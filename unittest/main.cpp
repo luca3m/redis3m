@@ -9,8 +9,8 @@
 #include "connection.h"
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
+#include <boost/assign.hpp>
 
 using namespace redis3m;
 
@@ -22,4 +22,12 @@ BOOST_AUTO_TEST_CASE ( fail_connect )
 BOOST_AUTO_TEST_CASE( correct_connection)
 {
     BOOST_CHECK_NO_THROW(connection());
+}
+
+BOOST_AUTO_TEST_CASE( test_ping)
+{
+    connection conn;
+    conn.append_commands(boost::assign::list_of("PING"));
+    reply r = conn.get_reply();
+    BOOST_CHECK_EQUAL(r.str(), "PONG");
 }
