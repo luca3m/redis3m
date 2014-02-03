@@ -17,7 +17,7 @@ namespace redis3m {
     class connection
     {
     public:
-        connection(const std::string& host, const unsigned port);
+        connection(const std::string& host="localhost", const unsigned port=6379);
         virtual ~connection();
     private:
         redisContext *c;

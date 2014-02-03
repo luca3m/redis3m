@@ -9,13 +9,42 @@
 /* Begin PBXBuildFile section */
 		8147FE4818A03DD400DFE19A /* connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE4618A03DD400DFE19A /* connection.cpp */; };
 		8147FE4918A03DD400DFE19A /* connection.h in Headers */ = {isa = PBXBuildFile; fileRef = 8147FE4718A03DD400DFE19A /* connection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8147FE5218A04BBF00DFE19A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE5118A04BBF00DFE19A /* main.cpp */; };
+		8147FE5418A04BBF00DFE19A /* unittest.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8147FE5318A04BBF00DFE19A /* unittest.1 */; };
+		8147FE5A18A04E2F00DFE19A /* libredis3m.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8147FE3F18A03DB500DFE19A /* libredis3m.dylib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8147FE5818A04CC200DFE19A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8147FE3718A03DB500DFE19A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8147FE3E18A03DB500DFE19A;
+			remoteInfo = redis3m;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8147FE4D18A04BBF00DFE19A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8147FE5418A04BBF00DFE19A /* unittest.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8147FE3F18A03DB500DFE19A /* libredis3m.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libredis3m.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		8147FE4618A03DD400DFE19A /* connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = connection.cpp; sourceTree = "<group>"; };
 		8147FE4718A03DD400DFE19A /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
 		8147FE4A18A0420A00DFE19A /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		8147FE4F18A04BBF00DFE19A /* unittest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = unittest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8147FE5118A04BBF00DFE19A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		8147FE5318A04BBF00DFE19A /* unittest.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = unittest.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -23,6 +52,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8147FE4C18A04BBF00DFE19A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8147FE5A18A04E2F00DFE19A /* libredis3m.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,6 +72,7 @@
 				8147FE4A18A0420A00DFE19A /* utils.h */,
 				8147FE4618A03DD400DFE19A /* connection.cpp */,
 				8147FE4718A03DD400DFE19A /* connection.h */,
+				8147FE5018A04BBF00DFE19A /* unittest */,
 				8147FE4018A03DB500DFE19A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,8 +81,18 @@
 			isa = PBXGroup;
 			children = (
 				8147FE3F18A03DB500DFE19A /* libredis3m.dylib */,
+				8147FE4F18A04BBF00DFE19A /* unittest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8147FE5018A04BBF00DFE19A /* unittest */ = {
+			isa = PBXGroup;
+			children = (
+				8147FE5118A04BBF00DFE19A /* main.cpp */,
+				8147FE5318A04BBF00DFE19A /* unittest.1 */,
+			);
+			path = unittest;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -78,6 +126,24 @@
 			productReference = 8147FE3F18A03DB500DFE19A /* libredis3m.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		8147FE4E18A04BBF00DFE19A /* unittest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8147FE5518A04BBF00DFE19A /* Build configuration list for PBXNativeTarget "unittest" */;
+			buildPhases = (
+				8147FE4B18A04BBF00DFE19A /* Sources */,
+				8147FE4C18A04BBF00DFE19A /* Frameworks */,
+				8147FE4D18A04BBF00DFE19A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8147FE5918A04CC200DFE19A /* PBXTargetDependency */,
+			);
+			name = unittest;
+			productName = unittest;
+			productReference = 8147FE4F18A04BBF00DFE19A /* unittest */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -100,6 +166,7 @@
 			projectRoot = "";
 			targets = (
 				8147FE3E18A03DB500DFE19A /* redis3m */,
+				8147FE4E18A04BBF00DFE19A /* unittest */,
 			);
 		};
 /* End PBXProject section */
@@ -113,7 +180,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8147FE4B18A04BBF00DFE19A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8147FE5218A04BBF00DFE19A /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8147FE5918A04CC200DFE19A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8147FE3E18A03DB500DFE19A /* redis3m */;
+			targetProxy = 8147FE5818A04CC200DFE19A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		8147FE4118A03DB500DFE19A /* Debug */ = {
@@ -222,6 +305,38 @@
 			};
 			name = Release;
 		};
+		8147FE5618A04BBF00DFE19A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8147FE5718A04BBF00DFE19A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -239,6 +354,14 @@
 			buildConfigurations = (
 				8147FE4418A03DB500DFE19A /* Debug */,
 				8147FE4518A03DB500DFE19A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		8147FE5518A04BBF00DFE19A /* Build configuration list for PBXNativeTarget "unittest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8147FE5618A04BBF00DFE19A /* Debug */,
+				8147FE5718A04BBF00DFE19A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
