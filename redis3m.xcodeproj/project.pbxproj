@@ -6,8 +6,16 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8147FE4818A03DD400DFE19A /* connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE4618A03DD400DFE19A /* connection.cpp */; };
+		8147FE4918A03DD400DFE19A /* connection.h in Headers */ = {isa = PBXBuildFile; fileRef = 8147FE4718A03DD400DFE19A /* connection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8147FE3F18A03DB500DFE19A /* libredis3m.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libredis3m.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		8147FE4618A03DD400DFE19A /* connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = connection.cpp; sourceTree = "<group>"; };
+		8147FE4718A03DD400DFE19A /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
+		8147FE4A18A0420A00DFE19A /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,6 +32,9 @@
 		8147FE3618A03DB500DFE19A = {
 			isa = PBXGroup;
 			children = (
+				8147FE4A18A0420A00DFE19A /* utils.h */,
+				8147FE4618A03DD400DFE19A /* connection.cpp */,
+				8147FE4718A03DD400DFE19A /* connection.h */,
 				8147FE4018A03DB500DFE19A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +54,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8147FE4918A03DD400DFE19A /* connection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +109,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8147FE4818A03DD400DFE19A /* connection.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,16 +187,38 @@
 		8147FE4418A03DB500DFE19A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LINKER_DISPLAYS_MANGLED_NAMES = YES;
+				OTHER_LDFLAGS = "-lhiredis";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
 		8147FE4518A03DB500DFE19A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LINKER_DISPLAYS_MANGLED_NAMES = YES;
+				OTHER_LDFLAGS = "-lhiredis";
+				PRELINK_LIBS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};
