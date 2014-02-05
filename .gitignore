@@ -11,3 +11,6 @@
 *.lai
 *.la
 *.a
+
+# XCode project data 
+redis3m.xcodeproj/xcuserdata

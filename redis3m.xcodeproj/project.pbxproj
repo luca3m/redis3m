@@ -14,6 +14,11 @@
 		8147FE5A18A04E2F00DFE19A /* libredis3m.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8147FE3F18A03DB500DFE19A /* libredis3m.dylib */; };
 		8147FE5D18A0545300DFE19A /* reply.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE5B18A0545300DFE19A /* reply.cpp */; };
 		8147FE5E18A0545300DFE19A /* reply.h in Headers */ = {isa = PBXBuildFile; fileRef = 8147FE5C18A0545300DFE19A /* reply.h */; };
+		8147FE6118A2A1FF00DFE19A /* connection_pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE5F18A2A1FF00DFE19A /* connection_pool.cpp */; };
+		8147FE6218A2A1FF00DFE19A /* connection_pool.h in Headers */ = {isa = PBXBuildFile; fileRef = 8147FE6018A2A1FF00DFE19A /* connection_pool.h */; };
+		8147FE6418A2C4FF00DFE19A /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE6318A2C4FF00DFE19A /* utils.cpp */; };
+		8147FE6718A2C6AF00DFE19A /* sentinel_connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8147FE6518A2C6AF00DFE19A /* sentinel_connection.cpp */; };
+		8147FE6818A2C6AF00DFE19A /* sentinel_connection.h in Headers */ = {isa = PBXBuildFile; fileRef = 8147FE6618A2C6AF00DFE19A /* sentinel_connection.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +54,11 @@
 		8147FE5318A04BBF00DFE19A /* unittest.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = unittest.1; sourceTree = "<group>"; };
 		8147FE5B18A0545300DFE19A /* reply.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = reply.cpp; sourceTree = "<group>"; };
 		8147FE5C18A0545300DFE19A /* reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reply.h; sourceTree = "<group>"; };
+		8147FE5F18A2A1FF00DFE19A /* connection_pool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = connection_pool.cpp; sourceTree = "<group>"; };
+		8147FE6018A2A1FF00DFE19A /* connection_pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection_pool.h; sourceTree = "<group>"; };
+		8147FE6318A2C4FF00DFE19A /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
+		8147FE6518A2C6AF00DFE19A /* sentinel_connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sentinel_connection.cpp; sourceTree = "<group>"; };
+		8147FE6618A2C6AF00DFE19A /* sentinel_connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sentinel_connection.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +83,11 @@
 		8147FE3618A03DB500DFE19A = {
 			isa = PBXGroup;
 			children = (
+				8147FE6518A2C6AF00DFE19A /* sentinel_connection.cpp */,
+				8147FE6618A2C6AF00DFE19A /* sentinel_connection.h */,
+				8147FE6318A2C4FF00DFE19A /* utils.cpp */,
+				8147FE5F18A2A1FF00DFE19A /* connection_pool.cpp */,
+				8147FE6018A2A1FF00DFE19A /* connection_pool.h */,
 				8147FE5B18A0545300DFE19A /* reply.cpp */,
 				8147FE5C18A0545300DFE19A /* reply.h */,
 				8147FE4A18A0420A00DFE19A /* utils.h */,
@@ -108,8 +123,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8147FE6818A2C6AF00DFE19A /* sentinel_connection.h in Headers */,
 				8147FE4918A03DD400DFE19A /* connection.h in Headers */,
 				8147FE5E18A0545300DFE19A /* reply.h in Headers */,
+				8147FE6218A2A1FF00DFE19A /* connection_pool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,8 +200,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8147FE6118A2A1FF00DFE19A /* connection_pool.cpp in Sources */,
 				8147FE5D18A0545300DFE19A /* reply.cpp in Sources */,
 				8147FE4818A03DD400DFE19A /* connection.cpp in Sources */,
+				8147FE6718A2C6AF00DFE19A /* sentinel_connection.cpp in Sources */,
+				8147FE6418A2C4FF00DFE19A /* utils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +307,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				LINKER_DISPLAYS_MANGLED_NAMES = YES;
-				OTHER_LDFLAGS = "-lhiredis";
+				OTHER_LDFLAGS = (
+					"-lhiredis",
+					"-lboost_system",
+				);
 				PRELINK_LIBS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -299,6 +322,7 @@
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
 				EXECUTABLE_PREFIX = lib;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -306,7 +330,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				LINKER_DISPLAYS_MANGLED_NAMES = YES;
-				OTHER_LDFLAGS = "-lhiredis";
+				OTHER_LDFLAGS = (
+					"-lhiredis",
+					"-lboost_system",
+				);
 				PRELINK_LIBS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";

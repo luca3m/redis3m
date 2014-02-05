@@ -10,6 +10,7 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 
 namespace redis3m {
     class exception: public std::exception
@@ -29,3 +30,10 @@ namespace redis3m {
 
 #define REDIS3M_EXCEPTION(name) class name: public redis3m::exception {\
 public: name(const std::string& what=""): exception(what){}};
+
+namespace resolv
+{
+    REDIS3M_EXCEPTION(cannot_resolve_hostname)
+    
+    std::vector<std::string> get_addresses(const std::string &hostname);
+}

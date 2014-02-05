@@ -7,7 +7,8 @@
 //
 
 #include "connection.h"
-#include <boost/foreach.hpp>
+#include <boost/assign.hpp>
+#include <vector>
 
 using namespace redis3m;
 
@@ -25,22 +26,64 @@ connection::~connection()
     redisFree(c);
 }
 
-void connection::append_commands(const std::vector<std::string> &commands)
+void connection::append_command(const std::list<std::string> &commands)
 {
     std::vector<const char*> argv;
     std::vector<size_t> argvlen;
-    
-    BOOST_FOREACH(std::string item, commands)
-    {
-        argv.push_back(item.c_str());
-        argvlen.push_back(item.size());
+
+    for (std::list<std::string>::const_iterator it = commands.begin(); it != commands.end(); ++it) {
+        argv.push_back(it->c_str());
+        argvlen.push_back(it->size());
     }
-    redisAppendCommandArgv(c, static_cast<int>(commands.size()), argv.data(), argvlen.data());
+
+    int ret = redisAppendCommandArgv(c, static_cast<int>(commands.size()), argv.data(), argvlen.data());
+    if (ret != REDIS_OK)
+    {
+        throw transport_failure();
+    }
 }
 
 reply connection::get_reply()
 {
     redisReply *r;
-    redisGetReply(c, reinterpret_cast<void**>(&r));
+    int ret = redisGetReply(c, reinterpret_cast<void**>(&r));
+    if (ret != REDIS_OK)
+    {
+        throw transport_failure();
+    }
     return reply(r);
+}
+
+std::vector<reply> connection::get_replies(int count)
+{
+    std::vector<reply> ret;
+    redisReply *r;
+    for (int i=0; i < count; ++i)
+    {
+        int error = redisGetReply(c, reinterpret_cast<void**>(&r));
+        if (error != REDIS_OK)
+        {
+            throw transport_failure();
+        }
+        ret.push_back(reply(r));
+    }
+    return ret;
+}
+
+void connection::set(const std::string &key, const std::string &value)
+{
+    append_command(boost::assign::list_of(std::string("SET"))(key)(value));
+    get_reply();
+}
+
+std::string connection::get(const std::string &key)
+{
+    append_command(boost::assign::list_of(std::string("GET"))(key));
+    return get_reply().str();
+}
+
+void connection::flushdb()
+{
+    append_command(boost::assign::list_of("FLUSHDB"));
+    get_reply();
 }

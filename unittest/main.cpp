@@ -14,6 +14,16 @@
 
 using namespace redis3m;
 
+class test_connection
+{
+public:
+    test_connection()
+    {
+        c.flushdb();
+    }
+    redis3m::connection c;
+};
+
 BOOST_AUTO_TEST_CASE ( fail_connect )
 {
     BOOST_CHECK_THROW(connection("localhost", 9090), unable_to_connect);
@@ -27,7 +37,16 @@ BOOST_AUTO_TEST_CASE( correct_connection)
 BOOST_AUTO_TEST_CASE( test_ping)
 {
     connection conn;
-    conn.append_commands(boost::assign::list_of("PING"));
+    conn.append_command(boost::assign::list_of("PING"));
     reply r = conn.get_reply();
     BOOST_CHECK_EQUAL(r.str(), "PONG");
+}
+
+BOOST_AUTO_TEST_CASE( set_get)
+{
+    test_connection tc;
+
+    BOOST_CHECK_EQUAL("", tc.c.get("foo"));
+    BOOST_CHECK_NO_THROW(tc.c.set("foo", "bar"));
+    BOOST_CHECK_EQUAL("bar", tc.c.get("foo"));
 }

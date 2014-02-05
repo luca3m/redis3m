@@ -11,19 +11,35 @@
 #include <string>
 #include <hiredis/hiredis.h>
 #include "utils.h"
-#include <vector>
+#include <list>
 #include "reply.h"
+#include <vector>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace redis3m {
     REDIS3M_EXCEPTION(unable_to_connect)
-
+    REDIS3M_EXCEPTION(transport_failure)
     class connection
     {
     public:
         connection(const std::string& host="localhost", const unsigned port=6379);
         virtual ~connection();
-        void append_commands(const std::vector<std::string>& commands);
+        void append_command(const std::list<std::string>& args);
         reply get_reply();
+        std::vector<reply> get_replies(int count);
+
+        inline redisContext* c_ptr()
+        {
+            return c;
+        }
+        
+        // Strings
+        void set(const std::string& key, const std::string& value);
+        std::string get(const std::string& key);
+
+        // Server
+
+        void flushdb();
     private:
         redisContext *c;
     };
