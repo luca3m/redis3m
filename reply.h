@@ -10,13 +10,15 @@
 
 #include <hiredis/hiredis.h>
 #include <string>
-#include <boost/enable_shared_from_this.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 
 namespace redis3m {
     class connection;
-    class reply: boost::enable_shared_from_this<reply>
+    class reply: boost::noncopyable
     {
     public:
+        typedef boost::shared_ptr<reply> ptr_t;
         inline std::string str()
         {
             return std::string(c->str, c->len);

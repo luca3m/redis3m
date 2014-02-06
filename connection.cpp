@@ -43,7 +43,7 @@ void connection::append_command(const std::list<std::string> &commands)
     }
 }
 
-reply connection::get_reply()
+reply::ptr_t connection::get_reply()
 {
     redisReply *r;
     int ret = redisGetReply(c, reinterpret_cast<void**>(&r));
@@ -51,12 +51,12 @@ reply connection::get_reply()
     {
         throw transport_failure();
     }
-    return reply(r);
+    return reply::ptr_t(new reply(r));
 }
 
-std::vector<reply> connection::get_replies(int count)
+std::vector<reply::ptr_t> connection::get_replies(int count)
 {
-    std::vector<reply> ret;
+    std::vector<reply::ptr_t> ret;
     redisReply *r;
     for (int i=0; i < count; ++i)
     {
@@ -65,7 +65,7 @@ std::vector<reply> connection::get_replies(int count)
         {
             throw transport_failure();
         }
-        ret.push_back(reply(r));
+        ret.push_back(reply::ptr_t(new reply(r)));
     }
     return ret;
 }
@@ -79,7 +79,7 @@ void connection::set(const std::string &key, const std::string &value)
 std::string connection::get(const std::string &key)
 {
     append_command(boost::assign::list_of(std::string("GET"))(key));
-    return get_reply().str();
+    return get_reply()->str();
 }
 
 void connection::flushdb()

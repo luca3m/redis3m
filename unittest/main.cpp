@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE( test_ping)
 {
     connection conn;
     conn.append_command(boost::assign::list_of("PING"));
-    reply r = conn.get_reply();
-    BOOST_CHECK_EQUAL(r.str(), "PONG");
+    reply::ptr_t r = conn.get_reply();
+    BOOST_CHECK_EQUAL(r->str(), "PONG");
 }
 
 BOOST_AUTO_TEST_CASE( set_get)

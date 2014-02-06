@@ -11,6 +11,7 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace redis3m {
     class exception: public std::exception
@@ -30,6 +31,8 @@ namespace redis3m {
 
 #define REDIS3M_EXCEPTION(name) class name: public redis3m::exception {\
 public: name(const std::string& what=""): exception(what){}};
+
+#define REDIS3M_LOG(string) std::cerr << string << std::endl;
 
 namespace resolv
 {
