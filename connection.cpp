@@ -69,8 +69,8 @@ std::vector<reply> connection::get_replies(int count)
             throw transport_failure();
         }
         ret.push_back(reply(r));
+        freeReplyObject(r);
     }
-    freeReplyObject(r);
     return ret;
 }
 
