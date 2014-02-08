@@ -353,7 +353,10 @@
 					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				OTHER_LDFLAGS = (
+					"-lboost_unit_test_framework",
+					"-lboost_system",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -367,7 +370,10 @@
 					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				OTHER_LDFLAGS = "-lboost_unit_test_framework";
+				OTHER_LDFLAGS = (
+					"-lboost_unit_test_framework",
+					"-lboost_system",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -391,6 +397,7 @@
 				8147FE4518A03DB500DFE19A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8147FE5518A04BBF00DFE19A /* Build configuration list for PBXNativeTarget "unittest" */ = {
 			isa = XCConfigurationList;
@@ -399,6 +406,7 @@
 				8147FE5718A04BBF00DFE19A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

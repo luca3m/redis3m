@@ -14,3 +14,6 @@
 
 # XCode project data 
 redis3m.xcodeproj/xcuserdata
+
+# Vagrant data
+vagrant/.vagrant
