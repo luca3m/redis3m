@@ -19,13 +19,15 @@
 
 namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_sentinel)
+    REDIS3M_EXCEPTION(cannot_find_master)
     class connection_pool: boost::noncopyable
     {
     public:
         typedef boost::shared_ptr<connection_pool> ptr_t;
         enum node_role_t{
             ANY = 0,
-            MASTER = 1
+            MASTER = 1,
+            SLAVE = 2
         };
 
         connection_pool(const std::string& sentinel_host,
@@ -37,7 +39,7 @@ namespace redis3m {
 
     private:
         connection::ptr_t create_master_connection();
-        connection::ptr_t create_any_connection();
+        connection::ptr_t create_slave_connection();
         connection::ptr_t sentinel_connection();
 
         boost::mutex access_mutex;

@@ -10,24 +10,38 @@
 
 #include <hiredis/hiredis.h>
 #include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/noncopyable.hpp>
+#include "utils.h"
+#include <vector>
 
 namespace redis3m {
+    
     class connection;
-    class reply: boost::noncopyable
+    class reply
     {
     public:
-        typedef boost::shared_ptr<reply> ptr_t;
-        inline std::string str()
+        enum type_t
         {
-            return std::string(c->str, c->len);
-        }
-        virtual ~reply();
+            STRING = 1,
+            ARRAY = 2,
+            INTEGER = 3,
+            NIL = 4,
+            STATUS = 5,
+            ERROR = 6
+        };
+
+        inline type_t type() const { return _type; }
+        inline const std::string& str() const { return _str; }
+        inline long long integer() const { return _integer; }
+        inline const std::vector<reply>& elements() const { return _elements; }
 
     private:
         reply(redisReply *reply);
+
+        type_t _type;
+        std::string _str;
+        long long _integer;
+        std::vector<reply> _elements;
+
         friend class connection;
-        redisReply *c;
     };
 }

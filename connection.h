@@ -24,11 +24,14 @@ namespace redis3m {
     {
     public:
         typedef boost::shared_ptr<connection> ptr_t;
-        connection(const std::string& host="localhost", const unsigned port=6379);
+        inline static ptr_t create(const std::string& host="localhost", const unsigned int port=6379)
+        {
+            return ptr_t(new connection(host, port));
+        }
         virtual ~connection();
         void append_command(const std::list<std::string>& args);
-        reply::ptr_t get_reply();
-        std::vector<reply::ptr_t> get_replies(int count);
+        reply get_reply();
+        std::vector<reply> get_replies(int count);
 
         inline redisContext* c_ptr()
         {
@@ -43,6 +46,7 @@ namespace redis3m {
 
         void flushdb();
     private:
+        connection(const std::string& host, const unsigned int port);
         redisContext *c;
     };
 }

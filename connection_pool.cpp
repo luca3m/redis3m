@@ -10,15 +10,17 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace redis3m;
 
 connection_pool::connection_pool(const std::string& sentinel_host,
                                  const std::string& master_name,
                                  unsigned int sentinel_port):
-    sentinel_host(sentinel_host),
-    master_name(master_name),
-    sentinel_port(sentinel_port)
+sentinel_host(sentinel_host),
+master_name(master_name),
+sentinel_port(sentinel_port)
 {
 
 }
@@ -39,7 +41,7 @@ connection::ptr_t connection_pool::sentinel_connection()
         REDIS3M_LOG(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
         try
         {
-            sentinel.reset(new connection(real_sentinel, sentinel_port));
+            sentinel = connection::create(real_sentinel, sentinel_port);
             break;
         } catch (const unable_to_connect& ex)
         {
@@ -52,4 +54,33 @@ connection::ptr_t connection_pool::sentinel_connection()
         throw cannot_find_sentinel("Cannot find sentinel");
     }
     return sentinel;
+}
+
+connection::ptr_t connection_pool::create_master_connection()
+{
+    connection::ptr_t sentinel = sentinel_connection();
+
+    unsigned int connection_retries = 0;
+    while(connection_retries < 5)
+    {
+        sentinel->append_command(boost::assign::list_of(std::string("SENTINEL"))
+                                 (std::string("get-master-addr-by-name"))
+                                 (master_name)
+                                 );
+        reply response = sentinel->get_reply();
+        std::string master_ip = response.elements().at(0).str();
+        unsigned int master_port = boost::lexical_cast<unsigned int>(response.elements().at(1).str());
+
+        try
+        {
+            return connection::create(master_ip, master_port);
+        } catch (const unable_to_connect& ex)
+        {
+            REDIS3M_LOG(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+        }
+        connection_retries++;
+        sleep(5);
+    }
+    throw cannot_find_master(
+                             boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }
