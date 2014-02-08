@@ -27,8 +27,6 @@ sentinel_port(sentinel_port)
 
 connection::ptr_t connection_pool::sentinel_connection()
 {
-    connection::ptr_t sentinel;
-
     std::vector<std::string> real_sentinels = resolv::get_addresses(sentinel_host);
     REDIS3M_LOG(boost::str(
                            boost::format("Found %d redis sentinels: %s")
@@ -41,19 +39,39 @@ connection::ptr_t connection_pool::sentinel_connection()
         REDIS3M_LOG(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
         try
         {
-            sentinel = connection::create(real_sentinel, sentinel_port);
-            break;
+            return connection::create(real_sentinel, sentinel_port);
         } catch (const unable_to_connect& ex)
         {
             REDIS3M_LOG(boost::str(boost::format("%s is down") % real_sentinel));
         }
     }
 
-    if (!sentinel)
+    throw cannot_find_sentinel("Cannot find sentinel");
+}
+
+connection::ptr_t connection_pool::create_slave_connection()
+{
+    connection::ptr_t sentinel = sentinel_connection();
+    sentinel->append_command(boost::assign::list_of<std::string>("SENTINEL")("slaves")(master_name));
+    reply response = sentinel->get_reply();
+    for (std::vector<reply>::const_iterator it = response.elements().begin();
+         it != response.elements().end(); ++it)
     {
-        throw cannot_find_sentinel("Cannot find sentinel");
+        const std::vector<reply>& properties = response.elements();
+        if (properties.at(9).str() == "slave")
+        {
+            std::string host = properties.at(3).str();
+            unsigned int port = boost::lexical_cast<unsigned int>(properties.at(5).str());
+            try
+            {
+                return connection::create(host, port);
+            } catch (const unable_to_connect& ex)
+            {
+                REDIS3M_LOG(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
+            }
+        }
     }
-    return sentinel;
+    throw cannot_find_slave();
 }
 
 connection::ptr_t connection_pool::create_master_connection()

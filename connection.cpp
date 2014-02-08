@@ -91,3 +91,8 @@ void connection::flushdb()
     append_command(boost::assign::list_of("FLUSHDB"));
     get_reply();
 }
+
+bool connection::is_valid()
+{
+    return c->err != REDIS_OK;
+}
