@@ -9,6 +9,7 @@
 #include "connection.h"
 #include <boost/assign.hpp>
 #include <vector>
+#include <hiredis/hiredis.h>
 
 using namespace redis3m;
 

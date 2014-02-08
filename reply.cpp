@@ -7,6 +7,7 @@
 //
 
 #include "reply.h"
+#include <hiredis/hiredis.h>
 
 using namespace redis3m;
 

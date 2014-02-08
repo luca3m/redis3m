@@ -9,13 +9,14 @@
 #pragma once
 
 #include <string>
-#include <hiredis/hiredis.h>
 #include "utils.h"
 #include <list>
 #include "reply.h"
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
+
+struct redisContext;
 
 namespace redis3m {
     REDIS3M_EXCEPTION(unable_to_connect)

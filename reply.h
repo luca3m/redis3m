@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include <hiredis/hiredis.h>
 #include <string>
 #include "utils.h"
 #include <vector>
+
+struct redisReply;
 
 namespace redis3m {
     
