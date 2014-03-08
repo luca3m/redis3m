@@ -24,17 +24,12 @@ namespace redis3m {
     {
     public:
         typedef boost::shared_ptr<connection_pool> ptr_t;
-        enum node_t{
-            ANY = 0,
-            MASTER = 1,
-            SLAVE = 2
-        };
 
         connection_pool(const std::string& sentinel_host,
                         const std::string& master_name,
                         unsigned int sentinel_port=26379);
 
-        connection::ptr_t get(const std::string& master_name, node_t type=MASTER);
+        connection::ptr_t get(connection::role_t type=connection::MASTER);
         
         void put(connection::ptr_t conn );
 
@@ -44,7 +39,7 @@ namespace redis3m {
         connection::ptr_t sentinel_connection();
 
         boost::mutex access_mutex;
-        std::set<std::pair<node_t, connection::ptr_t> > connections;
+        std::set<connection::ptr_t> connections;
 
         std::string sentinel_host;
         unsigned int sentinel_port;

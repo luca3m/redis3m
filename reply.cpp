@@ -26,7 +26,7 @@ _integer(0)
             _integer = c_reply->integer;
             break;
         case ARRAY:
-            for (long long i=0; i < c_reply->elements; ++i) {
+            for (size_t i=0; i < c_reply->elements; ++i) {
                 _elements.push_back(reply(c_reply->element[i]));
             }
             break;

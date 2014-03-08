@@ -12,6 +12,8 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp>
 
 using namespace redis3m;
 
@@ -25,6 +27,69 @@ sentinel_port(sentinel_port)
 
 }
 
+connection::ptr_t connection_pool::get(connection::role_t type)
+{
+    connection::ptr_t ret;
+
+    // Look for a cached connection
+    access_mutex.lock();
+    std::set<connection::ptr_t>::iterator it;
+    switch (type) {
+        case connection::ANY:
+            it = connections.begin();
+            break;
+        case connection::MASTER:
+        case connection::SLAVE:
+            it = std::find_if(connections.begin(), connections.end(),
+                           ( boost::lambda::bind(&connection::_role, *boost::lambda::_1) == type ));
+            break;
+    }
+    for (; it != connections.end(); ++it)
+    {
+        connections.erase(it);
+        if (it->get()->is_valid())
+        {
+            ret = *it;
+            break;
+        }
+    }
+    access_mutex.unlock();
+
+    // If no connection found, create a new one
+    if (!ret)
+    {
+        switch (type) {
+            case connection::SLAVE:
+            {
+                ret = create_slave_connection();
+                ret->_role = connection::SLAVE;
+                break;
+            }
+            case connection::ANY:
+            {
+                try {
+                    ret = create_slave_connection();
+                    ret->_role = connection::SLAVE;
+                    break;
+                } catch (const cannot_find_slave& ex) {
+                    // Go ahead, looking for a master, no break istruction
+                }
+            }
+            case connection::MASTER:
+                ret = create_master_connection();
+                ret->_role = connection::MASTER;
+                break;
+        }
+    }
+    return ret;
+}
+
+void connection_pool::put(connection::ptr_t conn)
+{
+    boost::unique_lock<boost::mutex> lock(access_mutex);
+    connections.insert(conn);
+}
+
 connection::ptr_t connection_pool::sentinel_connection()
 {
     std::vector<std::string> real_sentinels = resolv::get_addresses(sentinel_host);
@@ -34,7 +99,7 @@ connection::ptr_t connection_pool::sentinel_connection()
                            % boost::algorithm::join(real_sentinels, ", ")
                            )
                 );
-    BOOST_FOREACH( std::string real_sentinel, real_sentinels)
+    BOOST_FOREACH( const std::string& real_sentinel, real_sentinels)
     {
         REDIS3M_LOG(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
         try
@@ -99,6 +164,5 @@ connection::ptr_t connection_pool::create_master_connection()
         connection_retries++;
         sleep(5);
     }
-    throw cannot_find_master(
-                             boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
+    throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }
