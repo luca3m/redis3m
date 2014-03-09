@@ -58,15 +58,16 @@ namespace redis3m {
 
         // Server
         void flushdb();
-    private:
-        friend class connection_pool;
-        connection(const std::string& host, const unsigned int port);
 
         enum role_t {
             ANY = 0,
             MASTER = 1,
             SLAVE = 2
         };
+        
+    private:
+        friend class connection_pool;
+        connection(const std::string& host, const unsigned int port);
 
         role_t _role;
         redisContext *c;

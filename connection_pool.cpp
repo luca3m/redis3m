@@ -122,7 +122,7 @@ connection::ptr_t connection_pool::create_slave_connection()
     for (std::vector<reply>::const_iterator it = response.elements().begin();
          it != response.elements().end(); ++it)
     {
-        const std::vector<reply>& properties = response.elements();
+        const std::vector<reply>& properties = it->elements();
         if (properties.at(9).str() == "slave")
         {
             std::string host = properties.at(3).str();
