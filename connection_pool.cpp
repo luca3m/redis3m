@@ -119,8 +119,11 @@ connection::ptr_t connection_pool::create_slave_connection()
     connection::ptr_t sentinel = sentinel_connection();
     sentinel->append_command(boost::assign::list_of<std::string>("SENTINEL")("slaves")(master_name));
     reply response = sentinel->get_reply();
-    for (std::vector<reply>::const_iterator it = response.elements().begin();
-         it != response.elements().end(); ++it)
+    std::vector<reply> slaves(response.elements());
+    std::random_shuffle(slaves.begin(), slaves.end());
+
+    for (std::vector<reply>::const_iterator it = slaves.begin();
+         it != slaves.end(); ++it)
     {
         const std::vector<reply>& properties = it->elements();
         if (properties.at(9).str() == "slave")

@@ -60,16 +60,9 @@ reply connection::get_reply()
 std::vector<reply> connection::get_replies(int count)
 {
     std::vector<reply> ret;
-    redisReply *r;
     for (int i=0; i < count; ++i)
     {
-        int error = redisGetReply(c, reinterpret_cast<void**>(&r));
-        if (error != REDIS_OK)
-        {
-            throw transport_failure();
-        }
-        ret.push_back(reply(r));
-        freeReplyObject(r);
+        ret.push_back(get_reply());
     }
     return ret;
 }
