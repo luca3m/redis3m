@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Luca Marturana. All rights reserved.
 //
 
-#include "redis3m/connection.h"
+#include <redis3m/connection.h>
 #include <boost/assign.hpp>
 #include <vector>
 #include <hiredis/hiredis.h>

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "reply.h"
-#include "connection.h"
+#include <redis3m/reply.h>
+#include <redis3m/connection.h>
 #include <vector>
 #include <string>
 

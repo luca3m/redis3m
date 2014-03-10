@@ -10,11 +10,11 @@
 
 #include <string>
 #include <set>
-#include "connection.h"
+#include <redis3m/connection.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
-#include "utils.h"
+#include <redis3m/utils/common.h>
 
 namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_sentinel)

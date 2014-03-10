@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Luca Marturana. All rights reserved.
 //
 
-#include "redis3m/utils.h"
+#include <redis3m/utils/resolv.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <string>
-#include "utils.h"
+#include <redis3m/utils/common.h>
 #include <vector>
 
 struct redisReply;

@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Luca Marturana. All rights reserved.
 //
 
-#include "redis3m/connection_pool.h"
+#include <redis3m/connection_pool.h>
+#include <redis3m/utils/resolv.h>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
