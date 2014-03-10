@@ -8,7 +8,6 @@
 
 #include <redis3m/connection.h>
 #include <boost/assign.hpp>
-#include <vector>
 #include <hiredis/hiredis.h>
 
 using namespace redis3m;
@@ -27,12 +26,14 @@ connection::~connection()
     redisFree(c);
 }
 
-void connection::append_command(const std::list<std::string> &commands)
+void connection::append_command(const std::vector<std::string> &commands)
 {
     std::vector<const char*> argv;
+    argv.reserve(commands.size());
     std::vector<size_t> argvlen;
+    argvlen.reserve(commands.size());
 
-    for (std::list<std::string>::const_iterator it = commands.begin(); it != commands.end(); ++it) {
+    for (std::vector<std::string>::const_iterator it = commands.begin(); it != commands.end(); ++it) {
         argv.push_back(it->c_str());
         argvlen.push_back(it->size());
     }

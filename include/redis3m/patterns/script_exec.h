@@ -21,8 +21,8 @@ namespace redis3m {
             script_exec(const std::string& script);
 
             reply exec(connection::ptr_t connection,
-                       const std::vector<std::string>& keys,
-                       const std::vector<std::string>& args);
+                       const std::vector<std::string>& keys=std::vector<std::string>(),
+                       const std::vector<std::string>& args=std::vector<std::string>());
         private:
             std::string _script;
             std::string _sha1;

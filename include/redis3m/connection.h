@@ -10,7 +10,6 @@
 
 #include <string>
 #include <redis3m/utils/common.h>
-#include <list>
 #include <redis3m/reply.h>
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -38,11 +37,11 @@ namespace redis3m {
 
         bool is_valid();
         
-        void append_command(const std::list<std::string>& args);
+        void append_command(const std::vector<std::string>& args);
 
         reply get_reply();
 
-        inline reply run_command(const std::list<std::string>& args)
+        inline reply run_command(const std::vector<std::string>& args)
         {
             append_command(args);
             return get_reply();
