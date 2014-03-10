@@ -19,6 +19,7 @@ namespace redis3m {
     public:
         exception(const std::string& what):
         _what(what){}
+        virtual ~exception() throw() {}
         
         inline virtual const char* what()
         {

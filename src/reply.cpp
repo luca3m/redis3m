@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Luca Marturana. All rights reserved.
 //
 
-#include "reply.h"
+#include "redis3m/reply.h"
 #include <hiredis/hiredis.h>
 
 using namespace redis3m;
