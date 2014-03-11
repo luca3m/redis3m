@@ -27,6 +27,8 @@ reply patterns::script_exec::exec(connection::ptr_t connection,
                 const std::vector<std::string>& args)
 {
     std::vector<std::string> exec_command;
+    exec_command.reserve(3+keys.size()+args.size());
+
     exec_command.push_back("EVALSHA");
     exec_command.push_back(_sha1);
     exec_command.push_back(boost::lexical_cast<std::string>(keys.size()));
