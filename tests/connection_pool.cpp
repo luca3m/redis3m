@@ -17,16 +17,16 @@ using namespace redis3m;
 
 BOOST_AUTO_TEST_CASE( test_pool)
 {
-    connection_pool pool(getenv("REDIS_HOST"), "test");
+        connection_pool::ptr_t pool = connection_pool::create(getenv("REDIS_HOST"), "test");
 
-    connection::ptr_t c = pool.get(connection::MASTER);
+    connection::ptr_t c = pool->get(connection::MASTER);
 
-    c->set("foo", "bar");
+    c->run_command(boost::assign::list_of("SET")("foo")("bar"));
 
-    pool.put(c);
+    pool->put(c);
 
-    c = pool.get(connection::SLAVE);
+    c = pool->get(connection::SLAVE);
 
-    BOOST_CHECK_EQUAL(c->get("foo"), "bar");
+    BOOST_CHECK_EQUAL(c->run_command(boost::assign::list_of("GET")("foo")).str(), "bar");
 }
 

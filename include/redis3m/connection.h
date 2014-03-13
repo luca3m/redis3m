@@ -14,6 +14,8 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/function.hpp>
 
 struct redisContext;
 
@@ -51,13 +53,6 @@ namespace redis3m {
 
         inline redisContext* c_ptr() { return c; }
         
-        // Strings
-        void set(const std::string& key, const std::string& value);
-        std::string get(const std::string& key);
-
-        // Server
-        void flushdb();
-
         enum role_t {
             ANY = 0,
             MASTER = 1,

@@ -21,7 +21,7 @@ public:
     test_connection()
     {
         c = redis3m::connection::create(getenv("REDIS_HOST"));
-        c->flushdb();
+        c->run_command(boost::assign::list_of("FLUSHDB"));
     }
     redis3m::connection::ptr_t c;
 };
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( set_get)
 {
     test_connection tc;
 
-    BOOST_CHECK_EQUAL("", tc.c->get("foo"));
-    BOOST_CHECK_NO_THROW(tc.c->set("foo", "bar"));
-    BOOST_CHECK_EQUAL("bar", tc.c->get("foo"));
+    BOOST_CHECK_EQUAL("", tc.c->run_command(boost::assign::list_of("GET")("foo")).str());
+    BOOST_CHECK_NO_THROW(tc.c->run_command(boost::assign::list_of("SET")("foo")("bar")));
+    BOOST_CHECK_EQUAL("bar", tc.c->run_command(boost::assign::list_of("GET")("foo")).str());
 }

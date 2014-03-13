@@ -68,24 +68,6 @@ std::vector<reply> connection::get_replies(int count)
     return ret;
 }
 
-void connection::set(const std::string &key, const std::string &value)
-{
-    append_command(boost::assign::list_of(std::string("SET"))(key)(value));
-    get_reply();
-}
-
-std::string connection::get(const std::string &key)
-{
-    append_command(boost::assign::list_of(std::string("GET"))(key));
-    return get_reply().str();
-}
-
-void connection::flushdb()
-{
-    append_command(boost::assign::list_of("FLUSHDB"));
-    get_reply();
-}
-
 bool connection::is_valid()
 {
     return c->err != REDIS_OK;
