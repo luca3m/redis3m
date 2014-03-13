@@ -1,6 +1,8 @@
 #include <redis3m/utils/datetime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+using namespace redis3m;
+
 uint64_t datetime::utc_now_in_seconds()
 {
     static const boost::posix_time::ptime epoch(boost::gregorian::date(1970,1,1));

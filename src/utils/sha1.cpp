@@ -34,6 +34,8 @@
 
 #include <redis3m/utils/sha1.h>
 
+namespace redis3m
+{
 namespace sha1
 {
     namespace // local
@@ -183,3 +185,4 @@ namespace sha1
         hexstring[40] = 0;
     }
 } // namespace sha1
+}

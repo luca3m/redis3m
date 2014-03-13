@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+using namespace redis3m;
 
 std::vector<std::string> resolv::get_addresses(const std::string &hostname)
 {

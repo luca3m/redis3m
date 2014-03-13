@@ -28,6 +28,8 @@
 #ifndef SHA1_DEFINED
 #define SHA1_DEFINED
 
+namespace redis3m
+{
 namespace sha1
 {
 
@@ -45,5 +47,5 @@ namespace sha1
     void toHexString(const unsigned char* hash, char* hexstring);
 
 } // namespace sha1
-
+}
 #endif // SHA1_DEFINED
