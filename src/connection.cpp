@@ -70,5 +70,5 @@ std::vector<reply> connection::get_replies(int count)
 
 bool connection::is_valid()
 {
-    return c->err != REDIS_OK;
+    return c->err == REDIS_OK;
 }
