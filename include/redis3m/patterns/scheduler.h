@@ -3,6 +3,7 @@
 #include <string>
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/connection.h>
+#include <inttypes.h>
 
 namespace redis3m
 {
