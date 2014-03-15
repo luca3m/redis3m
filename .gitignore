@@ -12,11 +12,7 @@
 *.la
 *.a
 
-# XCode project data 
-redis3m.xcodeproj/xcuserdata
-
-# Vagrant data
-vagrant/.vagrant
+# CMake date
 CMakeCache.txt
 CMakeFiles
 Makefile
@@ -24,3 +20,7 @@ cmake_install.cmake
 build
 cmake_install.cmake.user
 CTestTestfile.cmake
+
+# Vagrant data
+vagrant/.vagrant
+
