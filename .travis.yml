@@ -1,0 +1,29 @@
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+services: redis
+
+# install pre-reqs
+install:
+  - sudo apt-get install libboost-all-dev
+  - mkdir -p _prereqs
+  - pushd _prereqs
+  - git clone https://github.com/redis/hiredis
+  - cd hiredis
+  - make
+  - sudo make install
+  - popd
+
+# Run the Build script
+script:
+  - mkdir _build
+  - cd _build
+  - cmake ..
+  - sudo make install
+  - sudo ldconfig
+
+after_script:
+  - REDIS_HOST="localhost" ctest -V .
