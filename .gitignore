@@ -23,3 +23,4 @@ Makefile
 cmake_install.cmake
 build
 cmake_install.cmake.user
+CTestTestfile.cmake

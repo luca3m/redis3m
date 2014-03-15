@@ -34,12 +34,12 @@ reply patterns::script_exec::exec(connection::ptr_t connection,
     exec_command.push_back(boost::lexical_cast<std::string>(keys.size()));
     exec_command.insert(exec_command.end(), keys.begin(), keys.end());
     exec_command.insert(exec_command.end(), args.begin(), args.end());
-    reply r = connection->run_command(exec_command);
+    reply r = connection->run(exec_command);
     if (r.type() == reply::ERROR)
     {
         exec_command[0] = "EVAL";
         exec_command[1] = _script;
-        r = connection->run_command(exec_command);
+        r = connection->run(exec_command);
     }
     return r;
 }

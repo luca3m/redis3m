@@ -7,10 +7,12 @@
 //
 
 #include <redis3m/connection.h>
-#include <boost/assign.hpp>
+#include <boost/assign/list_of.hpp>
 #include <hiredis/hiredis.h>
 
 using namespace redis3m;
+
+boost::assign_detail::generic_list<std::string>(&redis3m::command)(const std::string&) = boost::assign::list_of<std::string>;
 
 connection::connection(const std::string& host, const unsigned port)
 {
@@ -26,7 +28,7 @@ connection::~connection()
     redisFree(c);
 }
 
-void connection::append_command(const std::vector<std::string> &commands)
+void connection::append(const std::vector<std::string> &commands)
 {
     std::vector<const char*> argv;
     argv.reserve(commands.size());

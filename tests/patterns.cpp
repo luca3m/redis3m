@@ -24,7 +24,7 @@ public:
     test_connection()
     {
         c = redis3m::connection::create(getenv("REDIS_HOST"));
-        c->run_command(boost::assign::list_of("flushdb"));
+        c->run(command("flushdb"));
     }
 
     inline redis3m::connection::ptr_t operator*()
@@ -77,6 +77,6 @@ BOOST_AUTO_TEST_CASE ( scheduler_test )
     // Dequeue
     s.dequeue(*tc, found_id);
 
-    reply r = tc->run_command(boost::assign::list_of<std::string>("ZCARD")("test-queue"));
+    reply r = tc->run(command("ZCARD")("test-queue"));
     BOOST_CHECK_EQUAL(r.integer(), 0);
 }

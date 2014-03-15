@@ -1,5 +1,4 @@
 #include <redis3m/patterns/scheduler.h>
-#include <boost/assign/list_of.hpp>
 #include <redis3m/utils/datetime.h>
 #include <boost/lexical_cast.hpp>
 
@@ -24,14 +23,14 @@ scheduler::scheduler(const std::string &queue_name):
 
 void scheduler::enqueue(connection::ptr_t connection, const std::string &object_id, const uint64_t delay)
 {
-    connection->run_command(boost::assign::list_of<std::string>("ZADD")(_queue)
+    connection->run(command("ZADD")(_queue)
                             (boost::lexical_cast<std::string>(datetime::utc_now_in_seconds()+delay))
                             (object_id));
 }
 
 void scheduler::dequeue(connection::ptr_t connection, const std::string &object_id)
 {
-    connection->run_command(boost::assign::list_of<std::string>("ZREM")(_queue)(object_id));
+    connection->run(command("ZREM")(_queue)(object_id));
 }
 
 std::string scheduler::find_expired(connection::ptr_t connection, const uint64_t lock_for)

@@ -11,7 +11,6 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
@@ -118,7 +117,7 @@ connection::ptr_t connection_pool::sentinel_connection()
 connection::ptr_t connection_pool::create_slave_connection()
 {
     connection::ptr_t sentinel = sentinel_connection();
-    sentinel->append_command(boost::assign::list_of<std::string>("SENTINEL")("slaves")(master_name));
+    sentinel->append(command("SENTINEL")("slaves")(master_name));
     reply response = sentinel->get_reply();
     std::vector<reply> slaves(response.elements());
     std::random_shuffle(slaves.begin(), slaves.end());
@@ -150,8 +149,7 @@ connection::ptr_t connection_pool::create_master_connection()
     unsigned int connection_retries = 0;
     while(connection_retries < 5)
     {
-        sentinel->append_command(boost::assign::list_of(std::string("SENTINEL"))
-                                 (std::string("get-master-addr-by-name"))
+        sentinel->append(command("SENTINEL")("get-master-addr-by-name")
                                  (master_name)
                                  );
         reply response = sentinel->get_reply();

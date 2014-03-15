@@ -15,13 +15,16 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/assign/list_of.hpp>
-#include <boost/function.hpp>
 
 struct redisContext;
 
 namespace redis3m {
     REDIS3M_EXCEPTION(unable_to_connect)
     REDIS3M_EXCEPTION(transport_failure)
+
+    // Utility to build commands, an alias of boost::assign::list_of<std::string>
+    // increases readability of code
+    extern boost::assign_detail::generic_list<std::string>(&command)(const std::string&);
 
     class connection: boost::noncopyable
     {
@@ -35,17 +38,17 @@ namespace redis3m {
             return ptr_t(new connection(host, port));
         }
 
-        virtual ~connection();
+        ~connection();
 
         bool is_valid();
         
-        void append_command(const std::vector<std::string>& args);
+        void append(const std::vector<std::string>& args);
 
         reply get_reply();
 
-        inline reply run_command(const std::vector<std::string>& args)
+        inline reply run(const std::vector<std::string>& args)
         {
-            append_command(args);
+            append(args);
             return get_reply();
         }
         

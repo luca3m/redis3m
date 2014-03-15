@@ -21,12 +21,12 @@ BOOST_AUTO_TEST_CASE( test_pool)
 
     connection::ptr_t c = pool->get(connection::MASTER);
 
-    c->run_command(boost::assign::list_of("SET")("foo")("bar"));
+    c->run(command("SET")("foo")("bar"));
 
     pool->put(c);
 
     c = pool->get(connection::SLAVE);
 
-    BOOST_CHECK_EQUAL(c->run_command(boost::assign::list_of("GET")("foo")).str(), "bar");
+    BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
 }
 
