@@ -1,5 +1,6 @@
 redis3m
 =======
+[![Build Status](https://travis-ci.org/luca3m/redis3m.png?branch=master)](https://travis-ci.org/luca3m/redis3m)
 
 A C++ [Redis](http://redis.io) driver
 
