@@ -3,8 +3,8 @@
 #include <redis3m/connection.h>
 #include <map>
 #include <string>
-#include <boost/assign/list_of.hpp>
 #include <boost/foreach.hpp>
+#include <redis3m/patterns/model.h>
 
 namespace redis3m
 {
@@ -13,20 +13,6 @@ namespace patterns
 
 class orm;
 
-class entity
-{
-public:
-    entity();
-
-    inline const std::string& id() const { return _id; }
-
-protected:
-    bool _loaded;
-private:
-    std::string _id;
-    friend class orm;
-};
-
 class orm {
 public:
 
@@ -34,7 +20,7 @@ public:
     template<typename Entity>
     bool find_by_id(connection::ptr_t conn, const std::string& id, Entity& entity)
     {
-        reply r = conn->run_command(boost::assign::list_of(std::string("HGETALL"))(entity_key<Entity>(id)));
+        reply r = conn->run(command("HGETALL")(entity_key<Entity>(id)));
         if (r.elements().size() > 0 )
         {
             std::map<std::string, std::string> map;
@@ -42,8 +28,8 @@ public:
             {
                 map[r.elements()[i].str()] = r.elements()[i+1].str();
             }
+            map["id"] = id;
             entity.from_map(map);
-            entity._id= id;
             return true;
         }
         else
@@ -55,12 +41,10 @@ public:
     template<class Entity>
     bool find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value, Entity& entity)
     {
-        std::string id = conn->run_command(
-                            boost::assign::list_of<std::string>("HGET")
+        std::string id = conn->run(command("HGET")
                            (unique_field_key<Entity>(field), value)).str();
         if (!id.empty())
         {
-            entity._id = id;
             return find_by_id(conn, id, entity);
         }
         else
@@ -72,7 +56,7 @@ public:
     template<class Entity>
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
-        return conn->run_command(boost::assign::list_of<std::string>("SISMEMBER")(collection_key<Entity>(), id)).integer() == 1;
+        return conn->run(command("SISMEMBER")(collection_key<Entity>(), id)).integer() == 1;
     }
 
     // Basic attribute handling
@@ -80,12 +64,13 @@ public:
     std::string save(connection::ptr_t conn, const Entity& entity)
     {
         std::string new_id = entity.id();
+        // Create a new id if object is new, using redis INCR command
         if (new_id.empty())
         {
-            uint64_t new_id_int = conn->run_command(
-                        boost::assign::list_of<std::string>("INCR")(collection_id_key<Entity>())).integer();
+            uint64_t new_id_int = conn->run(command("INCR")(collection_id_key<Entity>())).integer();
             new_id = boost::lexical_cast<std::string>(new_id_int);
         }
+
         std::string key = entity_key<Entity>(new_id);
 
         std::map<std::string, std::string> serialized_entity = entity.to_map();
@@ -107,19 +92,19 @@ public:
 
         std::vector<std::string> indexes = Entity::indexes();
 
-        conn->append_command(boost::assign::list_of<std::string>("MULTI"));
-        conn->append_command(boost::assign::list_of<std::string>("SADD")(collection_key<Entity>())
+        conn->append(command("MULTI"));
+        conn->append(command("SADD")(collection_key<Entity>())
                              (new_id));
         //conn->append_command(boost::assign::list_of("DEL")(key));
 
         BOOST_FOREACH(std::string field, indexes)
         {
-            conn->append_command(boost::assign::list_of<std::string>("SADD")
+            conn->append(command("SADD")
                                  (indexed_field_key<Entity>(field, serialized_entity[field]))
                                  (new_id)
                                  );
         }
-        conn->append_command(boost::assign::list_of<std::string>("EXEC"));
+        conn->append(command("EXEC"));
 
         conn->get_replies(3+indexes.size());
 
