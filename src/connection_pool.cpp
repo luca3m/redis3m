@@ -47,12 +47,13 @@ connection::ptr_t connection_pool::get(connection::role_t type)
     }
     for (; it != connections.end(); ++it)
     {
-        connections.erase(it);
         if (it->get()->is_valid())
         {
             ret = *it;
+            connections.erase(it);
             break;
         }
+        connections.erase(it);
     }
     access_mutex.unlock();
 
