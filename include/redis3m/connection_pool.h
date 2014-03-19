@@ -35,7 +35,7 @@ namespace redis3m {
         }
 
         connection::ptr_t get(connection::role_t type=connection::MASTER);
-        
+
         void put(connection::ptr_t conn );
 
         template<typename Ret>
@@ -59,6 +59,8 @@ namespace redis3m {
             throw too_much_retries();
         }
 
+        inline void set_database(unsigned int value) { _database = value; }
+
     private:
         connection_pool(const std::string& sentinel_host,
                         const std::string& master_name,
@@ -73,5 +75,6 @@ namespace redis3m {
         std::string sentinel_host;
         unsigned int sentinel_port;
         std::string master_name;
+        unsigned int _database;
     };
 }

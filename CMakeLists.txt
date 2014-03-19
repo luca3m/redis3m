@@ -19,7 +19,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${REDIS3M_VERSION_STRIN
 
 
 install (TARGETS ${PROJECT_NAME} DESTINATION lib)
-install (DIRECTORY "include" DESTINATION include)
+install (DIRECTORY "${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}" DESTINATION include)
 
 if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR lib)
@@ -31,7 +31,7 @@ set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 
-install(FILES "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
 
 # Tests
 add_executable(connection_test tests/connection.cpp)

@@ -21,16 +21,35 @@ scheduler::scheduler(const std::string &queue_name):
 
 }
 
-void scheduler::enqueue(connection::ptr_t connection, const std::string &object_id, const uint64_t delay)
+void scheduler::append_enqueue(connection::ptr_t connection, const std::string &object_id,
+                               const uint64_t time, bool relative)
 {
-    connection->run(command("ZADD")(_queue)
-                            (boost::lexical_cast<std::string>(datetime::utc_now_in_seconds()+delay))
+    uint64_t final_time = time;
+    if (relative)
+    {
+        final_time += datetime::utc_now_in_seconds();
+    }
+    connection->append(command("ZADD")(_queue)
+                            (boost::lexical_cast<std::string>(final_time))
                             (object_id));
+}
+
+void scheduler::enqueue(connection::ptr_t connection, const std::string &object_id,
+                        const uint64_t time, bool relative)
+{
+    append_enqueue(connection, object_id, time, relative);
+    connection->get_reply();
+}
+
+void scheduler::append_dequeue(connection::ptr_t connection, const std::string &object_id)
+{
+    connection->append(command("ZREM")(_queue)(object_id));
 }
 
 void scheduler::dequeue(connection::ptr_t connection, const std::string &object_id)
 {
-    connection->run(command("ZREM")(_queue)(object_id));
+    append_dequeue(connection, object_id);
+    connection->get_reply();
 }
 
 std::string scheduler::find_expired(connection::ptr_t connection, const uint64_t lock_for)

@@ -22,7 +22,8 @@ connection_pool::connection_pool(const std::string& sentinel_host,
                                  unsigned int sentinel_port):
 sentinel_host(sentinel_host),
 master_name(master_name),
-sentinel_port(sentinel_port)
+sentinel_port(sentinel_port),
+_database(0)
 {
 
 }
@@ -79,6 +80,12 @@ connection::ptr_t connection_pool::get(connection::role_t type)
                 ret = create_master_connection();
                 ret->_role = connection::MASTER;
                 break;
+        }
+
+        // Setup connections selecting db
+        if (_database != 0)
+        {
+            ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
         }
     }
     return ret;

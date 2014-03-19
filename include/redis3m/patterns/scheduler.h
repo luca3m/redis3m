@@ -14,7 +14,10 @@ class scheduler
 public:
     scheduler(const std::string& queue_name);
 
-    void enqueue(connection::ptr_t connection, const std::string& object_id, const uint64_t delay);
+    void append_enqueue(connection::ptr_t connection, const std::string& object_id, const uint64_t time, bool relative=true);
+    void enqueue(connection::ptr_t connection, const std::string& object_id, const uint64_t time, bool relative=true);
+
+    void append_dequeue(connection::ptr_t connection, const std::string& object_id);
     void dequeue(connection::ptr_t connection, const std::string& object_id);
 
     std::string find_expired(connection::ptr_t connection, const uint64_t lock_for=60);
