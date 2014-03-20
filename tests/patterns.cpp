@@ -12,6 +12,7 @@
 #include <redis3m/patterns/scheduler.h>
 #include <redis3m/patterns/simple_obj_store.h>
 #include <redis3m/patterns/model.h>
+#include <redis3m/patterns/orm.h>
 
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK
@@ -48,7 +49,18 @@ public:
         return "Test";
     }
 
+    static std::vector<std::string> indices()
+    {
+        return boost::assign::list_of("field");
+    }
+
+    static std::vector<std::string> uniques()
+    {
+        return std::vector<std::string>();
+    }
+
     REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field)
+    REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field2)
 };
 
 class test_connection
@@ -129,4 +141,22 @@ BOOST_AUTO_TEST_CASE ( simple_obj_store_test )
     BOOST_CHECK_EQUAL(store.find(*tc, "xxx", restored), true);
 
     BOOST_CHECK_EQUAL(restored.field(), "test");
+}
+
+
+BOOST_AUTO_TEST_CASE ( orm_save_test )
+{
+    test_connection tc;
+
+    patterns::orm store;
+
+    test_model new_m("xxx", "test");
+
+    store.save(*tc, new_m);
+
+//    test_model restored;
+
+//    BOOST_CHECK_EQUAL(store.find(*tc, "xxx", restored), true);
+
+//    BOOST_CHECK_EQUAL(restored.field(), "test");
 }

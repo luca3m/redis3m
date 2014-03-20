@@ -14,18 +14,18 @@
 #include <string>
 
 namespace redis3m {
-    namespace patterns
-    {
-        class script_exec {
-        public:
-            script_exec(const std::string& script);
-
-            reply exec(connection::ptr_t connection,
-                       const std::vector<std::string>& keys=std::vector<std::string>(),
-                       const std::vector<std::string>& args=std::vector<std::string>());
-        private:
-            std::string _script;
-            std::string _sha1;
-        };
-    }
+namespace patterns
+{
+class script_exec {
+public:
+    script_exec(const std::string& script, bool is_path=false);
+    reply exec(connection::ptr_t connection,
+               const std::vector<std::string>& keys=std::vector<std::string>(),
+               const std::vector<std::string>& args=std::vector<std::string>());
+private:
+    std::string _script;
+    bool _is_path;
+    std::string _sha1;
+};
+}
 }
