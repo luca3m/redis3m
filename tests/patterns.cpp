@@ -10,6 +10,8 @@
 #include <redis3m/connection.h>
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/patterns/scheduler.h>
+#include <redis3m/patterns/simple_obj_store.h>
+#include <redis3m/patterns/model.h>
 
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK
@@ -17,6 +19,37 @@
 #include <boost/assign.hpp>
 
 using namespace redis3m;
+
+class test_model: public redis3m::patterns::model
+{
+public:
+    test_model(){}
+
+    test_model(const std::string& test_id, const std::string& field):
+        _field(field)
+    {
+        _id = test_id;
+        _loaded = true;
+    }
+
+    std::map<std::string, std::string> to_map() const
+    {
+        return boost::assign::map_list_of("field", _field);
+    }
+
+    void from_map(const std::map<std::string, std::string> &map)
+    {
+        _field = map.at("field");
+        _loaded = true;
+    }
+
+    static std::string model_name()
+    {
+        return "Test";
+    }
+
+    REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field)
+};
 
 class test_connection
 {
@@ -79,4 +112,21 @@ BOOST_AUTO_TEST_CASE ( scheduler_test )
 
     reply r = tc->run(command("ZCARD")("test-queue"));
     BOOST_CHECK_EQUAL(r.integer(), 0);
+}
+
+BOOST_AUTO_TEST_CASE ( simple_obj_store_test )
+{
+    test_connection tc;
+
+    patterns::simple_obj_store store;
+
+    test_model new_m("xxx", "test");
+
+    store.save(*tc, new_m);
+
+    test_model restored;
+
+    BOOST_CHECK_EQUAL(store.find(*tc, "xxx", restored), true);
+
+    BOOST_CHECK_EQUAL(restored.field(), "test");
 }

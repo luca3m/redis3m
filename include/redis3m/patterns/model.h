@@ -3,15 +3,18 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <map>
+#include <redis3m/utils/common.h>
 
 namespace redis3m
 {
 namespace patterns
 {
 
+REDIS3M_EXCEPTION(model_not_loaded)
+
 #define REDIS3M_MODEL_RO_ATTRIBUTE(type, name) \
 public:\
-    inline const type& name() const { if (_loaded) return _##name; else throw model_not_loaded(); }\
+    inline const type& name() const { if (_loaded) return _##name; else throw redis3m::patterns::model_not_loaded(); }\
 private:\
     type _##name;
 
@@ -30,9 +33,11 @@ public:
     }
 
     void from_map(const std::map<std::string, std::string>& map) {
-        _id = map["id"];
+        _id = map.at("id");
         _loaded = true;
     }
+
+    inline const std::string& id() const { if (_loaded) return _id; else throw model_not_loaded(); }
 
 protected:
     inline static std::string read_opt_str_from_map(const std::map<std::string, std::string>& map,
@@ -112,8 +117,9 @@ protected:
 
     bool _loaded;
 
-    REDIS3M_MODEL_RO_ATTRIBUTE(std::string, id)
+    std::string _id;
 };
+
 
 }
 }
