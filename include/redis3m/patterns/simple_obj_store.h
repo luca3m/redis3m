@@ -22,7 +22,7 @@ public:
         redis3m::reply r = connection->run(redis3m::command("HGETALL")(m.model_name() + ":" +  id));
         std::map<std::string, std::string> serialized;
         const std::vector<redis3m::reply>& key_values = r.elements();
-        for(int i=0; i < key_values.size()/2; i+=2)
+        for(int i=0; i < key_values.size(); i+=2)
         {
             serialized[key_values.at(i).str()] = key_values.at(i+1).str();
         }
