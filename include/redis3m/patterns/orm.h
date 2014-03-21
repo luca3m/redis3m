@@ -17,26 +17,26 @@ class orm {
 public:
 
     // Find
-//    template<typename Model>
-//    bool find_by_id(connection::ptr_t conn, const std::string& id, Model& model)
-//    {
-//        reply r = conn->run(command("HGETALL")(model_key<Model>(id)));
-//        if (r.elements().size() > 0 )
-//        {
-//            std::map<std::string, std::string> map;
-//            for (unsigned long i = 0; i< r.elements(); i=i+2 )
-//            {
-//                map[r.elements()[i].str()] = r.elements()[i+1].str();
-//            }
-//            map["id"] = id;
-//            model.from_map(map);
-//            return true;
-//        }
-//        else
-//        {
-//            return false;
-//        }
-//    }
+    template<typename Model>
+    bool find_by_id(connection::ptr_t conn, const std::string& id, Model& model)
+    {
+        reply r = conn->run(command("HGETALL")(model_key<Model>(id)));
+        if (r.elements().size() > 0 )
+        {
+            std::map<std::string, std::string> map;
+            for (unsigned long i = 0; i < r.elements().size(); i+=2 )
+            {
+                map[r.elements()[i].str()] = r.elements()[i+1].str();
+            }
+            map["id"] = id;
+            model.from_map(map);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     template<class Model>
     bool find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value, Model& model)
@@ -163,6 +163,21 @@ public:
 //        }
 //        freeReplyObject( reply );
 //    }
+
+    template<typename Model, typename SubModel>
+    std::vector<SubModel> list_members(connection::ptr_t conn, const Model& m, const std::string& list_name)
+    {
+        std::vector<SubModel> ret;
+        reply lrange = conn->run(command("LRANGE")
+                            (submodel_collection_key<Model>(m.id(), list_name))
+                            ("0")("-1"));
+        BOOST_FOREACH(reply r, lrange.elements())
+        {
+            SubModel sm;
+            ret.push_back(find_by_id(conn, r.str(), sm));
+        }
+        return ret;
+    }
 
 //    // Subentities
 //    template<class Model>
