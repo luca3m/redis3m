@@ -8,7 +8,7 @@ services: redis
 
 # install pre-reqs
 install:
-  - sudo apt-get install libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev
+  - sudo apt-get install libmsgpack-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev
   - mkdir -p _prereqs
   - pushd _prereqs
   - git clone https://github.com/redis/hiredis

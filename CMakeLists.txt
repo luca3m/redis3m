@@ -31,7 +31,11 @@ set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 
+set(datadir ${CMAKE_INSTALL_PREFIX}/share/data/${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-DDATADIR=\\\"${datadir}\\\"")
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data" DESTINATION ${datadir})
 
 # Tests
 add_executable(connection_test tests/connection.cpp)
