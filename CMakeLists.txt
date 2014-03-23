@@ -12,7 +12,7 @@ set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${R
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -pipe")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pipe")
 
-find_package(Boost COMPONENTS system filesystem unit_test_framework date_time REQUIRED)
+find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_time REQUIRED)
 
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
@@ -55,6 +55,7 @@ target_link_libraries(patterns_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 add_executable(connection_pool_test tests/connection_pool.cpp)
 target_link_libraries(connection_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
+                              ${Boost_THREAD_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 enable_testing ()

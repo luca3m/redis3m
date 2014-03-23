@@ -72,7 +72,7 @@ namespace redis3m {
         boost::mutex access_mutex;
         std::set<connection::ptr_t> connections;
 
-        std::string sentinel_host;
+        std::vector<std::string> sentinel_hosts;
         unsigned int sentinel_port;
         std::string master_name;
         unsigned int _database;

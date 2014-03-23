@@ -22,6 +22,17 @@ public:
         c = redis3m::connection::create(getenv("REDIS_HOST"));
         c->run(command("FLUSHDB"));
     }
+
+    inline redis3m::connection::ptr_t operator*()
+    {
+        return c;
+    }
+
+    inline redis3m::connection::ptr_t operator->()
+    {
+        return c;
+    }
+
     redis3m::connection::ptr_t c;
 };
 
@@ -38,15 +49,13 @@ BOOST_AUTO_TEST_CASE( correct_connection )
 BOOST_AUTO_TEST_CASE( test_info)
 {
     test_connection tc;
-
-    redis3m::reply r = tc.c->run(command("INFO"));
-
+    redis3m::reply r = tc->run(command("INFO"));
 }
 
 BOOST_AUTO_TEST_CASE( test_ping)
 {
     test_connection tc;
-    reply r = tc.c->run(command("PING"));
+    reply r = tc->run(command("PING"));
     BOOST_CHECK_EQUAL(r.str(), "PONG");
 }
 
@@ -54,7 +63,7 @@ BOOST_AUTO_TEST_CASE( set_get)
 {
     test_connection tc;
 
-    BOOST_CHECK_EQUAL("", tc.c->run(command("GET")("foo")).str());
-    BOOST_CHECK_NO_THROW(tc.c->run(command("SET")("foo")("bar")));
-    BOOST_CHECK_EQUAL("bar", tc.c->run(command("GET")("foo")).str());
+    BOOST_CHECK_EQUAL("", tc->run(command("GET")("foo")).str());
+    BOOST_CHECK_NO_THROW(tc->run(command("SET")("foo")("bar")));
+    BOOST_CHECK_EQUAL("bar", tc->run(command("GET")("foo")).str());
 }

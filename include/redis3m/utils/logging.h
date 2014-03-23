@@ -2,6 +2,7 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace redis3m
 {
@@ -24,6 +25,7 @@ public:
     virtual void error_impl(const std::string& s);
 
 private:
+    boost::mutex access;
     static logging::ptr_t logger;
 };
 }

@@ -16,7 +16,7 @@ using namespace redis3m;
 
 patterns::script_exec::script_exec(const std::string& script, bool is_path):
 _script(script),
-  _is_path(is_path)
+_is_path(is_path)
 {
     unsigned char hash[20];
     char hexstring[41];

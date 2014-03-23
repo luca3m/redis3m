@@ -11,6 +11,8 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
@@ -21,12 +23,11 @@ using namespace redis3m;
 connection_pool::connection_pool(const std::string& sentinel_host,
                                  const std::string& master_name,
                                  unsigned int sentinel_port):
-sentinel_host(sentinel_host),
 master_name(master_name),
 sentinel_port(sentinel_port),
 _database(0)
 {
-
+    boost::algorithm::split(sentinel_hosts, sentinel_host, boost::is_any_of(","), boost::token_compress_on);
 }
 
 connection::ptr_t connection_pool::get(connection::role_t type)
@@ -101,25 +102,27 @@ void connection_pool::put(connection::ptr_t conn)
 
 connection::ptr_t connection_pool::sentinel_connection()
 {
-    std::vector<std::string> real_sentinels = resolv::get_addresses(sentinel_host);
-    logging::debug(boost::str(
+    BOOST_FOREACH(const std::string& host, sentinel_hosts)
+    {
+        std::vector<std::string> real_sentinels = resolv::get_addresses(host);
+        logging::debug(boost::str(
                            boost::format("Found %d redis sentinels: %s")
                            % real_sentinels.size()
                            % boost::algorithm::join(real_sentinels, ", ")
                            )
-                );
-    BOOST_FOREACH( const std::string& real_sentinel, real_sentinels)
-    {
-        logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
-        try
+                       );
+        BOOST_FOREACH( const std::string& real_sentinel, real_sentinels)
         {
-            return connection::create(real_sentinel, sentinel_port);
-        } catch (const unable_to_connect& ex)
-        {
-            logging::debug(boost::str(boost::format("%s is down") % real_sentinel));
+            logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
+            try
+            {
+                return connection::create(real_sentinel, sentinel_port);
+            } catch (const unable_to_connect& ex)
+            {
+                logging::debug(boost::str(boost::format("%s is down") % real_sentinel));
+            }
         }
     }
-
     throw cannot_find_sentinel("Cannot find sentinel");
 }
 
@@ -156,21 +159,28 @@ connection::ptr_t connection_pool::create_master_connection()
     connection::ptr_t sentinel = sentinel_connection();
 
     unsigned int connection_retries = 0;
-    while(connection_retries < 5)
+    while(connection_retries < 20)
     {
-        sentinel->append(command("SENTINEL")("get-master-addr-by-name")
-                                 (master_name)
-                                 );
-        reply response = sentinel->get_reply();
-        std::string master_ip = response.elements().at(0).str();
-        unsigned int master_port = boost::lexical_cast<unsigned int>(response.elements().at(1).str());
+        reply masters = sentinel->run(command("SENTINEL")("masters"));
+        BOOST_FOREACH(const reply& master, masters.elements())
+        {
+            if (master.elements().at(1).str() == master_name)
+            {
+                const std::string& flags = master.elements().at(9).str();
+                if (flags == "master")
+                {
+                    const std::string& master_ip = master.elements().at(3).str();
+                    unsigned int master_port = boost::lexical_cast<unsigned int>(master.elements().at(5).str());
 
-        try
-        {
-            return connection::create(master_ip, master_port);
-        } catch (const unable_to_connect& ex)
-        {
-            logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+                    try
+                    {
+                        return connection::create(master_ip, master_port);
+                    } catch (const unable_to_connect& ex)
+                    {
+                        logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+                    }
+                }
+            }
         }
         connection_retries++;
         sleep(5);
