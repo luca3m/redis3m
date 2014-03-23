@@ -52,7 +52,7 @@ namespace redis3m {
             return get_reply();
         }
         
-        std::vector<reply> get_replies(int count);
+        std::vector<reply> get_replies(unsigned int count);
 
         inline redisContext* c_ptr() { return c; }
         
@@ -66,6 +66,7 @@ namespace redis3m {
         friend class connection_pool;
         connection(const std::string& host, const unsigned int port);
 
+        unsigned int appended_commands;
         role_t _role;
         redisContext *c;
     };
