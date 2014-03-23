@@ -42,7 +42,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DA
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/*" DESTINATION ${datadir})
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/lua" DESTINATION ${datadir})
 
 # Tests
 add_executable(connection_test tests/connection.cpp)
