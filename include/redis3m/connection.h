@@ -9,7 +9,7 @@
 #pragma once
 
 #include <string>
-#include <redis3m/utils/common.h>
+#include <redis3m/utils/exception.h>
 #include <redis3m/reply.h>
 #include <vector>
 #include <boost/shared_ptr.hpp>

@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>
-#include <redis3m/utils/common.h>
+#include <redis3m/utils/exception.h>
 #include <boost/function.hpp>
 
 namespace redis3m {

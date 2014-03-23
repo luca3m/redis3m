@@ -14,6 +14,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
+#include <redis3m/utils/logging.h>
 
 using namespace redis3m;
 
@@ -101,7 +102,7 @@ void connection_pool::put(connection::ptr_t conn)
 connection::ptr_t connection_pool::sentinel_connection()
 {
     std::vector<std::string> real_sentinels = resolv::get_addresses(sentinel_host);
-    REDIS3M_LOG(boost::str(
+    logging::debug(boost::str(
                            boost::format("Found %d redis sentinels: %s")
                            % real_sentinels.size()
                            % boost::algorithm::join(real_sentinels, ", ")
@@ -109,13 +110,13 @@ connection::ptr_t connection_pool::sentinel_connection()
                 );
     BOOST_FOREACH( const std::string& real_sentinel, real_sentinels)
     {
-        REDIS3M_LOG(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
+        logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
         try
         {
             return connection::create(real_sentinel, sentinel_port);
         } catch (const unable_to_connect& ex)
         {
-            REDIS3M_LOG(boost::str(boost::format("%s is down") % real_sentinel));
+            logging::debug(boost::str(boost::format("%s is down") % real_sentinel));
         }
     }
 
@@ -143,7 +144,7 @@ connection::ptr_t connection_pool::create_slave_connection()
                 return connection::create(host, port);
             } catch (const unable_to_connect& ex)
             {
-                REDIS3M_LOG(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
+                logging::debug(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
             }
         }
     }
@@ -169,7 +170,7 @@ connection::ptr_t connection_pool::create_master_connection()
             return connection::create(master_ip, master_port);
         } catch (const unable_to_connect& ex)
         {
-            REDIS3M_LOG(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+            logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
         }
         connection_retries++;
         sleep(5);

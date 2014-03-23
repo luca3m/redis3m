@@ -1,6 +1,6 @@
 #pragma once
 
-#include <redis3m/utils/common.h>
+#include <redis3m/utils/exception.h>
 #include <string>
 #include <vector>
 

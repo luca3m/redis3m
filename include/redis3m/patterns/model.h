@@ -3,7 +3,7 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <map>
-#include <redis3m/utils/common.h>
+#include <redis3m/utils/exception.h>
 
 namespace redis3m
 {
