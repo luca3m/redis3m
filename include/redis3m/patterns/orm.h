@@ -172,6 +172,12 @@ public:
         return ret;
     }
 
+//    template<typename Model, typename SubModel>
+//    void set_add(connection::ptr_t conn, const Model& m, const std::string& set_name, const SubModel& sub)
+//    {
+//        conn->run(command("SADD")(submodel_collection_key<Model>(m.id(), set_name))(sub.id()));
+//    }
+
 //    // Subentities
 //    template<class Model>
 //    bool sub_model_add(const std::string& model_id, const std::string& collection, const std::string& submodel_id)
