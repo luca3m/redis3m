@@ -41,7 +41,7 @@ public:
     void from_map(const std::map<std::string, std::string> &map)
     {
         _field = map.at("field");
-        _loaded = true;
+        model::from_map(map);
     }
 
     static std::string model_name()
@@ -150,13 +150,13 @@ BOOST_AUTO_TEST_CASE ( orm_save_test )
 
     patterns::orm store;
 
-    test_model new_m("xxx", "test");
+    test_model new_m("", "test");
 
-    store.save(*tc, new_m);
+    std::string id = store.save(*tc, new_m);
 
-//    test_model restored;
+    test_model restored;
 
-//    BOOST_CHECK_EQUAL(store.find(*tc, "xxx", restored), true);
+    BOOST_CHECK_EQUAL(store.find_by_id(*tc, id, restored), true);
 
-//    BOOST_CHECK_EQUAL(restored.field(), "test");
+    BOOST_CHECK_EQUAL(restored.field(), "test");
 }

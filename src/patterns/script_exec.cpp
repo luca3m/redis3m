@@ -10,6 +10,7 @@
 #include <redis3m/utils/sha1.h>
 #include <boost/lexical_cast.hpp>
 #include <redis3m/utils/file.h>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace redis3m;
 
@@ -45,7 +46,8 @@ reply patterns::script_exec::exec(connection::ptr_t connection,
     exec_command.insert(exec_command.end(), keys.begin(), keys.end());
     exec_command.insert(exec_command.end(), args.begin(), args.end());
     reply r = connection->run(exec_command);
-    if (r.type() == reply::ERROR)
+    if (r.type() == reply::ERROR &&
+        boost::starts_with(r.str(), "NOSCRIPT") )
     {
         exec_command[0] = "EVAL";
         if (_is_path)

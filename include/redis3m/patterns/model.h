@@ -38,6 +38,7 @@ public:
     }
 
     inline const std::string& id() const { if (_loaded) return _id; else throw model_not_loaded(); }
+    inline bool loaded() const { return _loaded; }
 
 protected:
     inline static std::string read_opt_str_from_map(const std::map<std::string, std::string>& map,

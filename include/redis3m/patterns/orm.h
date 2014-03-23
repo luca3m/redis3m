@@ -3,6 +3,7 @@
 #include <redis3m/connection.h>
 #include <map>
 #include <string>
+#include <algorithm>
 #include <boost/foreach.hpp>
 #include <redis3m/patterns/model.h>
 #include <redis3m/patterns/script_exec.h>
@@ -86,7 +87,15 @@ public:
 
         // pack model attributes
         std::map<std::string, std::string> attributes = model.to_map();
-        msgpack::pack(&sbuf, attributes);
+        std::vector<std::string> attributes_vector;
+        typedef std::pair<std::string, std::string> strpair;
+        BOOST_FOREACH(const strpair& item, attributes)
+        {
+            attributes_vector.push_back(item.first);
+            attributes_vector.push_back(item.second);
+        }
+
+        msgpack::pack(&sbuf, attributes_vector);
         args.push_back(std::string(sbuf.data(), sbuf.size()));
         sbuf.clear();
 
