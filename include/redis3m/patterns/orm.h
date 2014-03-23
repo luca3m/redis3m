@@ -77,7 +77,6 @@ public:
         model_map["id"] = new_id;
 
         std::vector<std::string> args;
-
         msgpack::sbuffer sbuf;  // simple buffer
 
         // Pack model data
@@ -123,55 +122,40 @@ public:
         return r.str();
     }
 
-//    template<class Model>
-//    void remove(const std::string& id)
-//    {
-//        std::string key = model_key<Model>(id);
+    template<class Model>
+    void remove(connection::ptr_t conn, const Model& model)
+    {
+        std::map<std::string, std::string> model_map;
+        model_map["name"] = model.model_name();
+        model_map["id"] = model.id();
+        model_map["key"] = model_key<Model>(model.id());
 
-//        std::vector<std::string> indexes = Model::indexes();
-//        std::vector<std::string> values;
-//        BOOST_FOREACH(std::string field, indexes)
-//        {
-//            values.push_back(hget(key, field));
-//        }
+        std::vector<std::string> args;
+        msgpack::sbuffer sbuf;  // simple buffer
 
-//        redisReply* reply;
-//        int redisCommandRet;
-//        // Watch command let transaction fail if sameone concurrently change model fields
-//        // REF: http://www.redis.io/commands/watch
-//        redisAppendCommand(c, "WATCH %s", key.c_str());
-//        redisAppendCommand(c, "MULTI");
-//        redisAppendCommand(c, "SREM %s %s", collection_key<Model>().c_str(), id.c_str());
-//        for ( uint16_t i=0; i < indexes.size(); ++i)
-//        {
-//            redisAppendCommand(c, "SREM %s %s",
-//                               indexed_field_key<Model>(indexes.at(i), values.at(i)).c_str(),
-//                               id.c_str());
-//        }
-//        redisAppendCommand(c, "DEL %s", key.c_str());
-//        redisAppendCommand(c, "EXEC");
+        // Pack model data
+        msgpack::pack(&sbuf, model_map);
+        args.push_back(std::string(sbuf.data(), sbuf.size()));
+        sbuf.clear();
 
-//        // redis will send 3 status replies for commands multi, sadd, del, hmset
-//        for (uint16_t i=0; i < 4 + indexes.size() ;++i)
-//        {
-//            redisCommandRet = redisGetReply(c, reinterpret_cast<void**>(&reply));
-//            if (redisCommandRet != REDIS_OK || reply->type != REDIS_REPLY_STATUS)
-//            {
-//                throw redis_fatal("Cannot remove resource");
-//            }
-//            freeReplyObject(reply);
-//        }
+        // pack model uniques
+        std::map<std::string, std::string> attributes = model.to_map();
+        std::map<std::string, std::string> uniques;
+        BOOST_FOREACH(const std::string& index, model.uniques())
+        {
+            uniques[index] = attributes[index];
+        }
+        msgpack::pack(&sbuf, uniques);
+        args.push_back(std::string(sbuf.data(), sbuf.size()));
+        sbuf.clear();
 
-//        redisCommandRet = redisGetReply(c, reinterpret_cast<void**>(&reply));
+        // TODO: support tracked keys
+        msgpack::pack(&sbuf, std::vector<std::string>());
+        args.push_back(std::string(sbuf.data(), sbuf.size()));
+        sbuf.clear();
 
-//        if (redisCommandRet != REDIS_OK || reply->type != REDIS_REPLY_ARRAY
-//                || reply->elements == 0)
-//        {
-//            freeReplyObject( reply );
-//            throw redis_fatal("Cannot remove resource");
-//        }
-//        freeReplyObject( reply );
-//    }
+        remove_script.exec(conn, std::vector<std::string>(), args);
+    }
 
     template<typename Model, typename SubModel>
     std::vector<SubModel> list_members(connection::ptr_t conn, const Model& m, const std::string& list_name)

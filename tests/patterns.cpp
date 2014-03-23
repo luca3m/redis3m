@@ -159,4 +159,11 @@ BOOST_AUTO_TEST_CASE ( orm_save_test )
     BOOST_CHECK_EQUAL(store.find_by_id(*tc, id, restored), true);
 
     BOOST_CHECK_EQUAL(restored.field(), "test");
+
+    store.remove(*tc, restored);
+
+    test_model restored2;
+
+    BOOST_CHECK_EQUAL(store.find_by_id(*tc, id, restored2), false);
+
 }
