@@ -1,7 +1,10 @@
 project(redis3m)
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_BUILD_TYPE DEBUG)
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE DEBUG)
+endif(NOT DEFINED CMAKE_BUILD_TYPE)
+
 set(REDIS3M_VERSION_MAJOR 0)
 set(REDIS3M_VERSION_MINOR 1)
 set(REDIS3M_VERSION_PATCH 0)
@@ -39,7 +42,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DA
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/data" DESTINATION ${datadir})
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/*" DESTINATION ${datadir})
 
 # Tests
 add_executable(connection_test tests/connection.cpp)
