@@ -13,7 +13,7 @@
 #include <redis3m/connection.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include <redis3m/utils/common.h>
 #include <boost/function.hpp>
 

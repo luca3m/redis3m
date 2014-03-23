@@ -8,20 +8,21 @@ services: redis
 
 # install pre-reqs
 install:
-  - sudo apt-get install libmsgpack-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev
-  - mkdir -p _prereqs
-  - pushd _prereqs
-  - git clone https://github.com/redis/hiredis
-  - cd hiredis
-  - make
-  - sudo make install
-  - popd
+  - sudo apt-get install libmsgpack-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev
+
+#  - mkdir -p _prereqs
+#  - pushd _prereqs
+#  - git clone https://github.com/redis/hiredis
+#  - cd hiredis
+#  - make
+#  - sudo make install
+#  - popd
 
 # Run the Build script
 script:
   - mkdir _build
   - cd _build
-  - cmake ..
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
   - sudo make install
   - sudo ldconfig
 
