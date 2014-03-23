@@ -5,15 +5,7 @@
 using namespace redis3m;
 using namespace redis3m::patterns;
 
-script_exec scheduler::find_expired_script(
-        "local res = redis.call('ZRANGEBYSCORE',KEYS[1],0,ARGV[1],'LIMIT',0,1)\n"
-        "if #res > 0 then\n"
-        "redis.call('ZADD', KEYS[1], ARGV[2], res[1])\n"
-        "return res[1]\n"
-        "else\n"
-        "return false\n"
-        "end\n");
-
+script_exec scheduler::find_expired_script(DATADIR "/lua/scheduler.lua", true);
 
 scheduler::scheduler(const std::string &queue_name):
     _queue(queue_name)
