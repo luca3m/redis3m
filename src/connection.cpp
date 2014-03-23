@@ -60,7 +60,7 @@ reply connection::get_reply()
     return ret;
 }
 
-std::vector<reply> connection::get_replies(int count)
+std::vector<reply> connection::get_replies(unsigned int count)
 {
     std::vector<reply> ret;
     for (int i=0; i < count; ++i)
