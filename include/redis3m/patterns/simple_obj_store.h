@@ -11,33 +11,33 @@ namespace redis3m
 namespace patterns
 {
 
+template<typename Model>
 class simple_obj_store
 {
 public:
     simple_obj_store(){}
 
-    template<typename Model>
-    bool find(connection::ptr_t connection, const std::string& id, Model& m)
+    Model find(connection::ptr_t connection, const std::string& id)
     {
-        redis3m::reply r = connection->run(redis3m::command("HGETALL")(m.model_name() + ":" +  id));
-        std::map<std::string, std::string> serialized;
+        redis3m::reply r = connection->run(redis3m::command("HGETALL")(Model::model_name() + ":" +  id));
+
         const std::vector<redis3m::reply>& key_values = r.elements();
-        for(int i=0; i < key_values.size(); i+=2)
+        if (key_values.size() > 0)
         {
-            serialized[key_values.at(i).str()] = key_values.at(i+1).str();
+            std::map<std::string, std::string> serialized;
+
+            for (int i=0; i < key_values.size(); i+=2)
+            {
+                serialized[key_values.at(i).str()] = key_values.at(i+1).str();
+            }
+            return Model(id, serialized);
         }
-        serialized["id"] = id;
-        try
+        else
         {
-            m.from_map(serialized);
-        } catch (const std::out_of_range& ex)
-        {
-            return false;
+            return Model();
         }
-        return true;
     }
 
-    template<typename Model>
     void append_save(connection::ptr_t connection, const Model& m)
     {
         std::map<std::string, std::string> serialized = m.to_map();
@@ -56,20 +56,17 @@ public:
         connection->append(hmset_command);
     }
 
-    template<typename Model>
     void save(connection::ptr_t connection, const Model& m)
     {
         append_save(connection, m);
         connection->get_reply();
     }
 
-    template<typename Model>
     void append_remove(connection::ptr_t connection, const Model& m)
     {
         connection->append(command("DEL")(m.model_name() + ":" + m.id()));
     }
 
-    template<typename Model>
     void remove(connection::ptr_t connection, const Model& m)
     {
         append_remove(connection, m);

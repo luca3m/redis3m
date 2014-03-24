@@ -27,21 +27,23 @@ public:
 
     }
 
+    model(const std::string& id, const std::map<std::string, std::string>& map):
+        _id(id),
+        _loaded(true)
+    {
+
+    }
+
     std::map<std::string, std::string> to_map()
     {
         return std::map<std::string, std::string>();
-    }
-
-    void from_map(const std::map<std::string, std::string>& map) {
-        _id = map.at("id");
-        _loaded = true;
     }
 
     inline const std::string& id() const { if (_loaded) return _id; else throw model_not_loaded(); }
     inline bool loaded() const { return _loaded; }
 
 protected:
-    inline static std::string read_opt_str_from_map(const std::map<std::string, std::string>& map,
+    inline static std::string read_str_from_map(const std::map<std::string, std::string>& map,
                                              const std::string& key,
                                              const std::string& default_value="")
     {
@@ -55,7 +57,7 @@ protected:
         }
     }
 
-    inline static void write_opt_str_to_map(std::map<std::string, std::string>& map,
+    inline static void write_str_to_map(std::map<std::string, std::string>& map,
                                             const std::string& key,
                                             const std::string& value,
                                             const std::string& default_value="")
@@ -67,7 +69,7 @@ protected:
     }
 
     template<typename IntegerType>
-    inline static IntegerType read_opt_int_from_map(const std::map<std::string, std::string>& map,
+    inline static IntegerType read_int_from_map(const std::map<std::string, std::string>& map,
                                                     const std::string& key,
                                                     const IntegerType default_value=0)
     {
@@ -82,7 +84,7 @@ protected:
     }
 
     template<typename IntegerType>
-    inline static void write_opt_int_to_map(std::map<std::string, std::string>& map,
+    inline static void write_int_to_map(std::map<std::string, std::string>& map,
                                             const std::string& key,
                                             const IntegerType value,
                                             const IntegerType default_value=0)
@@ -93,7 +95,7 @@ protected:
         }
     }
 
-    inline static bool read_opt_bool_from_map(const std::map<std::string, std::string>& map,
+    inline static bool read_bool_from_map(const std::map<std::string, std::string>& map,
                                               const std::string& key)
     {
         if (map.find(key) != map.end())
@@ -106,7 +108,7 @@ protected:
         }
     }
 
-    inline static void write_opt_bool_to_map(std::map<std::string, std::string>& map,
+    inline static void write_bool_to_map(std::map<std::string, std::string>& map,
                                              const std::string& key,
                                              const bool value)
     {
@@ -116,9 +118,8 @@ protected:
         }
     }
 
-    bool _loaded;
-
     std::string _id;
+    bool _loaded;
 };
 
 

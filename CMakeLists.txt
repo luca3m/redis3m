@@ -11,6 +11,7 @@ set(REDIS3M_VERSION_PATCH 0)
 set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${REDIS3M_VERSION_PATCH})
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -pipe")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pipe")
+set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
 
 find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_time REQUIRED)
 
@@ -18,7 +19,9 @@ find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
 file(GLOB SRC_FILES "src/*.cpp" "src/utils/*.cpp" "src/patterns/*.cpp")
 file(GLOB INCLUDE_FILES "include/redis3m/*.h" "include/redis3m/utils/*.h" "include/redis3m/patterns/*.h")
-add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${INCLUDE_FILES})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/utils/datadir.cpp.in
+  ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp @ONLY)
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})
 target_link_libraries(${PROJECT_NAME} hiredis ${Boost_SYSTEM_LIBRARY} ${Boost_DATE_TIME_LIBRARY})
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${REDIS3M_VERSION_STRING}
                                            SOVERSION ${REDIS3M_VERSION_MAJOR})
@@ -37,10 +40,9 @@ set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 
-set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
+
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DATADIR=\"${datadir}\"")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
-
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/pkgconfig)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/lua" DESTINATION ${datadir})
 

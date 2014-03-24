@@ -8,20 +8,21 @@
 #include <redis3m/patterns/model.h>
 #include <redis3m/patterns/script_exec.h>
 #include <msgpack.hpp>
+#include <redis3m/utils/file.h>
 
 namespace redis3m
 {
 namespace patterns
 {
 
+template<typename Model>
 class orm {
 public:
 
     // Find
-    template<typename Model>
-    bool find_by_id(connection::ptr_t conn, const std::string& id, Model& model)
+    Model find_by_id(connection::ptr_t conn, const std::string& id)
     {
-        reply r = conn->run(command("HGETALL")(model_key<Model>(id)));
+        reply r = conn->run(command("HGETALL")(model_key(id)));
         if (r.elements().size() > 0 )
         {
             std::map<std::string, std::string> map;
@@ -29,53 +30,42 @@ public:
             {
                 map[r.elements()[i].str()] = r.elements()[i+1].str();
             }
-            map["id"] = id;
-            model.from_map(map);
-            return true;
+            return Model(id, map);
         }
         else
         {
-            return false;
+            return Model();
         }
     }
 
-    template<class Model>
-    bool find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value, Model& model)
+    Model find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value)
     {
         std::string id = conn->run(command("HGET")
-                           (unique_field_key<Model>(field), value)).str();
+                           (unique_field_key(field), value)).str();
         if (!id.empty())
         {
-            return find_by_id(conn, id, model);
+            return find_by_id(conn, id);
         }
         else
         {
-            return false;
+            return Model();
         }
     }
 
-    template<class Model>
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
-        return conn->run(command("SISMEMBER")(collection_key<Model>(), id)).integer() == 1;
+        return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
     }
 
     // Basic attribute handling
-    template<class Model>
     std::string save(connection::ptr_t conn, const Model& model)
     {
-        std::string new_id = model.id();
-        // Create a new id if object is new, using redis INCR command
-        if (new_id.empty())
-        {
-            uint64_t new_id_int = conn->run(command("INCR")(collection_id_key<Model>())).integer();
-            new_id = boost::lexical_cast<std::string>(new_id_int);
-        }
-
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
-        model_map["id"] = new_id;
-
+        if (!model.id().empty())
+        {
+            model_map["id"] = model.id();
+        }
         std::vector<std::string> args;
         msgpack::sbuffer sbuf;  // simple buffer
 
@@ -122,13 +112,12 @@ public:
         return r.str();
     }
 
-    template<class Model>
     void remove(connection::ptr_t conn, const Model& model)
     {
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
         model_map["id"] = model.id();
-        model_map["key"] = model_key<Model>(model.id());
+        model_map["key"] = model_key(model.id());
 
         std::vector<std::string> args;
         msgpack::sbuffer sbuf;  // simple buffer
@@ -157,17 +146,15 @@ public:
         remove_script.exec(conn, std::vector<std::string>(), args);
     }
 
-    template<typename Model, typename SubModel>
-    std::vector<SubModel> list_members(connection::ptr_t conn, const Model& m, const std::string& list_name)
+    std::vector<std::string> list_members(connection::ptr_t conn, const Model& m, const std::string& list_name)
     {
-        std::vector<SubModel> ret;
+        std::vector<std::string> ret;
         reply lrange = conn->run(command("LRANGE")
-                            (submodel_collection_key<Model>(m.id(), list_name))
+                            (submodel_collection_key(m.id(), list_name))
                             ("0")("-1"));
         BOOST_FOREACH(reply r, lrange.elements())
         {
-            SubModel sm;
-            ret.push_back(find_by_id(conn, r.str(), sm));
+            ret.push_back(r.str());
         }
         return ret;
     }
@@ -227,37 +214,31 @@ public:
 
 private:
 
-    template<class Model>
     inline std::string collection_key()
     {
         return Model::model_name() + ":all";
     }
 
-    template<class Model>
     inline std::string collection_id_key()
     {
         return Model::model_name() + ":id";
     }
 
-    template<typename Model>
     inline std::string model_key(const std::string& id)
     {
         return Model::model_name() + ":" + id;
     }
 
-    template<class Model>
     inline std::string submodel_collection_key(const std::string& id, const std::string& collection_name)
     {
-        return model_key<Model>(id) + ":" + collection_name;
+        return model_key(id) + ":" + collection_name;
     }
 
-    template<class Model>
     inline std::string indexed_field_key(const std::string& field, const std::string& value)
     {
         return Model::model_name() + ":indices:" + field + ":" + value;
     }
 
-    template<class Model>
     inline std::string unique_field_key(const std::string& field)
     {
         return Model::model_name() + ":uniques:" + field;
@@ -266,5 +247,12 @@ private:
     static script_exec save_script;
     static script_exec remove_script;
 };
+
+template<typename Model>
+script_exec orm<Model>::save_script(utils::datadir + "/lua/save.lua", true);
+
+template<typename Model>
+script_exec orm<Model>::remove_script(utils::datadir + "/lua/delete.lua", true);
+
 }
 }

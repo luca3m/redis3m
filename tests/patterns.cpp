@@ -24,24 +24,25 @@ using namespace redis3m;
 class test_model: public redis3m::patterns::model
 {
 public:
-    test_model(){}
+    test_model():
+        model(){}
 
-    test_model(const std::string& test_id, const std::string& field):
-        _field(field)
+    test_model(const std::string& id, const std::map<std::string, std::string>& map):
+        model(id, map),
+        _field(read_str_from_map(map, "field")),
+        _field2(read_str_from_map(map, "field2"))
+    {}
+
+    test_model(const std::string& id, const std::string& field1):
+        model(),
+        _field(field1)
     {
-        _id = test_id;
-        _loaded = true;
+        _id = id;
     }
 
     std::map<std::string, std::string> to_map() const
     {
         return boost::assign::map_list_of("field", _field);
-    }
-
-    void from_map(const std::map<std::string, std::string> &map)
-    {
-        _field = map.at("field");
-        model::from_map(map);
     }
 
     static std::string model_name()
@@ -104,19 +105,19 @@ BOOST_AUTO_TEST_CASE ( scheduler_test )
     patterns::scheduler s("test-queue");
 
     // Enqueue
-    s.enqueue(*tc, "testid", 1);
+    s.enqueue(*tc, "testid", boost::posix_time::milliseconds(100));
 
     // Not expired yet
     BOOST_CHECK_EQUAL( s.find_expired(*tc), "");
-    sleep(2);
+    usleep(200*1000);
 
     // Now it should expire
-    std::string found_id = s.find_expired(*tc, 2);
+    std::string found_id = s.find_expired(*tc, boost::posix_time::milliseconds(10));
     BOOST_CHECK_EQUAL( found_id, "testid");
-    sleep(3);
+    usleep(20*1000);
 
     // Expire again after lock_for passed
-    found_id = s.find_expired(*tc, 2);
+    found_id = s.find_expired(*tc, boost::posix_time::seconds(2));
     BOOST_CHECK_EQUAL( found_id, "testid");
 
     // Dequeue
@@ -130,15 +131,15 @@ BOOST_AUTO_TEST_CASE ( simple_obj_store_test )
 {
     test_connection tc;
 
-    patterns::simple_obj_store store;
+    patterns::simple_obj_store<test_model> store;
 
     test_model new_m("xxx", "test");
 
     store.save(*tc, new_m);
 
-    test_model restored;
+    test_model restored = store.find(*tc, "xxx");
 
-    BOOST_CHECK_EQUAL(store.find(*tc, "xxx", restored), true);
+    BOOST_CHECK_EQUAL(restored.loaded(), true);
 
     BOOST_CHECK_EQUAL(restored.field(), "test");
 }
@@ -148,22 +149,21 @@ BOOST_AUTO_TEST_CASE ( orm_save_test )
 {
     test_connection tc;
 
-    patterns::orm store;
+    patterns::orm<test_model> store;
 
     test_model new_m("", "test");
 
     std::string id = store.save(*tc, new_m);
 
-    test_model restored;
-
-    BOOST_CHECK_EQUAL(store.find_by_id(*tc, id, restored), true);
+    test_model restored = store.find_by_id(*tc, id);
+    BOOST_CHECK_EQUAL(restored.loaded(), true);
 
     BOOST_CHECK_EQUAL(restored.field(), "test");
 
     store.remove(*tc, restored);
 
-    test_model restored2;
+    test_model restored2 = store.find_by_id(*tc, id);
 
-    BOOST_CHECK_EQUAL(store.find_by_id(*tc, id, restored2), false);
+    BOOST_CHECK_EQUAL(restored2.loaded(), false);
 
 }

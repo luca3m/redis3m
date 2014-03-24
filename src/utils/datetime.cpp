@@ -5,8 +5,19 @@ using namespace redis3m;
 
 uint64_t datetime::utc_now_in_seconds()
 {
-    static const boost::posix_time::ptime epoch(boost::gregorian::date(1970,1,1));
     boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
-    boost::posix_time::time_duration now_in_seconds = now - epoch;
-    return now_in_seconds.total_seconds();
+    return ptime_in_seconds(now);
+}
+
+uint64_t datetime::ptime_in_seconds(const boost::posix_time::ptime &time)
+{
+    static const boost::posix_time::ptime epoch(boost::gregorian::date(1970,1,1));
+    boost::posix_time::time_duration seconds_since_epoch = time - epoch;
+    return seconds_since_epoch.total_seconds();
+}
+
+
+boost::posix_time::ptime datetime::now()
+{
+    return boost::posix_time::second_clock::universal_time();
 }
