@@ -40,8 +40,7 @@ public:
 
     Model find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value)
     {
-        std::string id = conn->run(command("HGET")
-                           (unique_field_key(field), value)).str();
+        std::string id = conn->run(command("HGET")(unique_field_key(field))(value)).str();
         if (!id.empty())
         {
             return find_by_id(conn, id);
@@ -152,7 +151,7 @@ public:
         reply lrange = conn->run(command("LRANGE")
                             (subentry_collection_key(m.id(), list_name))
                             ("0")("-1"));
-        BOOST_FOREACH(reply r, lrange.elements())
+        BOOST_FOREACH(const reply& r, lrange.elements())
         {
             ret.push_back(r.str());
         }
