@@ -1,6 +1,4 @@
 #include <redis3m/utils/file.h>
 
-using namespace redis3m;
-
-std::string utils::datadir("@datadir@");
+std::string redis3m::utils::datadir(const std::string& path) { return "@datadir@" + path; }
 

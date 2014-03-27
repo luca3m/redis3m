@@ -213,10 +213,10 @@ public:
 };
 
 template<typename Model>
-script_exec orm<Model>::save_script(utils::datadir + "/lua/save.lua", true);
+script_exec orm<Model>::save_script(utils::datadir("/lua/save.lua"), true);
 
 template<typename Model>
-script_exec orm<Model>::remove_script(utils::datadir + "/lua/delete.lua", true);
+script_exec orm<Model>::remove_script(utils::datadir("/lua/delete.lua"), true);
 
 }
 }

@@ -9,7 +9,7 @@ namespace utils
 
 std::string read_content_of_file(const std::string& path);
 
-extern std::string datadir;
+std::string datadir(const std::string& path="");
 
 }
 }

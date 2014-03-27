@@ -6,7 +6,7 @@
 using namespace redis3m;
 using namespace redis3m::patterns;
 
-script_exec scheduler::find_expired_script(utils::datadir + "/lua/scheduler.lua", true);
+script_exec scheduler::find_expired_script(utils::datadir("/lua/scheduler.lua"), true);
 
 scheduler::scheduler(const std::string &queue_name):
     _queue(queue_name)
