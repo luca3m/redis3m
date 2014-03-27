@@ -150,7 +150,7 @@ public:
     {
         std::vector<std::string> ret;
         reply lrange = conn->run(command("LRANGE")
-                            (submodel_collection_key(m.id(), list_name))
+                            (subentry_collection_key(m.id(), list_name))
                             ("0")("-1"));
         BOOST_FOREACH(reply r, lrange.elements())
         {
@@ -159,60 +159,25 @@ public:
         return ret;
     }
 
-//    template<typename Model, typename SubModel>
-//    void set_add(connection::ptr_t conn, const Model& m, const std::string& set_name, const SubModel& sub)
-//    {
-//        conn->run(command("SADD")(submodel_collection_key<Model>(m.id(), set_name))(sub.id()));
-//    }
+    void set_add(connection::ptr_t conn, const Model& m, const std::string& set_name, const std::string& entry)
+    {
+        conn->run(command("SADD")(subentry_collection_key(m.id(), set_name))(entry));
+    }
 
-//    // Subentities
-//    template<class Model>
-//    bool sub_model_add(const std::string& model_id, const std::string& collection, const std::string& submodel_id)
-//    {
-//        return sadd(submodel_collection_key<Model>(model_id, collection), submodel_id);
-//    }
+    void set_remove(connection::ptr_t conn, const Model& m, const std::string& set_name, const std::string& entry)
+    {
+        conn->run(command("SREM")(subentry_collection_key(m.id(), set_name)(entry)));
+    }
 
-//    template<class Model>
-//    bool sub_model_remove(const std::string& model_id, const std::string& collection, const std::string& submodel_id)
-//    {
-//        return srem(submodel_collection_key<Model>(model_id, collection), submodel_id);
-//    }
-
-//    template<class Model>
-//    std::vector<std::string> all_subentities(const std::string& model_id, const std::string& collection)
-//    {
-//        return smembers(submodel_collection_key<Model>(model_id, collection));
-//    }
-
-//    template<class Model>
-//    bool submodel_exists_by_id(const std::string& model_id, const std::string& collection, const std::string& submodel_id)
-//    {
-//        return sismember(submodel_collection_key<Model>(model_id, collection), submodel_id);
-//    }
-
-//    template<class Model>
-//    void submodel_exists_by_id_throw(const std::string& model_id, const std::string& collection, const std::string& submodel_id)
-//    {
-//        if (! sismember(submodel_collection_key<Model>(model_id, collection), submodel_id))
-//        {
-//            throw Model_not_found(submodel_id + "is not on " + Model::model_name() + " " + collection);
-//        }
-//    }
-
-//    template<class Model, class redis_submodel>
-//    bool has_submodel_with_indexed_field(const std::string& model_id, const std::string& collection,
-//                                          const std::string& submodel_indexed_field, const std::string& submodel_indexed_field_value)
-//    {
-//        std::vector<std::string> keys_to_intersect =
-//                boost::assign::list_of
-//                (submodel_collection_key<Model>(model_id, collection))
-//                (indexed_field_key<redis_submodel>(submodel_indexed_field, submodel_indexed_field_value));
-//        std::vector<std::string> intersection_result = sinter(keys_to_intersect);
-
-//        return intersection_result.size() > 0;
-//    }
-
-private:
+    std::set<std::string> set_members(connection::ptr_t conn, const Model& m, const std::string& set_name)
+    {
+        reply r = conn->run(command("SMEMBERS")(subentry_collection_key(m.id(), set_name)));
+        std::set<std::string> ret;
+        BOOST_FOREACH(const reply& i, r.elements())
+        {
+            ret.insert(i.str());
+        }
+    }
 
     inline std::string collection_key()
     {
@@ -229,7 +194,7 @@ private:
         return Model::model_name() + ":" + id;
     }
 
-    inline std::string submodel_collection_key(const std::string& id, const std::string& collection_name)
+    inline std::string subentry_collection_key(const std::string& id, const std::string& collection_name)
     {
         return model_key(id) + ":" + collection_name;
     }
