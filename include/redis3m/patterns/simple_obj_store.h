@@ -15,8 +15,6 @@ template<typename Model>
 class simple_obj_store
 {
 public:
-    simple_obj_store(){}
-
     Model find(connection::ptr_t connection, const std::string& id)
     {
         redis3m::reply r = connection->run(redis3m::command("HGETALL")(Model::model_name() + ":" +  id));

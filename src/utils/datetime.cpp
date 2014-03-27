@@ -16,7 +16,6 @@ uint64_t datetime::ptime_in_seconds(const boost::posix_time::ptime &time)
     return seconds_since_epoch.total_seconds();
 }
 
-
 boost::posix_time::ptime datetime::now()
 {
     return boost::posix_time::second_clock::universal_time();

@@ -26,12 +26,20 @@ namespace redis3m {
     // increases readability of code
     extern boost::assign_detail::generic_list<std::string>(&command)(const std::string&);
 
+    /**
+     * @brief The connection class, represent a connection to a Redis server
+     */
     class connection: boost::noncopyable
     {
     public:
-
         typedef boost::shared_ptr<connection> ptr_t;
 
+        /**
+         * @brief Create and open a new connection
+         * @param host hostname or ip of redis server, default localhost
+         * @param port port of redis server, default: 6379
+         * @return
+         */
         inline static ptr_t create(const std::string& host="localhost",
                                    const unsigned int port=6379)
         {
@@ -42,18 +50,43 @@ namespace redis3m {
 
         bool is_valid();
         
+        /**
+         * @brief Append a command to Redis server
+         * @param args vector with args, example [ "SET", "foo", "bar" ]
+         */
         void append(const std::vector<std::string>& args);
 
+        /**
+         * @brief Get a reply from server, blocking call if no reply is ready
+         * @return reply object
+         */
         reply get_reply();
+        
+        /**
+         * @brief Get specific count of replies requested, blocking if they
+         * are not ready yet.
+         * @param count
+         * @return
+         */
+        std::vector<reply> get_replies(unsigned int count);
 
+        /**
+         * @brief Utility to call append and then get_reply together
+         * @param args same as {@link append()}
+         * @return reply object
+         */
         inline reply run(const std::vector<std::string>& args)
         {
             append(args);
             return get_reply();
         }
-        
-        std::vector<reply> get_replies(unsigned int count);
 
+        /**
+         * @brief Returns raw ptr to hiredis library connection.
+         * Use it with caution and pay attention on memory
+         * management.
+         * @return
+         */
         inline redisContext* c_ptr() { return c; }
         
         enum role_t {
@@ -66,7 +99,6 @@ namespace redis3m {
         friend class connection_pool;
         connection(const std::string& host, const unsigned int port);
 
-        unsigned int appended_commands;
         role_t _role;
         redisContext *c;
     };

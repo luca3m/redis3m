@@ -22,11 +22,24 @@ namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_master)
     REDIS3M_EXCEPTION(cannot_find_slave)
     REDIS3M_EXCEPTION(too_much_retries)
+
+    /**
+     * @brief Manages a connection pool, using a Redis Sentinel
+     * to get instaces ip, managing also failover
+     */
     class connection_pool: boost::noncopyable
     {
     public:
         typedef boost::shared_ptr<connection_pool> ptr_t;
 
+        /**
+         * @brief Create a new connection_pool
+         * @param sentinel_host Can be a single host or a list separate by commas,
+         * if an host has multiple IPs, connection_pool tries all of them
+         * @param master_name Master to lookup
+         * @param sentinel_port Sentinel port, default 26379
+         * @return
+         */
         static inline ptr_t create(const std::string& sentinel_host,
                                    const std::string& master_name,
                                    unsigned int sentinel_port=26379)
@@ -34,8 +47,19 @@ namespace redis3m {
             return ptr_t(new connection_pool(sentinel_host, master_name, sentinel_port));
         }
 
+        /**
+         * @brief Ask for a connection
+         * @param type Specify the type required, Master, Slave or Any
+         * @return a valid connection object
+         */
         connection::ptr_t get(connection::role_t type=connection::MASTER);
 
+        /**
+         * @brief Put a connection again on pool for reuse, pay attention to
+         * insert only connection created from the same pool. Otherwise unpexpected
+         * behaviours can happen.
+         * @param conn
+         */
         void put(connection::ptr_t conn );
 
         template<typename Ret>
@@ -59,6 +83,11 @@ namespace redis3m {
             throw too_much_retries();
         }
 
+        /**
+         * @brief Set a database to use on every new connection object created
+         * by the pool.
+         * @param value A valid database index
+         */
         inline void set_database(unsigned int value) { _database = value; }
 
     private:

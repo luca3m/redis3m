@@ -18,6 +18,13 @@ public:\
 private:\
     type _##name;
 
+/**
+ * @brief Class useful to define models used by {@link orm} and {@link simple_obj_store}.
+ * REDIS3M_MODEL_RO_ATTRIBUTE(type, name) macro defines automatically an attribute with
+ * a public getter.
+ * All fields need to be serialized to a std::map<std::string, std::string>. Model class
+ * contains various helpers to to that easily.
+ */
 class model
 {
 public:

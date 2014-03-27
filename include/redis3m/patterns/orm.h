@@ -56,7 +56,6 @@ public:
         return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
     }
 
-    // Basic attribute handling
     std::string save(connection::ptr_t conn, const Model& model)
     {
         std::map<std::string, std::string> model_map;
