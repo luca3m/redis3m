@@ -17,3 +17,30 @@ It's an experimental project, born to bring my experience using Redis and C++ on
 ### Dependencies
 
 redis3m requires hiredis and boost libraries.
+
+### Install
+
+First step install all required dependencies, on a Debian system you can use:
+
+```bash
+sudo apt-get install libmsgpack-dev libboost-thread-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev cmake build-essential
+```
+
+Then checkout the code and compile it
+```bash
+git clone https://github.com/luca3m/redis3m
+cd redis3m
+cmake -DCMAKE_BUILD_TYPE=Release
+make
+sudo make install
+```
+
+### Documentation
+
+See [examples](https://github.com/luca3m/redis3m/tree/master/examples) directory for some examples, you can compile them with:
+
+```bash
+g++ <example.cpp> $(pkg-config --cflags --libs redis3m) -o <example.bin>
+```
+
+As reference you can read [include](https://github.com/luca3m/redis3m/tree/master/include) files, they are pretty simple and some of them are already documented with Doxygen.
