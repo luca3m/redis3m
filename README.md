@@ -2,17 +2,13 @@ redis3m
 =======
 [![Build Status](https://travis-ci.org/luca3m/redis3m.png?branch=master)](https://travis-ci.org/luca3m/redis3m)
 
-A C++ [Redis](http://redis.io) driver
-
-It's an experimental project, born to bring my experience using Redis and C++ on a opensource library.
-
+A C++ [Redis](http://redis.io) driver, born to bring my experience using Redis and C++ on a opensource library.
 
 ### Main goals
 
-1. Wrap official [hiredis](http://github.com/redis/hiredis) C driver, for easy upgrade in the future
-2. Provide High Availability connection pooling using redis sentinel
-3. Provide some useful redis patterns, like [scheduler](http://luca3m.me/2013/12/03/redis-scheduler.html), [orm](http://github.com/soveran/ohm), counters or message queueing
-
+1. Provide a simple and efficient wrapper of [hiredis](http://github.com/redis/hiredis), with C++ facilities like memory management
+2. A connection pooling system, with support for high availability using sentinel
+3. A set of useful patterns ready to use and composable with other code. For example [scheduler](http://luca3m.me/2013/12/03/redis-scheduler.html), [orm](http://github.com/soveran/ohm), counters or message queueing
 
 ### Dependencies
 
@@ -44,3 +40,8 @@ g++ <example.cpp> $(pkg-config --cflags --libs redis3m) -o <example.bin>
 ```
 
 As reference you can read [include](https://github.com/luca3m/redis3m/tree/master/include) files, they are pretty simple and some of them are already documented with Doxygen.
+
+### Versioning
+
+This project uses [semantic versioning](http://semver.org). In short words versions are named X.Y[.Z].
+Changing X means break API changes, Y means new features without breaking old code, Z means bug fixing.
