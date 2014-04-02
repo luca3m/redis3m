@@ -70,6 +70,11 @@ public:
         append_remove(connection, m);
         connection->get_reply();
     }
+
+    inline std::string model_key(const std::string& id)
+    {
+      return Model::model_name() + ":" + id;
+    }
 };
 }
 }
