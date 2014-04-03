@@ -4,6 +4,7 @@
 #include <boost/lexical_cast.hpp>
 #include <map>
 #include <redis3m/utils/exception.h>
+#include <vector>
 
 namespace redis3m
 {
@@ -48,6 +49,18 @@ public:
 
     inline const std::string& id() const { if (_loaded) return _id; else throw model_not_loaded(); }
     inline bool loaded() const { return _loaded; }
+
+    inline std::vector< std::string > indices()
+    {
+      std::vector< std::string > indices;
+      return indices;
+    }
+
+    inline std::vector< std::string > uniques()
+    {
+      std::vector< std::string > uniques;
+      return uniques;
+    }
 
 protected:
     inline static std::string read_str_from_map(const std::map<std::string, std::string>& map,
