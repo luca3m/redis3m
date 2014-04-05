@@ -11,11 +11,10 @@
 #include <string>
 #include <set>
 #include <redis3m/connection.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <mutex>
 #include <boost/noncopyable.hpp>
-#include <boost/thread/mutex.hpp>
 #include <redis3m/utils/exception.h>
-#include <boost/function.hpp>
 
 namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_sentinel)
@@ -30,7 +29,7 @@ namespace redis3m {
     class connection_pool: boost::noncopyable
     {
     public:
-        typedef boost::shared_ptr<connection_pool> ptr_t;
+        typedef std::shared_ptr<connection_pool> ptr_t;
 
         /**
          * @brief Create a new connection_pool
@@ -62,9 +61,8 @@ namespace redis3m {
          */
         void put(connection::ptr_t conn );
 
-        template<typename Ret>
-        Ret run_with_connection(boost::function<Ret(connection::ptr_t)> f,
-                                connection::role_t conn_type,
+        void run_with_connection(std::function<void(connection::ptr_t)> f,
+                                connection::role_t conn_type = connection::MASTER,
                                 unsigned int retries=5)
         {
             while (retries > 0)
@@ -72,9 +70,8 @@ namespace redis3m {
                 try
                 {
                     connection::ptr_t c = get(conn_type);
-                    Ret r = f(c);
+                    f(c);
                     put(c);
-                    return r;
                 } catch (const transport_failure& ex)
                 {
                     --retries;
@@ -98,7 +95,7 @@ namespace redis3m {
         connection::ptr_t create_master_connection();
         connection::ptr_t sentinel_connection();
 
-        boost::mutex access_mutex;
+        std::mutex access_mutex;
         std::set<connection::ptr_t> connections;
 
         std::vector<std::string> sentinel_hosts;

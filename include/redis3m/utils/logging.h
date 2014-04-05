@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
+#include <memory>
+#include <mutex>
 
 namespace redis3m
 {
@@ -10,7 +10,7 @@ namespace redis3m
 class logging
 {
 public:
-    typedef boost::shared_ptr<logging> ptr_t;
+    typedef std::shared_ptr<logging> ptr_t;
     inline static void debug(const std::string& s)
     {
         logger->debug_impl(s);
@@ -25,7 +25,7 @@ public:
     virtual void error_impl(const std::string& s);
 
 private:
-    boost::mutex access;
+    std::mutex access;
     static logging::ptr_t logger;
 };
 }

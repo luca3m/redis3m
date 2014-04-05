@@ -2,8 +2,9 @@
 
 #include <boost/noncopyable.hpp>
 #include <redis3m/connection.h>
-#include <boost/thread/mutex.hpp>
 #include <set>
+#include <memory>
+#include <mutex>
 
 namespace redis3m
 {
@@ -11,7 +12,7 @@ namespace redis3m
 class simple_pool: boost::noncopyable
 {
 public:
-    typedef boost::shared_ptr<simple_pool> ptr_t;
+    typedef std::shared_ptr<simple_pool> ptr_t;
 
     inline ptr_t create(const std::string& host, unsigned int port)
     {
@@ -31,6 +32,6 @@ private:
     unsigned int _port;
     unsigned int _database;
     std::set<connection::ptr_t> connections;
-    boost::mutex access_mutex;
+    std::mutex access_mutex;
 };
 }

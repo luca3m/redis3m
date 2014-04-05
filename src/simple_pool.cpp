@@ -35,7 +35,7 @@ connection::ptr_t simple_pool::get()
 
 void simple_pool::put(connection::ptr_t conn)
 {
-    boost::unique_lock<boost::mutex> lock(access_mutex);
+    std::unique_lock<std::mutex> lock(access_mutex);
     connections.insert(conn);
 }
 

@@ -8,15 +8,13 @@
 
 #include <redis3m/connection_pool.h>
 #include <redis3m/utils/resolv.h>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
 #include <redis3m/utils/logging.h>
+#include <chrono>
+#include <thread>
 
 using namespace redis3m;
 
@@ -43,8 +41,10 @@ connection::ptr_t connection_pool::get(connection::role_t type)
             break;
         case connection::MASTER:
         case connection::SLAVE:
-            it = std::find_if(connections.begin(), connections.end(),
-                           ( boost::lambda::bind(&connection::_role, *boost::lambda::_1) == type ));
+            it = std::find_if(connections.begin(), connections.end(),[type](connection::ptr_t conn)
+            {
+                return conn->_role == type;
+            });
             break;
     }
     for (; it != connections.end(); ++it)
@@ -88,7 +88,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
         // Setup connections selecting db
         if (_database != 0)
         {
-            ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
+            ret->run(command("SELECT")(std::to_string(_database)));
         }
     }
     return ret;
@@ -96,13 +96,13 @@ connection::ptr_t connection_pool::get(connection::role_t type)
 
 void connection_pool::put(connection::ptr_t conn)
 {
-    boost::unique_lock<boost::mutex> lock(access_mutex);
+    std::unique_lock<std::mutex> lock(access_mutex);
     connections.insert(conn);
 }
 
 connection::ptr_t connection_pool::sentinel_connection()
 {
-    BOOST_FOREACH(const std::string& host, sentinel_hosts)
+    for(const std::string& host : sentinel_hosts)
     {
         std::vector<std::string> real_sentinels = resolv::get_addresses(host);
         logging::debug(boost::str(
@@ -111,7 +111,7 @@ connection::ptr_t connection_pool::sentinel_connection()
                            % boost::algorithm::join(real_sentinels, ", ")
                            )
                        );
-        BOOST_FOREACH( const std::string& real_sentinel, real_sentinels)
+        for( const std::string& real_sentinel : real_sentinels)
         {
             logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
             try
@@ -141,7 +141,7 @@ connection::ptr_t connection_pool::create_slave_connection()
         if (properties.at(9).str() == "slave")
         {
             std::string host = properties.at(3).str();
-            unsigned int port = boost::lexical_cast<unsigned int>(properties.at(5).str());
+            unsigned int port = std::stoi(properties.at(5).str());
             try
             {
                 return connection::create(host, port);
@@ -162,7 +162,7 @@ connection::ptr_t connection_pool::create_master_connection()
     while(connection_retries < 20)
     {
         reply masters = sentinel->run(command("SENTINEL")("masters"));
-        BOOST_FOREACH(const reply& master, masters.elements())
+        for(const reply& master : masters.elements())
         {
             if (master.elements().at(1).str() == master_name)
             {
@@ -170,7 +170,7 @@ connection::ptr_t connection_pool::create_master_connection()
                 if (flags == "master")
                 {
                     const std::string& master_ip = master.elements().at(3).str();
-                    unsigned int master_port = boost::lexical_cast<unsigned int>(master.elements().at(5).str());
+                    unsigned int master_port = std::stoi(master.elements().at(5).str());
 
                     try
                     {
@@ -183,7 +183,7 @@ connection::ptr_t connection_pool::create_master_connection()
             }
         }
         connection_retries++;
-        sleep(5);
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }

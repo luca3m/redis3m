@@ -12,7 +12,7 @@
 #include <redis3m/utils/exception.h>
 #include <redis3m/reply.h>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/noncopyable.hpp>
 #include <boost/assign/list_of.hpp>
 
@@ -32,7 +32,7 @@ namespace redis3m {
     class connection: boost::noncopyable
     {
     public:
-        typedef boost::shared_ptr<connection> ptr_t;
+        typedef std::shared_ptr<connection> ptr_t;
 
         /**
          * @brief Create and open a new connection

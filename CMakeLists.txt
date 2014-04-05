@@ -7,13 +7,14 @@ endif(NOT DEFINED CMAKE_BUILD_TYPE)
 
 set(REDIS3M_VERSION_MAJOR 0)
 set(REDIS3M_VERSION_MINOR 1)
-set(REDIS3M_VERSION_PATCH 0)
+set(REDIS3M_VERSION_PATCH 1)
 set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${REDIS3M_VERSION_PATCH})
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -pipe")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pipe")
+set(CMAKE_CXX_FLAGS "-fPIC -std=c++11 -pipe")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
 
-find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_time REQUIRED)
+find_package(Boost COMPONENTS filesystem unit_test_framework date_time REQUIRED)
 
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
