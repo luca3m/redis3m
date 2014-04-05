@@ -17,10 +17,6 @@
 #include <redis3m/utils/exception.h>
 
 namespace redis3m {
-    REDIS3M_EXCEPTION(cannot_find_sentinel)
-    REDIS3M_EXCEPTION(cannot_find_master)
-    REDIS3M_EXCEPTION(cannot_find_slave)
-    REDIS3M_EXCEPTION(too_much_retries)
 
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
@@ -29,6 +25,10 @@ namespace redis3m {
     class connection_pool: boost::noncopyable
     {
     public:
+        REDIS3M_EXCEPTION(cannot_find_sentinel)
+        REDIS3M_EXCEPTION(cannot_find_master)
+        REDIS3M_EXCEPTION(cannot_find_slave)
+        REDIS3M_EXCEPTION(too_much_retries)
         typedef std::shared_ptr<connection_pool> ptr_t;
 
         /**
@@ -62,23 +62,8 @@ namespace redis3m {
         void put(connection::ptr_t conn );
 
         void run_with_connection(std::function<void(connection::ptr_t)> f,
-                                connection::role_t conn_type = connection::MASTER,
-                                unsigned int retries=5)
-        {
-            while (retries > 0)
-            {
-                try
-                {
-                    connection::ptr_t c = get(conn_type);
-                    f(c);
-                    put(c);
-                } catch (const transport_failure& ex)
-                {
-                    --retries;
-                }
-            }
-            throw too_much_retries();
-        }
+                                 connection::role_t conn_type = connection::MASTER,
+                                 unsigned int retries=5);
 
         /**
          * @brief Set a database to use on every new connection object created

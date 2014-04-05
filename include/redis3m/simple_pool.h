@@ -13,8 +13,9 @@ class simple_pool: boost::noncopyable
 {
 public:
     typedef std::shared_ptr<simple_pool> ptr_t;
+    REDIS3M_EXCEPTION(too_much_retries)
 
-    inline ptr_t create(const std::string& host, unsigned int port)
+    static inline ptr_t create(const std::string& host, unsigned int port)
     {
         return ptr_t(new simple_pool(host, port));
     }
@@ -22,6 +23,8 @@ public:
     connection::ptr_t get();
 
     void put(connection::ptr_t conn);
+
+    void run_with_connection(std::function<void(connection::ptr_t)> f, unsigned int retries=5);
 
     inline void set_database(unsigned int value) { _database = value; }
 
