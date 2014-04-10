@@ -187,3 +187,24 @@ connection::ptr_t connection_pool::create_master_connection()
     }
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }
+
+template<>
+void connection_pool::run_with_connection(boost::function<void(connection::ptr_t)> f,
+                                connection::role_t conn_type,
+                                unsigned int retries)
+{
+    while (retries > 0)
+    {
+        try
+        {
+            connection::ptr_t c = get(conn_type);
+            f(c);
+            put(c);
+            return;
+        } catch (const transport_failure& ex)
+        {
+            --retries;
+        }
+    }
+    throw too_much_retries();
+}

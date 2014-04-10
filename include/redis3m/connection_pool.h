@@ -64,7 +64,7 @@ namespace redis3m {
 
         template<typename Ret>
         Ret run_with_connection(boost::function<Ret(connection::ptr_t)> f,
-                                connection::role_t conn_type,
+                                connection::role_t conn_type = connection::MASTER,
                                 unsigned int retries=5)
         {
             while (retries > 0)
@@ -106,4 +106,9 @@ namespace redis3m {
         std::string master_name;
         unsigned int _database;
     };
+
+    template<>
+    void connection_pool::run_with_connection(boost::function<void(connection::ptr_t)> f,
+                                connection::role_t conn_type,
+                                unsigned int retries);
 }
