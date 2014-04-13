@@ -1,10 +1,5 @@
-//
-//  connection_pool.h
-//  redis3m
-//
-//  Created by Luca Marturana on 05/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #pragma once
 
@@ -63,6 +58,15 @@ namespace redis3m {
         void put(connection::ptr_t conn );
 
         template<typename Ret>
+        /**
+         * @brief Execute a block of code passing a connection::ptr_t
+         * if something fails, like broken connection, it will automatically
+         * retry with an another one
+         * @param f function to run, C++11 lambdas are perfect
+         * @param conn_type type of connection required
+         * @param retries how much retries do
+         * @return
+         */
         Ret run_with_connection(boost::function<Ret(connection::ptr_t)> f,
                                 connection::role_t conn_type = connection::MASTER,
                                 unsigned int retries=5)

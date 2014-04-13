@@ -1,10 +1,5 @@
-//
-//  script_exec.cpp
-//  redis3m
-//
-//  Created by Luca Marturana on 09/03/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/utils/sha1.h>

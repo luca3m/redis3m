@@ -1,10 +1,5 @@
-//
-//  connection.cpp
-//  redis3m
-//
-//  Created by Luca Marturana on 03/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/connection.h>
 #include <boost/assign/list_of.hpp>

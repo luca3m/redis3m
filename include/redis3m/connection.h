@@ -1,10 +1,5 @@
-//
-//  connection.h
-//  redis3m
-//
-//  Created by Luca Marturana on 03/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #pragma once
 
