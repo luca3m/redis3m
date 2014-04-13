@@ -19,10 +19,24 @@ namespace patterns
 {
 
 template<typename Model>
+/**
+ * @brief Object-Redis-Mapper is a convenient pattern to store object on Redis.
+ * Useful when you need classic CRUD operations. It's compatible and inspired by
+ * http://github.com/soveran/ohm.
+ * Data can be indexed and it supports also uniques.
+ * To use it make a subclass of {@link model} to model your attribute and use it
+ * to fill orm template parameter.
+ */
 class orm {
 public:
 
-    // Find
+    /**
+     * @brief As the name says, get an object from id specifying it's unique
+     * identifier
+     * @param conn
+     * @param id
+     * @return Use {@link model.loaded()} to check if it's valid or not
+     */
     Model find_by_id(connection::ptr_t conn, const std::string& id)
     {
         reply r = conn->run(command("HGETALL")(model_key(id)));
@@ -41,6 +55,13 @@ public:
         }
     }
 
+    /**
+     * @brief Find an object by using a unique field
+     * @param conn
+     * @param field name of field, should be returned by {@link model::uniques}
+     * @param value
+     * @return Use {@link model.loaded()} to check if it's valid or not
+     */
     Model find_by_unique_field(connection::ptr_t conn, const std::string& field, const std::string& value)
     {
         std::string id = conn->run(command("HGET")(unique_field_key(field))(value)).str();
@@ -54,11 +75,23 @@ public:
         }
     }
 
+    /**
+     * @brief Check if an object exists or not.
+     * @param conn
+     * @param id Unique identifier
+     * @return
+     */
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
         return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
     }
 
+    /**
+     * @brief Save an object on database, or update it if it's already present
+     * @param conn
+     * @param model
+     * @return unique identifier of the object, a new one on creation.
+     */
     std::string save(connection::ptr_t conn, const Model& model)
     {
         std::map<std::string, std::string> model_map;
@@ -113,6 +146,11 @@ public:
         return r.str();
     }
 
+    /**
+     * @brief Remove object and all related data from database
+     * @param conn
+     * @param model
+     */
     void remove(connection::ptr_t conn, const Model& model)
     {
         std::map<std::string, std::string> model_map;
@@ -180,11 +218,24 @@ public:
         }
     }
 
+    /**
+     * @brief Redis key of a SET containing all object ids. Useful for
+     * custom operations. Pay attention to mantain compatibility with
+     * all other functions.
+     * @return
+     */
     inline std::string collection_key()
     {
         return Model::model_name() + ":all";
     }
 
+    /**
+     * @brief Key containing an incremental counter, used to generate
+     * an id for new objects. Useful for custom operations.
+     * Pay attention to mantain compatibility with
+     * all other functions.
+     * @return
+     */
     inline std::string collection_id_key()
     {
         return Model::model_name() + ":id";
@@ -210,6 +261,7 @@ public:
         return Model::model_name() + ":uniques:" + field;
     }
 
+private:
     static script_exec save_script;
     static script_exec remove_script;
 };

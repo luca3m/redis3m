@@ -13,7 +13,6 @@
 #include <boost/lambda/bind.hpp>
 #include <redis3m/utils/logging.h>
 #include <boost/thread.hpp>
-#include <boost/chrono/duration.hpp>
 
 using namespace redis3m;
 
