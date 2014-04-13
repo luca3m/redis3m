@@ -12,6 +12,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <redis3m/utils/logging.h>
+#include <boost/thread.hpp>
 
 using namespace redis3m;
 
@@ -83,7 +84,11 @@ connection::ptr_t connection_pool::get(connection::role_t type)
         // Setup connections selecting db
         if (_database != 0)
         {
-            ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
+            reply r = ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
+            if (r.type() == reply::ERROR)
+            {
+                throw wrong_database(r.str());
+            }
         }
     }
     return ret;
@@ -178,7 +183,7 @@ connection::ptr_t connection_pool::create_master_connection()
             }
         }
         connection_retries++;
-        sleep(5);
+        boost::this_thread::sleep_for(boost::chrono::seconds(5));
     }
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }

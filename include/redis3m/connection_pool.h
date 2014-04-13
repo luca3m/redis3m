@@ -17,7 +17,7 @@ namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_master)
     REDIS3M_EXCEPTION(cannot_find_slave)
     REDIS3M_EXCEPTION(too_much_retries)
-
+    REDIS3M_EXCEPTION(wrong_database)
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
      * to get instaces ip, managing also failover
