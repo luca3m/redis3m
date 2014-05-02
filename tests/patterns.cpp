@@ -1,12 +1,8 @@
 // Copyright (c) 2014 Luca Marturana. All rights reserved.
 // Licensed under Apache 2.0, see LICENSE for details
 
-#include <redis3m/connection.h>
-#include <redis3m/patterns/script_exec.h>
-#include <redis3m/patterns/scheduler.h>
-#include <redis3m/patterns/simple_obj_store.h>
-#include <redis3m/patterns/model.h>
-#include <redis3m/patterns/orm.h>
+#include <redis3m/redis3m.hpp>
+#include <redis3m/patterns/patterns.hpp>
 
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK

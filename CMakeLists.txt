@@ -23,7 +23,7 @@ find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
 file(GLOB SRC_FILES "src/*.cpp" "src/utils/*.cpp" "src/patterns/*.cpp")
-file(GLOB INCLUDE_FILES "include/redis3m/*.h" "include/redis3m/utils/*.h" "include/redis3m/patterns/*.h")
+file(GLOB INCLUDE_FILES "include/redis3m/*.h*" "include/redis3m/utils/*.h*" "include/redis3m/patterns/*.h*")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/utils/datadir.cpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp @ONLY)
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})

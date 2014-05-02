@@ -4,6 +4,7 @@
 #pragma once
 
 #include <redis3m/connection.h>
+#include <redis3m/command.h>
 #include <map>
 #include <string>
 #include <algorithm>
