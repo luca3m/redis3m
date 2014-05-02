@@ -1,0 +1,78 @@
+\hypertarget{classredis3m_1_1patterns_1_1script__exec}{\section{redis3m\-:\-:patterns\-:\-:script\-\_\-exec Class Reference}
+\label{classredis3m_1_1patterns_1_1script__exec}\index{redis3m\-::patterns\-::script\-\_\-exec@{redis3m\-::patterns\-::script\-\_\-exec}}
+}
+
+
+Helps to run Lua scripts on a Redis instance. It will take care to use E\-V\-A\-L\-S\-H\-A to optimize performance and then E\-V\-A\-L if the script is not yet available on Redis server. See \href{http://redis.io/commands/eval}{\tt http\-://redis.\-io/commands/eval} for other infos.  
+
+
+
+
+{\ttfamily \#include $<$script\-\_\-exec.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classredis3m_1_1patterns_1_1script__exec_aae07e70190043893d6bbdd08cfb716fa}{script\-\_\-exec} (const std\-::string \&script, bool is\-\_\-path=false)
+\begin{DoxyCompactList}\small\item\em Create \hyperlink{classredis3m_1_1patterns_1_1script__exec}{script\-\_\-exec}. \end{DoxyCompactList}\item 
+\hyperlink{classredis3m_1_1reply}{reply} \hyperlink{classredis3m_1_1patterns_1_1script__exec_a79f391b7a3e5a696e0c60318c6ca7b73}{exec} (connection\-::ptr\-\_\-t \hyperlink{classredis3m_1_1connection}{connection}, const std\-::vector$<$ std\-::string $>$ \&keys=std\-::vector$<$ std\-::string $>$(), const std\-::vector$<$ std\-::string $>$ \&args=std\-::vector$<$ std\-::string $>$())
+\begin{DoxyCompactList}\small\item\em Execute the script. First trying with E\-V\-A\-L\-S\-H\-A, then with E\-V\-A\-L. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Helps to run Lua scripts on a Redis instance. It will take care to use E\-V\-A\-L\-S\-H\-A to optimize performance and then E\-V\-A\-L if the script is not yet available on Redis server. See \href{http://redis.io/commands/eval}{\tt http\-://redis.\-io/commands/eval} for other infos. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classredis3m_1_1patterns_1_1script__exec_aae07e70190043893d6bbdd08cfb716fa}{\index{redis3m\-::patterns\-::script\-\_\-exec@{redis3m\-::patterns\-::script\-\_\-exec}!script\-\_\-exec@{script\-\_\-exec}}
+\index{script\-\_\-exec@{script\-\_\-exec}!redis3m::patterns::script_exec@{redis3m\-::patterns\-::script\-\_\-exec}}
+\subsubsection[{script\-\_\-exec}]{\setlength{\rightskip}{0pt plus 5cm}patterns\-::script\-\_\-exec\-::script\-\_\-exec (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{script, }
+\item[{bool}]{is\-\_\-path = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1patterns_1_1script__exec_aae07e70190043893d6bbdd08cfb716fa}
+
+
+Create \hyperlink{classredis3m_1_1patterns_1_1script__exec}{script\-\_\-exec}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em script} & script content or a path to a file which contains the script \\
+\hline
+{\em is\-\_\-path} & true if previous argument is a path, false otherwise. The latter is default. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classredis3m_1_1patterns_1_1script__exec_a79f391b7a3e5a696e0c60318c6ca7b73}{\index{redis3m\-::patterns\-::script\-\_\-exec@{redis3m\-::patterns\-::script\-\_\-exec}!exec@{exec}}
+\index{exec@{exec}!redis3m::patterns::script_exec@{redis3m\-::patterns\-::script\-\_\-exec}}
+\subsubsection[{exec}]{\setlength{\rightskip}{0pt plus 5cm}{\bf reply} patterns\-::script\-\_\-exec\-::exec (
+\begin{DoxyParamCaption}
+\item[{connection\-::ptr\-\_\-t}]{connection, }
+\item[{const std\-::vector$<$ std\-::string $>$ \&}]{keys = {\ttfamily std\-:\-:vector$<$std\-:\-:string$>$()}, }
+\item[{const std\-::vector$<$ std\-::string $>$ \&}]{args = {\ttfamily std\-:\-:vector$<$std\-:\-:string$>$()}}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1patterns_1_1script__exec_a79f391b7a3e5a696e0c60318c6ca7b73}
+
+
+Execute the script. First trying with E\-V\-A\-L\-S\-H\-A, then with E\-V\-A\-L. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & \\
+\hline
+{\em keys} & vector of keys used by the script \\
+\hline
+{\em args} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/redis3m/patterns/script\-\_\-exec.\-h\item 
+src/patterns/script\-\_\-exec.\-cpp\end{DoxyCompactItemize}

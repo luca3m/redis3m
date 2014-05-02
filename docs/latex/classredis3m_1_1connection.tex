@@ -1,0 +1,173 @@
+\hypertarget{classredis3m_1_1connection}{\section{redis3m\-:\-:connection Class Reference}
+\label{classredis3m_1_1connection}\index{redis3m\-::connection@{redis3m\-::connection}}
+}
+
+
+The connection class, represent a connection to a Redis server.  
+
+
+
+
+{\ttfamily \#include $<$connection.\-h$>$}
+
+Inheritance diagram for redis3m\-:\-:connection\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classredis3m_1_1connection}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum {\bfseries role\-\_\-t} \{ {\bfseries A\-N\-Y} = 0, 
+{\bfseries M\-A\-S\-T\-E\-R} = 1, 
+{\bfseries S\-L\-A\-V\-E} = 2
+ \}
+\item 
+\hypertarget{classredis3m_1_1connection_a6e3fffb8c2b60128baf8ef0e9b78cbd3}{typedef boost\-::shared\-\_\-ptr\\*
+$<$ \hyperlink{classredis3m_1_1connection}{connection} $>$ {\bfseries ptr\-\_\-t}}\label{classredis3m_1_1connection_a6e3fffb8c2b60128baf8ef0e9b78cbd3}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classredis3m_1_1connection_a8ab5fc0ed61431b65220d2b389e8357e}{bool {\bfseries is\-\_\-valid} ()}\label{classredis3m_1_1connection_a8ab5fc0ed61431b65220d2b389e8357e}
+
+\item 
+void \hyperlink{classredis3m_1_1connection_a308ac2576c2dd1c8ce6e97c4572c86f5}{append} (const std\-::vector$<$ std\-::string $>$ \&args)
+\begin{DoxyCompactList}\small\item\em Append a command to Redis server. \end{DoxyCompactList}\item 
+\hyperlink{classredis3m_1_1reply}{reply} \hyperlink{classredis3m_1_1connection_a0c01abebb9be6368d3d159d30522e8c2}{get\-\_\-reply} ()
+\begin{DoxyCompactList}\small\item\em Get a reply from server, blocking call if no reply is ready. \end{DoxyCompactList}\item 
+std\-::vector$<$ \hyperlink{classredis3m_1_1reply}{reply} $>$ \hyperlink{classredis3m_1_1connection_a4a346751b7b4f47f5a5d702ad10b2490}{get\-\_\-replies} (unsigned int count)
+\begin{DoxyCompactList}\small\item\em Get specific count of replies requested, blocking if they are not ready yet. \end{DoxyCompactList}\item 
+\hyperlink{classredis3m_1_1reply}{reply} \hyperlink{classredis3m_1_1connection_ab2690e664a0f0bd4647be5b0f07f988b}{run} (const std\-::vector$<$ std\-::string $>$ \&args)
+\begin{DoxyCompactList}\small\item\em Utility to call append and then get\-\_\-reply together. \end{DoxyCompactList}\item 
+redis\-Context $\ast$ \hyperlink{classredis3m_1_1connection_a7c583cf358ea3d4b20583670280072ae}{c\-\_\-ptr} ()
+\begin{DoxyCompactList}\small\item\em Returns raw ptr to hiredis library connection. Use it with caution and pay attention on memory management. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static ptr\-\_\-t \hyperlink{classredis3m_1_1connection_a367251876cd720fe0a58727e2c8d202c}{create} (const std\-::string \&host=\char`\"{}localhost\char`\"{}, const unsigned int port=6379)
+\begin{DoxyCompactList}\small\item\em Create and open a new connection. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classredis3m_1_1connection_accac599643e0a8c900f765dcf4026344}{class {\bfseries connection\-\_\-pool}}\label{classredis3m_1_1connection_accac599643e0a8c900f765dcf4026344}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The connection class, represent a connection to a Redis server. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classredis3m_1_1connection_a308ac2576c2dd1c8ce6e97c4572c86f5}{\index{redis3m\-::connection@{redis3m\-::connection}!append@{append}}
+\index{append@{append}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{append}]{\setlength{\rightskip}{0pt plus 5cm}void connection\-::append (
+\begin{DoxyParamCaption}
+\item[{const std\-::vector$<$ std\-::string $>$ \&}]{args}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1connection_a308ac2576c2dd1c8ce6e97c4572c86f5}
+
+
+Append a command to Redis server. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em args} & vector with args, example \mbox{[} \char`\"{}\-S\-E\-T\char`\"{}, \char`\"{}foo\char`\"{}, \char`\"{}bar\char`\"{} \mbox{]} \\
+\hline
+\end{DoxyParams}
+\hypertarget{classredis3m_1_1connection_a7c583cf358ea3d4b20583670280072ae}{\index{redis3m\-::connection@{redis3m\-::connection}!c\-\_\-ptr@{c\-\_\-ptr}}
+\index{c\-\_\-ptr@{c\-\_\-ptr}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{c\-\_\-ptr}]{\setlength{\rightskip}{0pt plus 5cm}redis\-Context$\ast$ redis3m\-::connection\-::c\-\_\-ptr (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1connection_a7c583cf358ea3d4b20583670280072ae}
+
+
+Returns raw ptr to hiredis library connection. Use it with caution and pay attention on memory management. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection_a367251876cd720fe0a58727e2c8d202c}{\index{redis3m\-::connection@{redis3m\-::connection}!create@{create}}
+\index{create@{create}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{create}]{\setlength{\rightskip}{0pt plus 5cm}static ptr\-\_\-t redis3m\-::connection\-::create (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{host = {\ttfamily \char`\"{}localhost\char`\"{}}, }
+\item[{const unsigned int}]{port = {\ttfamily 6379}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{classredis3m_1_1connection_a367251876cd720fe0a58727e2c8d202c}
+
+
+Create and open a new connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em host} & hostname or ip of redis server, default localhost \\
+\hline
+{\em port} & port of redis server, default\-: 6379 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection_a4a346751b7b4f47f5a5d702ad10b2490}{\index{redis3m\-::connection@{redis3m\-::connection}!get\-\_\-replies@{get\-\_\-replies}}
+\index{get\-\_\-replies@{get\-\_\-replies}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{get\-\_\-replies}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf reply} $>$ connection\-::get\-\_\-replies (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{count}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1connection_a4a346751b7b4f47f5a5d702ad10b2490}
+
+
+Get specific count of replies requested, blocking if they are not ready yet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em count} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection_a0c01abebb9be6368d3d159d30522e8c2}{\index{redis3m\-::connection@{redis3m\-::connection}!get\-\_\-reply@{get\-\_\-reply}}
+\index{get\-\_\-reply@{get\-\_\-reply}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{get\-\_\-reply}]{\setlength{\rightskip}{0pt plus 5cm}{\bf reply} connection\-::get\-\_\-reply (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1connection_a0c01abebb9be6368d3d159d30522e8c2}
+
+
+Get a reply from server, blocking call if no reply is ready. 
+
+\begin{DoxyReturn}{Returns}
+reply object 
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection_ab2690e664a0f0bd4647be5b0f07f988b}{\index{redis3m\-::connection@{redis3m\-::connection}!run@{run}}
+\index{run@{run}!redis3m::connection@{redis3m\-::connection}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}{\bf reply} redis3m\-::connection\-::run (
+\begin{DoxyParamCaption}
+\item[{const std\-::vector$<$ std\-::string $>$ \&}]{args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1connection_ab2690e664a0f0bd4647be5b0f07f988b}
+
+
+Utility to call append and then get\-\_\-reply together. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em args} & same as \hyperlink{classredis3m_1_1connection_a308ac2576c2dd1c8ce6e97c4572c86f5}{append()} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+reply object 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/redis3m/connection.\-h\item 
+src/connection.\-cpp\end{DoxyCompactItemize}

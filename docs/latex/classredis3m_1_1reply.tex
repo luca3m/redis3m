@@ -1,0 +1,110 @@
+\hypertarget{classredis3m_1_1reply}{\section{redis3m\-:\-:reply Class Reference}
+\label{classredis3m_1_1reply}\index{redis3m\-::reply@{redis3m\-::reply}}
+}
+
+
+Represent a reply received from redis server.  
+
+
+
+
+{\ttfamily \#include $<$reply.\-h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classredis3m_1_1reply_ac44942a4ec175e767ce119d452ffafd6}{type\-\_\-t} \{ \\*
+{\bfseries S\-T\-R\-I\-N\-G} = 1, 
+{\bfseries A\-R\-R\-A\-Y} = 2, 
+{\bfseries I\-N\-T\-E\-G\-E\-R} = 3, 
+{\bfseries N\-I\-L} = 4, 
+\\*
+{\bfseries S\-T\-A\-T\-U\-S} = 5, 
+{\bfseries E\-R\-R\-O\-R} = 6
+ \}
+\begin{DoxyCompactList}\small\item\em Define reply type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classredis3m_1_1reply_ac44942a4ec175e767ce119d452ffafd6}{type\-\_\-t} \hyperlink{classredis3m_1_1reply_a432022d4727f30c938ae30d6a3ed19e3}{type} () const 
+\begin{DoxyCompactList}\small\item\em Type of reply, other field values are dependent of this. \end{DoxyCompactList}\item 
+const std\-::string \& \hyperlink{classredis3m_1_1reply_a307e33a668bcfa162630de7b2cb0d0a1}{str} () const 
+\begin{DoxyCompactList}\small\item\em Returns string value if present, otherwise an empty string. \end{DoxyCompactList}\item 
+long long \hyperlink{classredis3m_1_1reply_a44eab40d41874248d97f68f7df142c82}{integer} () const 
+\begin{DoxyCompactList}\small\item\em Returns integer value if present, otherwise 0. \end{DoxyCompactList}\item 
+const std\-::vector$<$ \hyperlink{classredis3m_1_1reply}{reply} $>$ \& \hyperlink{classredis3m_1_1reply_abc01cc8d11878c895bdee9710fe1888d}{elements} () const 
+\begin{DoxyCompactList}\small\item\em Returns a vector of sub-\/replies if present, otherwise an empty one. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classredis3m_1_1reply_adb115488bb4890f7fc705ee527ad71e0}{class {\bfseries connection}}\label{classredis3m_1_1reply_adb115488bb4890f7fc705ee527ad71e0}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represent a reply received from redis server. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classredis3m_1_1reply_abc01cc8d11878c895bdee9710fe1888d}{\index{redis3m\-::reply@{redis3m\-::reply}!elements@{elements}}
+\index{elements@{elements}!redis3m::reply@{redis3m\-::reply}}
+\subsubsection[{elements}]{\setlength{\rightskip}{0pt plus 5cm}const std\-::vector$<${\bf reply}$>$\& redis3m\-::reply\-::elements (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1reply_abc01cc8d11878c895bdee9710fe1888d}
+
+
+Returns a vector of sub-\/replies if present, otherwise an empty one. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1reply_a44eab40d41874248d97f68f7df142c82}{\index{redis3m\-::reply@{redis3m\-::reply}!integer@{integer}}
+\index{integer@{integer}!redis3m::reply@{redis3m\-::reply}}
+\subsubsection[{integer}]{\setlength{\rightskip}{0pt plus 5cm}long long redis3m\-::reply\-::integer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1reply_a44eab40d41874248d97f68f7df142c82}
+
+
+Returns integer value if present, otherwise 0. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1reply_a307e33a668bcfa162630de7b2cb0d0a1}{\index{redis3m\-::reply@{redis3m\-::reply}!str@{str}}
+\index{str@{str}!redis3m::reply@{redis3m\-::reply}}
+\subsubsection[{str}]{\setlength{\rightskip}{0pt plus 5cm}const std\-::string\& redis3m\-::reply\-::str (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1reply_a307e33a668bcfa162630de7b2cb0d0a1}
+
+
+Returns string value if present, otherwise an empty string. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1reply_a432022d4727f30c938ae30d6a3ed19e3}{\index{redis3m\-::reply@{redis3m\-::reply}!type@{type}}
+\index{type@{type}!redis3m::reply@{redis3m\-::reply}}
+\subsubsection[{type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf type\-\_\-t} redis3m\-::reply\-::type (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1reply_a432022d4727f30c938ae30d6a3ed19e3}
+
+
+Type of reply, other field values are dependent of this. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/redis3m/reply.\-h\item 
+src/reply.\-cpp\end{DoxyCompactItemize}

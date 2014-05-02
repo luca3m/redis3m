@@ -1,0 +1,157 @@
+\hypertarget{classredis3m_1_1connection__pool}{\section{redis3m\-:\-:connection\-\_\-pool Class Reference}
+\label{classredis3m_1_1connection__pool}\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}}
+}
+
+
+Manages a connection pool, using a Redis Sentinel to get instaces ip, managing also failover.  
+
+
+
+
+{\ttfamily \#include $<$connection\-\_\-pool.\-h$>$}
+
+Inheritance diagram for redis3m\-:\-:connection\-\_\-pool\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classredis3m_1_1connection__pool}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classredis3m_1_1connection__pool_ac4288428ed17ad5b4a2247d859d99082}{typedef boost\-::shared\-\_\-ptr\\*
+$<$ \hyperlink{classredis3m_1_1connection__pool}{connection\-\_\-pool} $>$ {\bfseries ptr\-\_\-t}}\label{classredis3m_1_1connection__pool_ac4288428ed17ad5b4a2247d859d99082}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+connection\-::ptr\-\_\-t \hyperlink{classredis3m_1_1connection__pool_a64b7414a59f5ebb741f60f15269239cb}{get} (connection\-::role\-\_\-t type=connection\-::\-M\-A\-S\-T\-E\-R)
+\begin{DoxyCompactList}\small\item\em Ask for a connection. \end{DoxyCompactList}\item 
+void \hyperlink{classredis3m_1_1connection__pool_af98d6557618b0b3f2fb98a16f1248884}{put} (connection\-::ptr\-\_\-t conn)
+\begin{DoxyCompactList}\small\item\em Put a connection again on pool for reuse, pay attention to insert only connection created from the same pool. Otherwise unpexpected behaviours can happen. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Ret $>$ }\\Ret \hyperlink{classredis3m_1_1connection__pool_a4bbb7ca50a001ae9f3917def5007d0d7}{run\-\_\-with\-\_\-connection} (boost\-::function$<$ Ret(connection\-::ptr\-\_\-t)$>$ f, connection\-::role\-\_\-t conn\-\_\-type=connection\-::\-M\-A\-S\-T\-E\-R, unsigned int retries=5)
+\begin{DoxyCompactList}\small\item\em Execute a block of code passing a connection\-::ptr\-\_\-t if something fails, like broken connection, it will automatically retry with an another one. \end{DoxyCompactList}\item 
+void \hyperlink{classredis3m_1_1connection__pool_a6d42ddca75faeb5c33f9d3bf04f44c5b}{set\-\_\-database} (unsigned int value)
+\begin{DoxyCompactList}\small\item\em Set a database to use on every new connection object created by the pool. \end{DoxyCompactList}\item 
+\hypertarget{classredis3m_1_1connection__pool_ab57e4c5fd3b58fb7e2242825b7868478}{{\footnotesize template$<$$>$ }\\void {\bfseries run\-\_\-with\-\_\-connection} (boost\-::function$<$ void(connection\-::ptr\-\_\-t)$>$ f, connection\-::role\-\_\-t conn\-\_\-type, unsigned int retries)}\label{classredis3m_1_1connection__pool_ab57e4c5fd3b58fb7e2242825b7868478}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static ptr\-\_\-t \hyperlink{classredis3m_1_1connection__pool_a75ee0b238816effb57301c5cbae720b4}{create} (const std\-::string \&sentinel\-\_\-host, const std\-::string \&master\-\_\-name, unsigned int sentinel\-\_\-port=26379)
+\begin{DoxyCompactList}\small\item\em Create a new \hyperlink{classredis3m_1_1connection__pool}{connection\-\_\-pool}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Manages a connection pool, using a Redis Sentinel to get instaces ip, managing also failover. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classredis3m_1_1connection__pool_a75ee0b238816effb57301c5cbae720b4}{\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}!create@{create}}
+\index{create@{create}!redis3m::connection_pool@{redis3m\-::connection\-\_\-pool}}
+\subsubsection[{create}]{\setlength{\rightskip}{0pt plus 5cm}static ptr\-\_\-t redis3m\-::connection\-\_\-pool\-::create (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{sentinel\-\_\-host, }
+\item[{const std\-::string \&}]{master\-\_\-name, }
+\item[{unsigned int}]{sentinel\-\_\-port = {\ttfamily 26379}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}}\label{classredis3m_1_1connection__pool_a75ee0b238816effb57301c5cbae720b4}
+
+
+Create a new \hyperlink{classredis3m_1_1connection__pool}{connection\-\_\-pool}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sentinel\-\_\-host} & Can be a single host or a list separate by commas, if an host has multiple I\-Ps, \hyperlink{classredis3m_1_1connection__pool}{connection\-\_\-pool} tries all of them \\
+\hline
+{\em master\-\_\-name} & Master to lookup \\
+\hline
+{\em sentinel\-\_\-port} & Sentinel port, default 26379 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection__pool_a64b7414a59f5ebb741f60f15269239cb}{\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}!get@{get}}
+\index{get@{get}!redis3m::connection_pool@{redis3m\-::connection\-\_\-pool}}
+\subsubsection[{get}]{\setlength{\rightskip}{0pt plus 5cm}connection\-::ptr\-\_\-t connection\-\_\-pool\-::get (
+\begin{DoxyParamCaption}
+\item[{connection\-::role\-\_\-t}]{type = {\ttfamily connection\-:\-:MASTER}}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1connection__pool_a64b7414a59f5ebb741f60f15269239cb}
+
+
+Ask for a connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Specify the type required, Master, Slave or Any \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a valid connection object 
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection__pool_af98d6557618b0b3f2fb98a16f1248884}{\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}!put@{put}}
+\index{put@{put}!redis3m::connection_pool@{redis3m\-::connection\-\_\-pool}}
+\subsubsection[{put}]{\setlength{\rightskip}{0pt plus 5cm}void connection\-\_\-pool\-::put (
+\begin{DoxyParamCaption}
+\item[{connection\-::ptr\-\_\-t}]{conn}
+\end{DoxyParamCaption}
+)}}\label{classredis3m_1_1connection__pool_af98d6557618b0b3f2fb98a16f1248884}
+
+
+Put a connection again on pool for reuse, pay attention to insert only connection created from the same pool. Otherwise unpexpected behaviours can happen. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conn} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{classredis3m_1_1connection__pool_a4bbb7ca50a001ae9f3917def5007d0d7}{\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}!run\-\_\-with\-\_\-connection@{run\-\_\-with\-\_\-connection}}
+\index{run\-\_\-with\-\_\-connection@{run\-\_\-with\-\_\-connection}!redis3m::connection_pool@{redis3m\-::connection\-\_\-pool}}
+\subsubsection[{run\-\_\-with\-\_\-connection}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename Ret $>$ Ret redis3m\-::connection\-\_\-pool\-::run\-\_\-with\-\_\-connection (
+\begin{DoxyParamCaption}
+\item[{boost\-::function$<$ Ret(connection\-::ptr\-\_\-t)$>$}]{f, }
+\item[{connection\-::role\-\_\-t}]{conn\-\_\-type = {\ttfamily connection\-:\-:MASTER}, }
+\item[{unsigned int}]{retries = {\ttfamily 5}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1connection__pool_a4bbb7ca50a001ae9f3917def5007d0d7}
+
+
+Execute a block of code passing a connection\-::ptr\-\_\-t if something fails, like broken connection, it will automatically retry with an another one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & function to run, C++11 lambdas are perfect \\
+\hline
+{\em conn\-\_\-type} & type of connection required \\
+\hline
+{\em retries} & how much retries do \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classredis3m_1_1connection__pool_a6d42ddca75faeb5c33f9d3bf04f44c5b}{\index{redis3m\-::connection\-\_\-pool@{redis3m\-::connection\-\_\-pool}!set\-\_\-database@{set\-\_\-database}}
+\index{set\-\_\-database@{set\-\_\-database}!redis3m::connection_pool@{redis3m\-::connection\-\_\-pool}}
+\subsubsection[{set\-\_\-database}]{\setlength{\rightskip}{0pt plus 5cm}void redis3m\-::connection\-\_\-pool\-::set\-\_\-database (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{classredis3m_1_1connection__pool_a6d42ddca75faeb5c33f9d3bf04f44c5b}
+
+
+Set a database to use on every new connection object created by the pool. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & A valid database index \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+include/redis3m/connection\-\_\-pool.\-h\item 
+src/connection\-\_\-pool.\-cpp\end{DoxyCompactItemize}
