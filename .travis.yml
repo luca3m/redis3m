@@ -19,4 +19,4 @@ script:
   - sudo ldconfig
 
 after_script:
-  - REDIS_HOST="localhost" ctest -V
+  - REDIS_HOST="localhost" make test
