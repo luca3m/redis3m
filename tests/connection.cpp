@@ -62,3 +62,13 @@ BOOST_AUTO_TEST_CASE( set_get)
     BOOST_CHECK_NO_THROW(tc->run(command("SET") << "foo" << "bar"));
     BOOST_CHECK_EQUAL("bar", tc->run(command("GET") << "foo" ).str());
 }
+
+BOOST_AUTO_TEST_CASE( test_types)
+{
+    test_connection tc;
+
+    tc->run(command("SET") << "double" << 0.40);
+
+    BOOST_CHECK_EQUAL(tc->run(command("SET") << "double").str(), "0.40");
+
+}

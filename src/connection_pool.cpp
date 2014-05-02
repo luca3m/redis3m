@@ -131,7 +131,7 @@ connection::ptr_t connection_pool::sentinel_connection()
 connection::ptr_t connection_pool::create_slave_connection()
 {
     connection::ptr_t sentinel = sentinel_connection();
-    sentinel->append(command("SENTINEL")("slaves")(master_name));
+    sentinel->append(command("SENTINEL") << "slaves" << master_name );
     reply response = sentinel->get_reply();
     std::vector<reply> slaves(response.elements());
     std::random_shuffle(slaves.begin(), slaves.end());
@@ -163,7 +163,7 @@ connection::ptr_t connection_pool::create_master_connection()
     unsigned int connection_retries = 0;
     while(connection_retries < 20)
     {
-        reply masters = sentinel->run(command("SENTINEL")("masters"));
+        reply masters = sentinel->run(command("SENTINEL") << "masters" );
         BOOST_FOREACH(const reply& master, masters.elements())
         {
             if (master.elements().at(1).str() == master_name)
