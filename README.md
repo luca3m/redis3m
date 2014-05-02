@@ -26,7 +26,7 @@ Then checkout the code and compile it
 ```bash
 git clone https://github.com/luca3m/redis3m
 cd redis3m
-cmake -DCMAKE_BUILD_TYPE=Release
+cmake
 make
 sudo make install
 ```
