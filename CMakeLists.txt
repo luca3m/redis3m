@@ -1,9 +1,11 @@
 project(redis3m)
 cmake_minimum_required(VERSION 2.8)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE DEBUG)
-endif(NOT DEFINED CMAKE_BUILD_TYPE)
+if(CMAKE_GENERATOR MATCHES ".*(Make|Ninja).*"
+    AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel" FORCE)
+  message(STATUS "CMAKE_BUILD_TYPE not specified. Using ${CMAKE_BUILD_TYPE} build")
+endif()
 
 set(REDIS3M_VERSION_MAJOR 0)
 set(REDIS3M_VERSION_MINOR 2)
@@ -11,8 +13,11 @@ set(REDIS3M_VERSION_PATCH 0)
 set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${REDIS3M_VERSION_PATCH})
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -pipe")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pipe")
-set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
-
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+    set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
+else()
+   set(datadir data)
+endif()
 find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_time REQUIRED)
 
 # Library

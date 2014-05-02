@@ -84,10 +84,9 @@ public:
      * @brief A vector of fields to be indexed, used by Orm
      * @return
      */
-    inline std::vector< std::string > indices()
+    static inline std::vector< std::string > indices()
     {
-      std::vector< std::string > indices;
-      return indices;
+      return std::vector<std::string>();
     }
 
     /**
@@ -95,10 +94,19 @@ public:
      * used by Orm
      * @return
      */
-    inline std::vector< std::string > uniques()
+    static inline std::vector< std::string > uniques()
     {
-      std::vector< std::string > uniques;
-      return uniques;
+      return std::vector<std::string>();
+    }
+
+    /**
+     * @brief Keys associated with a Model, may be sets or lists usually.
+     * They will be saved as <Modelname>:<modelid>:<keyname>
+     * @return A vector of keys,
+     */
+    static inline std::vector<std::string> tracked()
+    {
+        return std::vector<std::string>();
     }
 
 protected:

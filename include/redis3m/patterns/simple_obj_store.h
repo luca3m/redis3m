@@ -45,7 +45,7 @@ public:
 
         std::vector<std::string> hmset_command;
         hmset_command.push_back("HMSET");
-        hmset_command.push_back(m.model_name() + ":" + m.id());
+        hmset_command.push_back(Model::model_name() + ":" + m.id());
 
         std::pair<std::string, std::string> item;
         BOOST_FOREACH(item, serialized)

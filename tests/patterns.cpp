@@ -32,6 +32,7 @@ public:
         _field(field1)
     {
         _id = id;
+        _loaded = true;
     }
 
     std::map<std::string, std::string> to_map() const
@@ -49,10 +50,12 @@ public:
         return boost::assign::list_of("field");
     }
 
-    static std::vector<std::string> uniques()
+    static std::vector<std::string> tracked()
     {
-        return std::vector<std::string>();
+        return boost::assign::list_of("mylist");
     }
+
+    void set_field(const std::string& value) { _field = value; }
 
     REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field)
     REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field2)
@@ -136,6 +139,11 @@ BOOST_AUTO_TEST_CASE ( simple_obj_store_test )
     BOOST_CHECK_EQUAL(restored.loaded(), true);
 
     BOOST_CHECK_EQUAL(restored.field(), "test");
+
+    store.remove(*tc, restored);
+
+    test_model restored2 = store.find(*tc, "xxx");
+    BOOST_CHECK_EQUAL(restored2.loaded(), false);
 }
 
 
@@ -151,13 +159,32 @@ BOOST_AUTO_TEST_CASE ( orm_save_test )
 
     test_model restored = store.find_by_id(*tc, id);
     BOOST_CHECK_EQUAL(restored.loaded(), true);
-
     BOOST_CHECK_EQUAL(restored.field(), "test");
 
     store.remove(*tc, restored);
 
     test_model restored2 = store.find_by_id(*tc, id);
-
     BOOST_CHECK_EQUAL(restored2.loaded(), false);
-
 }
+
+BOOST_AUTO_TEST_CASE ( orm_tracked_key )
+{
+    test_connection tc;
+
+    patterns::orm<test_model> store;
+
+    test_model new_m;
+    new_m.set_field("xxx");
+
+    std::string id = store.save(*tc, new_m);
+
+    BOOST_CHECK_NE(id, "");
+
+    tc->run(command("LPUSH")(store.tracked_key(id, "mylist"))("yyy"));
+
+    test_model restored = store.find_by_id(*tc, id);
+    store.remove(*tc, restored);
+
+    BOOST_CHECK_EQUAL(tc->run(command("EXISTS")(store.tracked_key(id, "mylist"))).integer(), 0);
+}
+

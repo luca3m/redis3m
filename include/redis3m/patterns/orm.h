@@ -96,7 +96,7 @@ public:
     {
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
-        if (!model.id().empty())
+        if (model.loaded())
         {
             model_map["id"] = model.id();
         }
@@ -124,7 +124,7 @@ public:
 
         // pack model indices
         std::vector<std::pair<std::string, std::string> > indices;
-        BOOST_FOREACH(const std::string& index, model.indices())
+        BOOST_FOREACH(const std::string& index, Model::indices())
         {
             indices.push_back(std::make_pair(index, attributes[index]));
         }
@@ -134,7 +134,7 @@ public:
 
         // pack model uniques
         std::map<std::string, std::string> uniques;
-        BOOST_FOREACH(const std::string& index, model.uniques())
+        BOOST_FOREACH(const std::string& index, Model::uniques())
         {
             uniques[index] = attributes[index];
         }
@@ -169,7 +169,7 @@ public:
         // pack model uniques
         std::map<std::string, std::string> attributes = model.to_map();
         std::map<std::string, std::string> uniques;
-        BOOST_FOREACH(const std::string& index, model.uniques())
+        BOOST_FOREACH(const std::string& index, Model::uniques())
         {
             uniques[index] = attributes[index];
         }
@@ -177,8 +177,7 @@ public:
         args.push_back(std::string(sbuf.data(), sbuf.size()));
         sbuf.clear();
 
-        // TODO: support tracked keys
-        msgpack::pack(&sbuf, std::vector<std::string>());
+        msgpack::pack(&sbuf, Model::tracked());
         args.push_back(std::string(sbuf.data(), sbuf.size()));
         sbuf.clear();
 
@@ -189,7 +188,7 @@ public:
     {
         std::vector<std::string> ret;
         reply lrange = conn->run(command("LRANGE")
-                            (subentry_collection_key(m.id(), list_name))
+                            (tracked_key(m.id(), list_name))
                             ("0")("-1"));
         BOOST_FOREACH(const reply& r, lrange.elements())
         {
@@ -200,17 +199,17 @@ public:
 
     void set_add(connection::ptr_t conn, const Model& m, const std::string& set_name, const std::string& entry)
     {
-        conn->run(command("SADD")(subentry_collection_key(m.id(), set_name))(entry));
+        conn->run(command("SADD")(tracked_key(m.id(), set_name))(entry));
     }
 
     void set_remove(connection::ptr_t conn, const Model& m, const std::string& set_name, const std::string& entry)
     {
-        conn->run(command("SREM")(subentry_collection_key(m.id(), set_name)(entry)));
+        conn->run(command("SREM")(tracked_key(m.id(), set_name)(entry)));
     }
 
     std::set<std::string> set_members(connection::ptr_t conn, const Model& m, const std::string& set_name)
     {
-        reply r = conn->run(command("SMEMBERS")(subentry_collection_key(m.id(), set_name)));
+        reply r = conn->run(command("SMEMBERS")(tracked_key(m.id(), set_name)));
         std::set<std::string> ret;
         BOOST_FOREACH(const reply& i, r.elements())
         {
@@ -246,7 +245,7 @@ public:
         return Model::model_name() + ":" + id;
     }
 
-    inline std::string subentry_collection_key(const std::string& id, const std::string& collection_name)
+    inline std::string tracked_key(const std::string& id, const std::string& collection_name)
     {
         return model_key(id) + ":" + collection_name;
     }
