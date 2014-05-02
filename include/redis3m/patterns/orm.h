@@ -240,14 +240,25 @@ public:
         return Model::model_name() + ":id";
     }
 
+    /**
+     * @brief Returns Redis Key used to save object data
+     * @param id
+     * @return
+     */
     inline std::string model_key(const std::string& id)
     {
         return Model::model_name() + ":" + id;
     }
 
-    inline std::string tracked_key(const std::string& id, const std::string& collection_name)
+    /**
+     * @brief Returns full key, related to object.
+     * @param id
+     * @param key
+     * @return
+     */
+    inline std::string tracked_key(const std::string& id, const std::string& key)
     {
-        return model_key(id) + ":" + collection_name;
+        return model_key(id) + ":" + key;
     }
 
     inline std::string indexed_field_key(const std::string& field, const std::string& value)
