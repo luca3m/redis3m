@@ -1,10 +1,5 @@
-//
-//  utils.cpp
-//  redis3m
-//
-//  Created by Luca Marturana on 05/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/utils/resolv.h>
 #include <sys/types.h>

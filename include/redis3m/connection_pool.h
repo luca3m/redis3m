@@ -1,10 +1,5 @@
-//
-//  connection_pool.h
-//  redis3m
-//
-//  Created by Luca Marturana on 05/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #pragma once
 
@@ -17,7 +12,6 @@
 #include <redis3m/utils/exception.h>
 
 namespace redis3m {
-
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
      * to get instaces ip, managing also failover
@@ -61,9 +55,35 @@ namespace redis3m {
          */
         void put(connection::ptr_t conn );
 
-        void run_with_connection(std::function<void(connection::ptr_t)> f,
-                                 connection::role_t conn_type = connection::MASTER,
-                                 unsigned int retries=5);
+        template<typename Ret>
+        /**
+         * @brief Execute a block of code passing a connection::ptr_t
+         * if something fails, like broken connection, it will automatically
+         * retry with an another one
+         * @param f function to run, C++11 lambdas are perfect
+         * @param conn_type type of connection required
+         * @param retries how much retries do
+         * @return
+         */
+        Ret run_with_connection(std::function<Ret(connection::ptr_t)> f,
+                                connection::role_t conn_type = connection::MASTER,
+                                unsigned int retries=5)
+        {
+            while (retries > 0)
+            {
+                try
+                {
+                    connection::ptr_t c = get(conn_type);
+                    Ret r = f(c);
+                    put(c);
+                    return r;
+                } catch (const transport_failure& ex)
+                {
+                    --retries;
+                }
+            }
+            throw too_much_retries();
+        }
 
         /**
          * @brief Set a database to use on every new connection object created
@@ -88,4 +108,9 @@ namespace redis3m {
         std::string master_name;
         unsigned int _database;
     };
+
+    template<>
+    void connection_pool::run_with_connection(std::function<void(connection::ptr_t)> f,
+                                connection::role_t conn_type,
+                                unsigned int retries);
 }

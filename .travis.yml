@@ -14,9 +14,9 @@ install:
 script:
   - mkdir _build
   - cd _build
-  - cmake -DCMAKE_BUILD_TYPE=Release ..
+  - cmake ..
   - sudo make install
   - sudo ldconfig
 
 after_script:
-  - REDIS_HOST="localhost" ctest -V
+  - REDIS_HOST="localhost" make test

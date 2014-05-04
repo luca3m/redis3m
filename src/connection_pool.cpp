@@ -1,10 +1,5 @@
-//
-//  connection_pool.cpp
-//  redis3m
-//
-//  Created by Luca Marturana on 05/02/14.
-//  Copyright (c) 2014 Luca Marturana. All rights reserved.
-//
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/connection_pool.h>
 #include <redis3m/utils/resolv.h>
@@ -77,6 +72,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
                     break;
                 } catch (const cannot_find_slave& ex) {
                     // Go ahead, looking for a master, no break istruction
+                    logging::debug("Slave not found, looking for a master");
                 }
             }
             case connection::MASTER:
@@ -88,7 +84,15 @@ connection::ptr_t connection_pool::get(connection::role_t type)
         // Setup connections selecting db
         if (_database != 0)
         {
+<<<<<<< HEAD
             ret->run(command("SELECT")(std::to_string(_database)));
+=======
+            reply r = ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
+            if (r.type() == reply::ERROR)
+            {
+                throw wrong_database(r.str());
+            }
+>>>>>>> master
         }
     }
     return ret;
@@ -188,8 +192,10 @@ connection::ptr_t connection_pool::create_master_connection()
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 }
 
-
-void connection_pool::run_with_connection(std::function<void (connection::ptr_t)> f, connection::role_t conn_type, unsigned int retries)
+template<>
+void connection_pool::run_with_connection(std::function<void(connection::ptr_t)> f,
+                                connection::role_t conn_type,
+                                unsigned int retries)
 {
     while (retries > 0)
     {
@@ -198,6 +204,7 @@ void connection_pool::run_with_connection(std::function<void (connection::ptr_t)
             connection::ptr_t c = get(conn_type);
             f(c);
             put(c);
+            return;
         } catch (const transport_failure& ex)
         {
             --retries;

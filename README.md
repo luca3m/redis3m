@@ -26,7 +26,7 @@ Then checkout the code and compile it
 ```bash
 git clone https://github.com/luca3m/redis3m
 cd redis3m
-cmake -DCMAKE_BUILD_TYPE=Release
+cmake
 make
 sudo make install
 ```
@@ -39,7 +39,7 @@ See [examples](https://github.com/luca3m/redis3m/tree/master/examples) directory
 g++ <example.cpp> $(pkg-config --cflags --libs redis3m) -o <example.bin>
 ```
 
-As reference you can read [include](https://github.com/luca3m/redis3m/tree/master/include) files, they are pretty simple and some of them are already documented with Doxygen.
+You can find all classes reference [here](http://luca3m.me/redis3m/docs)
 
 ### Versioning
 

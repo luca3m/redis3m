@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
+
 #include <redis3m/utils/datetime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 

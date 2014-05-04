@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
+
 #include <redis3m/simple_pool.h>
 #include <boost/lexical_cast.hpp>
 

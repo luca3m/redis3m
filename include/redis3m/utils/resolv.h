@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
+
 #pragma once
 
 #include <redis3m/utils/exception.h>

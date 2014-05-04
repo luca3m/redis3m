@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
+
 #pragma once
 
 #include <boost/noncopyable.hpp>
@@ -9,6 +12,9 @@
 namespace redis3m
 {
 
+/**
+ * @brief Manages a pool of connections to a single Redis server
+ */
 class simple_pool: boost::noncopyable
 {
 public:
@@ -20,12 +26,25 @@ public:
         return ptr_t(new simple_pool(host, port));
     }
 
+    /**
+     * @brief Get a working connection
+     * @return
+     */
     connection::ptr_t get();
 
+    /**
+     * @brief Put back a connection for reuse
+     * @param conn
+     */
     void put(connection::ptr_t conn);
 
-    void run_with_connection(std::function<void(connection::ptr_t)> f, unsigned int retries=5);
+    //void run_with_connection(std::function<void(connection::ptr_t)> f, unsigned int retries=5);
 
+    /**
+     * @brief Set default database, all connection will be initialized selecting
+     * this database.
+     * @param value
+     */
     inline void set_database(unsigned int value) { _database = value; }
 
 private:
