@@ -54,6 +54,14 @@ BOOST_AUTO_TEST_CASE( test_ping)
     BOOST_CHECK_EQUAL(r.str(), "PONG");
 }
 
+BOOST_AUTO_TEST_CASE( test_reply_operators)
+{
+    test_connection tc;
+    reply r = tc->run(command("PING"));
+    std::string value = r;
+    BOOST_CHECK_EQUAL(r, "PONG");
+}
+
 BOOST_AUTO_TEST_CASE( set_get)
 {
     test_connection tc;

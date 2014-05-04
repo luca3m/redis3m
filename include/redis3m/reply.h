@@ -56,6 +56,10 @@ public:
 
     inline operator long long() const { return _integer; }
 
+    inline bool operator==(const std::string& rvalue) const { return _str == rvalue; }
+
+    inline bool operator==(const long long rvalue) const { return _integer == rvalue; }
+
 private:
     reply(redisReply *reply);
 
