@@ -23,6 +23,7 @@ namespace redis3m {
         REDIS3M_EXCEPTION(cannot_find_master)
         REDIS3M_EXCEPTION(cannot_find_slave)
         REDIS3M_EXCEPTION(too_much_retries)
+        REDIS3M_EXCEPTION(wrong_database)
         typedef std::shared_ptr<connection_pool> ptr_t;
 
         /**

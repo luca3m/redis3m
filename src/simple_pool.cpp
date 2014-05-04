@@ -42,7 +42,7 @@ void simple_pool::put(connection::ptr_t conn)
     connections.insert(conn);
 }
 
-void simple_pool::run_with_connection(std::function<void (connection::ptr_t)> f, unsigned int retries)
+/*void simple_pool::run_with_connection(std::function<void (connection::ptr_t)> f, unsigned int retries)
 {
     while (retries > 0)
     {
@@ -57,7 +57,7 @@ void simple_pool::run_with_connection(std::function<void (connection::ptr_t)> f,
         }
     }
     throw too_much_retries();
-}
+}*/
 
 simple_pool::simple_pool(const std::string &host, unsigned int port):
     _host(host),

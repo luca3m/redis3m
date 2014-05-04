@@ -84,15 +84,11 @@ connection::ptr_t connection_pool::get(connection::role_t type)
         // Setup connections selecting db
         if (_database != 0)
         {
-<<<<<<< HEAD
-            ret->run(command("SELECT")(std::to_string(_database)));
-=======
-            reply r = ret->run(command("SELECT")(boost::lexical_cast<std::string>(_database)));
+            reply r = ret->run(command("SELECT")(std::to_string(_database)));
             if (r.type() == reply::ERROR)
             {
                 throw wrong_database(r.str());
             }
->>>>>>> master
         }
     }
     return ret;

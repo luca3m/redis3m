@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE (run_with_connection)
 {
     connection_pool::ptr_t pool = connection_pool::create(getenv("REDIS_HOST"), "test");
 
-    pool->run_with_connection([](connection::ptr_t c)
+    pool->run_with_connection<void>([](connection::ptr_t c)
     {
        c->run(command("SET")("foo")("bar"));
        BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
