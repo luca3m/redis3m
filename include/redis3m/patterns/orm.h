@@ -83,7 +83,7 @@ public:
      */
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
-        return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
+        return conn->run(command("SISMEMBER")(collection_key())(id)).integer() == 1;
     }
 
     /**
