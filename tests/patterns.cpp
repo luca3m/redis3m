@@ -2,6 +2,7 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/patterns/patterns.hpp>
+#include <redis3m/patterns/median_filter.h>
 
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK
@@ -183,3 +184,49 @@ BOOST_AUTO_TEST_CASE ( orm_tracked_key )
     BOOST_CHECK_EQUAL(tc->run(command("EXISTS")(store.tracked_key(id, "mylist"))).integer(), 0);
 }
 
+BOOST_AUTO_TEST_CASE( median )
+{
+    test_connection tc;
+    patterns::median_filter filter;
+
+    filter.add_sample(*tc, "even", 1);
+    filter.add_sample(*tc, "even", 0);
+    filter.add_sample(*tc, "even", 4);
+    filter.add_sample(*tc, "even", 5);
+    filter.add_sample(*tc, "even", 8);
+    filter.add_sample(*tc, "even", 10);
+
+    BOOST_CHECK_CLOSE(filter.median(*tc, "even"), 4.5, 0.1);
+
+    filter.add_sample(*tc, "odd", 1);
+    filter.add_sample(*tc, "odd", 0);
+    filter.add_sample(*tc, "odd", 3.5);
+    filter.add_sample(*tc, "odd", 5);
+    filter.add_sample(*tc, "odd", 10);
+
+    BOOST_CHECK_CLOSE(filter.median(*tc, "odd"), 3.5, 0.1);
+
+    // Over samples
+
+    filter.add_sample(*tc, "over", 90);
+    filter.add_sample(*tc, "over", 1);
+    filter.add_sample(*tc, "over", 0);
+    filter.add_sample(*tc, "over", 3.5);
+
+    filter.add_sample(*tc, "over", 5);
+    filter.add_sample(*tc, "over", 10);
+
+    filter.add_sample(*tc, "over", 80);
+    filter.add_sample(*tc, "over", 1);
+    filter.add_sample(*tc, "over", 28);
+
+    filter.add_sample(*tc, "over", 15);
+    filter.add_sample(*tc, "over", 35);
+    filter.add_sample(*tc, "over", 47);
+
+    filter.add_sample(*tc, "over", 100);
+    filter.add_sample(*tc, "over", 19);
+    filter.add_sample(*tc, "over", 31);
+
+    BOOST_CHECK_CLOSE(filter.median(*tc, "over"), 28, 0.1);
+}
