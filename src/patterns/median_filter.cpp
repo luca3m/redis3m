@@ -24,5 +24,12 @@ void median_filter::add_sample(connection::ptr_t connection, const std::string &
 double median_filter::median(connection::ptr_t connection, const std::string &tag)
 {
     reply r = get_median_script.exec(connection, command(zset_key(tag)));
-    return boost::lexical_cast<double>(r.str());
+    if (r.type() == reply::STRING)
+    {
+        return boost::lexical_cast<double>(r.str());
+    }
+    else
+    {
+        return 0;
+    }
 }

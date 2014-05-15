@@ -229,4 +229,9 @@ BOOST_AUTO_TEST_CASE( median )
     filter.add_sample(*tc, "over", 31);
 
     BOOST_CHECK_CLOSE(filter.median(*tc, "over"), 28, 0.1);
+
+    BOOST_CHECK_CLOSE(filter.median(*tc, "not_exist"), 0, 0.1);
+
+    filter.add_sample(*tc, "one", 3);
+    BOOST_CHECK_CLOSE(filter.median(*tc, "one"), 3, 0.1);
 }
