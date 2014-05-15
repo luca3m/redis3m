@@ -19,12 +19,12 @@ public:
 
     inline std::string list_key(const std::string& tag)
     {
-         return _prefix + ":list-" + tag;
+         return _prefix + ":" + tag + ":list";
     }
 
     inline std::string zset_key(const std::string& tag)
     {
-        return _prefix + ":zset-" + tag;
+        return _prefix + ":" + tag + ":zset";
     }
 
 private:
