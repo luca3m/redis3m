@@ -12,6 +12,7 @@ redis.call("ZADD", zset_key, value, id)
 local count = redis.call("LLEN", list_key)
 
 if count > max_samples then
+  -- Synchronize removing from list and set
   local removed = redis.call("RPOP", list_key)
   redis.call("ZREM", zset_key, removed)
 end
