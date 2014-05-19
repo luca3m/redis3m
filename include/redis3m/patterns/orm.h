@@ -8,6 +8,7 @@
 #include <string>
 #include <algorithm>
 #include <boost/foreach.hpp>
+#include <boost/assign/list_of.hpp>
 #include <redis3m/patterns/model.h>
 #include <redis3m/patterns/script_exec.h>
 #include <msgpack.hpp>
@@ -96,7 +97,7 @@ public:
     {
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
-        if (model.loaded())
+        if (model.loaded() && !model.id().empty())
         {
             model_map["id"] = model.id();
         }
@@ -123,10 +124,12 @@ public:
         sbuf.clear();
 
         // pack model indices
-        std::vector<std::pair<std::string, std::string> > indices;
+        std::map<std::string, std::vector<std::string> > indices;
         BOOST_FOREACH(const std::string& index, Model::indices())
         {
-            indices.push_back(std::make_pair(index, attributes[index]));
+            std::vector<std::string> values;
+            values.push_back(attributes[index]);
+            indices[index] = values;
         }
         msgpack::pack(&sbuf, indices);
         args.push_back(std::string(sbuf.data(), sbuf.size()));
@@ -215,6 +218,7 @@ public:
         {
             ret.insert(i.str());
         }
+        return ret;
     }
 
     /**
