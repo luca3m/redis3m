@@ -46,24 +46,12 @@ public:
      */
     inline std::string list_key(const std::string& tag)
     {
-         return _prefix + ":" + tag + ":list";
-    }
-
-    /**
-     * @brief ZSET used to store samples by score. Used to compute
-     * median value. Same concerns as {@link list_key()}
-     * @param tag identifies a specific filter
-     * @return
-     */
-    inline std::string zset_key(const std::string& tag)
-    {
-        return _prefix + ":" + tag + ":zset";
+         return _prefix + tag;
     }
 
 private:
     std::string _prefix;
     int _samples;
-    static script_exec add_sample_script;
     static script_exec get_median_script;
 };
 }

@@ -1,12 +1,12 @@
-local zset_key = KEYS[1]
-
-local size = redis.call("ZCARD", zset_key)
+local list_key = KEYS[1]
+local sorted_values = redis.call("SORT", list_key)
+local size = #sorted_values
+local median = 0.0
 
 if size % 2 == 0 then
-  local middles = redis.call("ZRANGE", zset_key, size/2-1, size/2, "WITHSCORES")
   -- Use to string because median value may be floating point
-  return tostring((middles[2]+middles[4]) / 2)
+  median = (sorted_values[size/2]+sorted_values[size/2+1]) / 2
 else
-  local middle = redis.call("ZRANGE", zset_key, math.floor(size/2), math.floor(size/2), "WITHSCORES")
-  return tostring(middle[2])
+  median = sorted_values[(size+1)/2]
 end
+return tostring(median)
