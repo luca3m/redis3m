@@ -2,6 +2,7 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/connection.h>
+#include <redis3m/simple_pool.h>
 
 #define BOOST_TEST_MODULE redis3m
 #define BOOST_TEST_DYN_LINK
@@ -61,4 +62,20 @@ BOOST_AUTO_TEST_CASE( set_get)
     BOOST_CHECK_EQUAL("", tc->run(command("GET")("foo")).str());
     BOOST_CHECK_NO_THROW(tc->run(command("SET")("foo")("bar")));
     BOOST_CHECK_EQUAL("bar", tc->run(command("GET")("foo")).str());
+}
+
+BOOST_AUTO_TEST_CASE( test_pool)
+{
+    simple_pool::ptr_t pool = simple_pool::create(getenv("REDIS_HOST"));
+
+    connection::ptr_t c = pool->get();
+
+    c->run(command("SET")("foo")("bar"));
+
+    pool->put(c);
+
+    c = pool->get();
+
+    BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
+    pool->put(c);
 }
