@@ -34,7 +34,7 @@ public:
         return *this;
     }
 
-    inline operator std::vector<std::string>& () {
+    inline operator const std::vector<std::string>& () {
         return _args;
     }
 
