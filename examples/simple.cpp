@@ -1,10 +1,12 @@
 #include <redis3m/connection.h>
 #include <iostream>
 
+using namespace redis3m;
+
 int main(int argc, char **argv)
 {
-        redis3m::connection::ptr_t conn = redis3m::connection::create();
-        conn->run(redis3m::command("SET")("foo")("bar"));
-        redis3m::reply r = conn->run(redis3m::command("GET")("foo"));        
+        connection::ptr_t conn = connection::create();
+        conn->run(command("SET")("foo")("bar"));
+        reply r = conn->run(command("GET")("foo"));        
         std::cout << "FOO is: " << r.str() << std::endl;
 }
