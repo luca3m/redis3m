@@ -16,54 +16,86 @@ namespace redis3m
 class command
 {
 public:
+    inline command() {}
+
     inline command(const std::string& arg)
     {
         _args.push_back(arg);
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_arithmetic< Type >, int >::type = 0>
-    inline command& operator<<(const Type arg)
+    inline command& operator<<(const unsigned long arg)
     {
         _args.push_back(boost::lexical_cast<std::string>(arg));
         return *this;
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_arithmetic< Type >, int >::type = 0>
-    inline command& operator()(const Type arg)
+    inline command& operator()(const unsigned long arg)
     {
         _args.push_back(boost::lexical_cast<std::string>(arg));
         return *this;
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_same<std::string, Type >, int >::type = 0>
-    inline command& operator<<(const Type arg)
+    inline command& operator<<(const float arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator()(const float arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator<<(const double arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator()(const double arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator<<(const long arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator()(const long arg)
+    {
+        _args.push_back(boost::lexical_cast<std::string>(arg));
+        return *this;
+    }
+
+    inline command& operator<<(const char* arg)
     {
         _args.push_back(arg);
         return *this;
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_same<std::string, Type >, int >::type = 0>
-    inline command& operator()(const Type arg)
+    inline command& operator()(const char* arg)
     {
         _args.push_back(arg);
         return *this;
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_same<const char*, Type >, int >::type = 0>
-    inline command& operator<<(const Type arg)
+    inline command& operator<<(const std::string& arg)
     {
         _args.push_back(arg);
         return *this;
     }
 
-    template<typename Type, typename boost::enable_if< boost::is_same<const char*, Type >, int >::type = 0>
-    inline command& operator()(const Type arg)
+    inline command& operator()(const std::string& arg)
     {
         _args.push_back(arg);
         return *this;
     }
 
-    inline operator std::vector<std::string>() {
+    inline operator std::vector<std::string>& () {
         return _args;
     }
 

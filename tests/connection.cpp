@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_types)
 
     tc->run(command("SET") << "double" << 0.40);
 
-    BOOST_CHECK_EQUAL(tc->run(command("SET") << "double").str(), "0.40");
+    BOOST_CHECK_CLOSE(boost::lexical_cast<double>(tc->run(command("GET") << "double").str()), 0.40, 0.1);
 
 }
 
