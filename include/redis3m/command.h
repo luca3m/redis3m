@@ -6,9 +6,6 @@
 #include <string>
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-#include <boost/type_traits/is_same.hpp>
 
 namespace redis3m
 {
@@ -23,75 +20,17 @@ public:
         _args.push_back(arg);
     }
 
-    inline command& operator<<(const unsigned long arg)
+    template<typename Type>
+    inline command& operator<<(const Type arg)
     {
         _args.push_back(boost::lexical_cast<std::string>(arg));
         return *this;
     }
 
-    inline command& operator()(const unsigned long arg)
+    template<typename Type>
+    inline command& operator()(const Type arg)
     {
         _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator<<(const float arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator()(const float arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator<<(const double arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator()(const double arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator<<(const long arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator()(const long arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
-
-    inline command& operator<<(const char* arg)
-    {
-        _args.push_back(arg);
-        return *this;
-    }
-
-    inline command& operator()(const char* arg)
-    {
-        _args.push_back(arg);
-        return *this;
-    }
-
-    inline command& operator<<(const std::string& arg)
-    {
-        _args.push_back(arg);
-        return *this;
-    }
-
-    inline command& operator()(const std::string& arg)
-    {
-        _args.push_back(arg);
         return *this;
     }
 
@@ -103,4 +42,31 @@ private:
     std::vector<std::string> _args;
 };
 
+template<>
+inline command& command::operator<<(const char* arg)
+{
+    _args.push_back(arg);
+    return *this;
+}
+
+template<>
+inline command& command::operator()(const char* arg)
+{
+    _args.push_back(arg);
+    return *this;
+}
+
+template<>
+inline command& command::operator<<(const std::string& arg)
+{
+    _args.push_back(arg);
+    return *this;
+}
+
+template<>
+inline command& command::operator()(const std::string& arg)
+{
+    _args.push_back(arg);
+    return *this;
+}
 }

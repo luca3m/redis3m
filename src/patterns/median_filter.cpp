@@ -20,8 +20,8 @@ median_filter::median_filter(const std::string &prefix, int samples):
 void median_filter::add_sample(connection::ptr_t connection, const std::string &tag, double value)
 {
   connection->append(command("MULTI"));
-  connection->append(command("LPUSH")(list_key(tag))(boost::lexical_cast<std::string>(value)));
-  connection->append(command("LTRIM")(list_key(tag))("0")(boost::lexical_cast<std::string>(_samples-1)));
+  connection->append(command("LPUSH") << list_key(tag) << value );
+  connection->append(command("LTRIM") << list_key(tag) << 0 << _samples-1 );
   connection->append(command("EXEC"));
   connection->get_replies(4);
 }
