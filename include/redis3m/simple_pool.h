@@ -6,25 +6,71 @@
 #include <boost/noncopyable.hpp>
 #include <redis3m/connection.h>
 #include <boost/thread/mutex.hpp>
+#include <boost/function.hpp>
 #include <set>
 
 namespace redis3m
 {
 
+/**
+ * @brief Manages a pool of connections to a single Redis server
+ */
 class simple_pool: boost::noncopyable
 {
 public:
     typedef boost::shared_ptr<simple_pool> ptr_t;
+    REDIS3M_EXCEPTION(too_much_retries)
 
-    inline ptr_t create(const std::string& host, unsigned int port)
+    static inline ptr_t create(const std::string& host="localhost", unsigned int port=6379)
     {
         return ptr_t(new simple_pool(host, port));
     }
 
+    template<typename Ret>
+    /**
+     * @brief Execute a block of code passing a connection::ptr_t
+     * if something fails, like broken connection, it will automatically
+     * retry with an another one
+     * @param f function to run, C++11 lambdas are perfect
+     * @param retries how much retries do
+     * @return
+     */
+    Ret run_with_connection(boost::function<Ret(connection::ptr_t)> f,
+                            unsigned int retries=5)
+    {
+        while (retries > 0)
+        {
+            try
+            {
+                connection::ptr_t c = get();
+                Ret r = f(c);
+                put(c);
+                return r;
+            } catch (const transport_failure& ex)
+            {
+                --retries;
+            }
+        }
+        throw too_much_retries();
+    }
+
+    /**
+     * @brief Get a working connection
+     * @return
+     */
     connection::ptr_t get();
 
+    /**
+     * @brief Put back a connection for reuse
+     * @param conn
+     */
     void put(connection::ptr_t conn);
 
+    /**
+     * @brief Set default database, all connection will be initialized selecting
+     * this database.
+     * @param value
+     */
     inline void set_database(unsigned int value) { _database = value; }
 
 private:
@@ -36,4 +82,8 @@ private:
     std::set<connection::ptr_t> connections;
     boost::mutex access_mutex;
 };
+
+template<>
+void simple_pool::run_with_connection(boost::function<void(connection::ptr_t)> f,
+                            unsigned int retries);
 }

@@ -7,8 +7,8 @@ if(CMAKE_GENERATOR MATCHES ".*(Make|Ninja).*"
   message(STATUS "CMAKE_BUILD_TYPE not specified. Using ${CMAKE_BUILD_TYPE} build")
 endif()
 
-set(REDIS3M_VERSION_MAJOR 0)
-set(REDIS3M_VERSION_MINOR 2)
+set(REDIS3M_VERSION_MAJOR 1)
+set(REDIS3M_VERSION_MINOR 1)
 set(REDIS3M_VERSION_PATCH 0)
 set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${REDIS3M_VERSION_PATCH})
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -pipe")
@@ -23,7 +23,7 @@ find_package(Boost COMPONENTS thread system filesystem unit_test_framework date_
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
 file(GLOB SRC_FILES "src/*.cpp" "src/utils/*.cpp" "src/patterns/*.cpp")
-file(GLOB INCLUDE_FILES "include/redis3m/*.h*" "include/redis3m/utils/*.h*" "include/redis3m/patterns/*.h*")
+file(GLOB INCLUDE_FILES "include/redis3m/*.h*" "include/redis3m/utils/*.h" "include/redis3m/patterns/*.h*")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/utils/datadir.cpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp @ONLY)
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})

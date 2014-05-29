@@ -72,3 +72,19 @@ BOOST_AUTO_TEST_CASE( test_types)
     BOOST_CHECK_EQUAL(tc->run(command("SET") << "double").str(), "0.40");
 
 }
+
+BOOST_AUTO_TEST_CASE( test_pool)
+{
+    simple_pool::ptr_t pool = simple_pool::create(getenv("REDIS_HOST"));
+
+    connection::ptr_t c = pool->get();
+
+    c->run(command("SET")("foo")("bar"));
+
+    pool->put(c);
+
+    c = pool->get();
+
+    BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
+    pool->put(c);
+}

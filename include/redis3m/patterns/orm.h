@@ -9,6 +9,7 @@
 #include <string>
 #include <algorithm>
 #include <boost/foreach.hpp>
+#include <boost/assign/list_of.hpp>
 #include <redis3m/patterns/model.h>
 #include <redis3m/patterns/script_exec.h>
 #include <msgpack.hpp>
@@ -84,7 +85,7 @@ public:
      */
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
-        return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
+        return conn->run(command("SISMEMBER")(collection_key())(id)).integer() == 1;
     }
 
     /**
@@ -97,7 +98,7 @@ public:
     {
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
-        if (model.loaded())
+        if (model.loaded() && !model.id().empty())
         {
             model_map["id"] = model.id();
         }
@@ -124,10 +125,12 @@ public:
         sbuf.clear();
 
         // pack model indices
-        std::vector<std::pair<std::string, std::string> > indices;
+        std::map<std::string, std::vector<std::string> > indices;
         BOOST_FOREACH(const std::string& index, Model::indices())
         {
-            indices.push_back(std::make_pair(index, attributes[index]));
+            std::vector<std::string> values;
+            values.push_back(attributes[index]);
+            indices[index] = values;
         }
         msgpack::pack(&sbuf, indices);
         args.push_back(std::string(sbuf.data(), sbuf.size()));
@@ -216,6 +219,7 @@ public:
         {
             ret.insert(i.str());
         }
+        return ret;
     }
 
     /**
@@ -241,14 +245,25 @@ public:
         return Model::model_name() + ":id";
     }
 
+    /**
+     * @brief Returns Redis Key used to save object data
+     * @param id
+     * @return
+     */
     inline std::string model_key(const std::string& id)
     {
         return Model::model_name() + ":" + id;
     }
 
-    inline std::string tracked_key(const std::string& id, const std::string& collection_name)
+    /**
+     * @brief Returns full key, related to object.
+     * @param id
+     * @param key
+     * @return
+     */
+    inline std::string tracked_key(const std::string& id, const std::string& key)
     {
-        return model_key(id) + ":" + collection_name;
+        return model_key(id) + ":" + key;
     }
 
     inline std::string indexed_field_key(const std::string& field, const std::string& value)

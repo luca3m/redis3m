@@ -50,3 +50,23 @@ simple_pool::simple_pool(const std::string &host, unsigned int port):
 {
 
 }
+
+template<>
+void simple_pool::run_with_connection(boost::function<void(connection::ptr_t)> f,
+                                unsigned int retries)
+{
+    while (retries > 0)
+    {
+        try
+        {
+            connection::ptr_t c = get();
+            f(c);
+            put(c);
+            return;
+        } catch (const transport_failure& ex)
+        {
+            --retries;
+        }
+    }
+    throw too_much_retries();
+}
