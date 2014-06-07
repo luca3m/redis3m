@@ -71,6 +71,11 @@ BOOST_AUTO_TEST_CASE( test_types)
 
     BOOST_CHECK_CLOSE(boost::lexical_cast<double>(tc->run(command("GET") << "double").str()), 0.40, 0.1);
 
+    tc->run(command("SET") << "test" << 100);
+    BOOST_CHECK_EQUAL(boost::lexical_cast<int>(tc->run(command("GET") << "test").str()), 100);
+
+    tc->run(command("SET") << "test" << "xxx");
+    BOOST_CHECK_EQUAL(tc->run(command("GET") << "test").str(), std::string("xxx"));
 }
 
 BOOST_AUTO_TEST_CASE( test_pool)
