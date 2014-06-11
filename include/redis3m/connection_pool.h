@@ -20,7 +20,7 @@ namespace redis3m {
     REDIS3M_EXCEPTION(wrong_database)
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
-     * to get instaces ip, managing also failover
+     * to get instances ip, managing also failover
      */
     class connection_pool: boost::noncopyable
     {

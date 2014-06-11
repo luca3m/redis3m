@@ -3,6 +3,7 @@
 
 #include <redis3m/simple_pool.h>
 #include <boost/lexical_cast.hpp>
+#include <redis3m/command.h>
 
 using namespace redis3m;
 

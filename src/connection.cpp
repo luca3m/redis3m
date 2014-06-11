@@ -7,8 +7,6 @@
 
 using namespace redis3m;
 
-boost::assign_detail::generic_list<std::string>(&redis3m::command)(const std::string&) = boost::assign::list_of<std::string>;
-
 connection::connection(const std::string& host, const unsigned port)
 {
     c = redisConnect(host.c_str(), port);
