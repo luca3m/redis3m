@@ -52,7 +52,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION lib/p
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/lua" DESTINATION ${datadir})
 
 # Tests
-add_executable(connection_test tests/connection.cpp)
+add_executable(connection_test tests/connection.cpp tests/common.h)
 target_link_libraries(connection_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

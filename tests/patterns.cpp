@@ -1,12 +1,10 @@
 // Copyright (c) 2014 Luca Marturana. All rights reserved.
 // Licensed under Apache 2.0, see LICENSE for details
 
-#include <redis3m/redis3m.hpp>
+#include "common.h"
+
 #include <redis3m/patterns/patterns.hpp>
 
-#define BOOST_TEST_MODULE redis3m
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
 #include <boost/assign.hpp>
 
 using namespace redis3m;
@@ -56,31 +54,6 @@ public:
     REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field)
     REDIS3M_MODEL_RO_ATTRIBUTE(std::string, field2)
 };
-
-class test_connection
-{
-public:
-    test_connection()
-    {
-        c = redis3m::connection::create(getenv("REDIS_HOST"));
-        c->run(command("flushdb"));
-    }
-
-    inline redis3m::connection::ptr_t operator*()
-    {
-        return c;
-    }
-
-    inline redis3m::connection::ptr_t operator->()
-    {
-        return c;
-    }
-
-private:
-    redis3m::connection::ptr_t c;
-};
-
-using namespace redis3m;
 
 BOOST_AUTO_TEST_CASE ( script_exec )
 {

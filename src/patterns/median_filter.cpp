@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 #include <redis3m/patterns/median_filter.h>
 #include <redis3m/utils/file.h>
 #include <boost/lexical_cast.hpp>
@@ -5,8 +7,6 @@
 
 using namespace redis3m;
 using namespace redis3m::patterns;
-
-script_exec median_filter::get_median_script(redis3m::utils::datadir("/lua/get_median.lua"), true);
 
 median_filter::median_filter(const std::string &prefix, int samples):
     _samples(samples)
@@ -28,13 +28,24 @@ void median_filter::add_sample(connection::ptr_t connection, const std::string &
 
 double median_filter::median(connection::ptr_t connection, const std::string &tag)
 {
-    reply r = get_median_script.exec(connection, command(list_key(tag)));
-    if (r.type() == reply::STRING)
+    reply r = connection->run(command("SORT") << list_key(tag));
+    const std::vector<reply>& values = r.elements();
+    int size = values.size();
+
+    if (size % 2 != 0)
     {
-        return boost::lexical_cast<double>(r.str());
+        return boost::lexical_cast<double>(values.at((size-1)/2).str());
     }
     else
     {
-        return 0;
+        if (size == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return ( boost::lexical_cast<double>(values.at(size/2-1).str()) +
+                boost::lexical_cast<double>(values.at(size/2).str()) ) / 2;
+        }
     }
 }

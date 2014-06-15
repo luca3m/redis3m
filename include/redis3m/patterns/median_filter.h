@@ -1,3 +1,5 @@
+// Copyright (c) 2014 Luca Marturana. All rights reserved.
+// Licensed under Apache 2.0, see LICENSE for details
 #pragma once
 
 #include <redis3m/connection.h>
@@ -52,7 +54,6 @@ public:
 private:
     std::string _prefix;
     int _samples;
-    static script_exec get_median_script;
 };
 }
 }

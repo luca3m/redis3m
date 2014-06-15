@@ -1,35 +1,9 @@
 // Copyright (c) 2014 Luca Marturana. All rights reserved.
 // Licensed under Apache 2.0, see LICENSE for details
 
-#include <redis3m/redis3m.hpp>
-
-#define BOOST_TEST_MODULE redis3m
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "common.h"
 
 using namespace redis3m;
-
-class test_connection
-{
-public:
-    test_connection()
-    {
-        c = redis3m::connection::create(getenv("REDIS_HOST"));
-        c->run(command("FLUSHDB"));
-    }
-
-    inline redis3m::connection::ptr_t operator*()
-    {
-        return c;
-    }
-
-    inline redis3m::connection::ptr_t operator->()
-    {
-        return c;
-    }
-
-    redis3m::connection::ptr_t c;
-};
 
 BOOST_AUTO_TEST_CASE ( fail_connect )
 {
@@ -38,7 +12,7 @@ BOOST_AUTO_TEST_CASE ( fail_connect )
 
 BOOST_AUTO_TEST_CASE( correct_connection )
 {
-    BOOST_CHECK_NO_THROW(connection::create(getenv("REDIS_HOST")));
+    BOOST_CHECK_NO_THROW(test_connection());
 }
 
 BOOST_AUTO_TEST_CASE( test_info)
@@ -80,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_types)
 
 BOOST_AUTO_TEST_CASE( test_pool)
 {
-    simple_pool::ptr_t pool = simple_pool::create(getenv("REDIS_HOST"));
+    test_simple_pool pool;
 
     connection::ptr_t c = pool->get();
 
