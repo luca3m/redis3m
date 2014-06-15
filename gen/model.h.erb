@@ -1,0 +1,27 @@
+#pragma once
+
+#include <redis3m/patterns/model.h>
+
+<% if @model.namespace %>
+namespace <%= @model.namespace %>
+{
+< % end %>
+
+class <%= @model.name %>: public redis3m::patterns::model
+{
+  <% @model.attributes.each do |attr| %>
+  REDIS3M_MODEL_RO_ATTRIBUTE(<%= attr.type %>, <%= attr.name %>)
+  <% end %>
+public:
+  <%= @model.name %>();
+  <%= @model.name %>(const std::string& id, const std::map<std::string, std::string>& data);
+
+  static inline std::string model_name() {
+    return "<%= @model.name %>";
+  }
+  std::map<std::string, std::string> to_map() const;
+}
+
+<% if @model.namespace %>
+}
+< % end %>

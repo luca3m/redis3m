@@ -1,0 +1,27 @@
+#include "<%= @model.name %>.h"
+
+<% if @model.namespace %>
+using namespace <%= @model.namespace %>;
+<% end %>
+
+<%= @model.name %>::<%= @model.name %>():
+  model()
+{}
+
+<%= @model.name %>::<%= @model.name %>(const std::string& id,
+               const std::map<std::string, std::string>& data):
+  model(id, data)
+{
+  <% @model.attributes.each do |attr| %>
+  _<%= attr.name %> = read_<%= attr.type %>_from_map(data, "<%= attr.name %>");
+  <% end %>
+}
+
+std::map<std::string, std::string> to_map() const
+{
+    std::map<std::string, std::string> ret;
+    <% @model.attributes.each do |attr| %>
+    write_<%= attr.type %>_to_map(ret, "<%= attr.name %>", _<%= attr.name %>);
+    <% end %>
+    return ret;
+}
