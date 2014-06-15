@@ -3,7 +3,6 @@
 #pragma once
 
 #include <redis3m/connection.h>
-#include <redis3m/patterns/script_exec.h>
 
 namespace redis3m
 {
