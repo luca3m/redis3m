@@ -1,5 +1,9 @@
 language: cpp
 
+env:
+  global:
+    - secure: "bxF90B6O9OoW4AjDn7pQFuUvRb5RijmVdNLcW8NlLTh8wsnTQaRPNDH/ciu3qU47wC7bMWNsZVgeTyZIy6W5T5YDxDFcDBAFw4EvlXxskW2rF3AsqfpoZKuoOo1dZhAuekyZn29TRqHlG1OMTIFJ0zC4PgyKCfzgOBbBEtIutm0="
+
 compiler:
   - gcc
   - clang
@@ -20,3 +24,13 @@ script:
 
 after_script:
   - REDIS_HOST="localhost" make test
+
+addons:
+  coverity_scan:
+    project:
+      name: "luca3m/redis3m"
+      description: "A C++ Redis client"
+    notification_email: lucamarturana@gmail.com
+    build_command_prepend: "cmake ."
+    build_command: "make"
+    branch_pattern: coverity
