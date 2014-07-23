@@ -1,2 +1,2 @@
 - [ ] C++11
-- [ ] New command builder
+- [x] New command builder
