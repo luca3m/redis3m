@@ -12,6 +12,7 @@ connection::connection(const std::string& host, const unsigned port)
     c = redisConnect(host.c_str(), port);
     if (c->err != REDIS_OK)
     {
+        redisFree(c);
         throw unable_to_connect();
     }
 }
