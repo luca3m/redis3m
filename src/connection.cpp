@@ -4,6 +4,7 @@
 #include <redis3m/connection.h>
 #include <boost/assign/list_of.hpp>
 #include <hiredis/hiredis.h>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace redis3m;
 
@@ -51,6 +52,12 @@ reply connection::get_reply()
     }
     reply ret(r);
     freeReplyObject(r);
+
+    if (ret.type() == reply::ERROR &&
+        boost::algorithm::starts_with(ret.str(), "READONLY"))
+    {
+        throw slave_read_only();
+    }
     return ret;
 }
 
@@ -64,7 +71,7 @@ std::vector<reply> connection::get_replies(unsigned int count)
     return ret;
 }
 
-bool connection::is_valid()
+bool connection::is_valid() const
 {
     return c->err == REDIS_OK;
 }

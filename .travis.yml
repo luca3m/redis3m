@@ -19,4 +19,5 @@ script:
   - sudo ldconfig
 
 after_script:
+  - bash ./tests/redis.sh &
   - REDIS_HOST="localhost" make test

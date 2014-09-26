@@ -18,6 +18,7 @@ namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_slave)
     REDIS3M_EXCEPTION(too_much_retries)
     REDIS3M_EXCEPTION(wrong_database)
+    REDIS3M_EXCEPTION(role_dont_match)
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
      * to get instances ip, managing also failover
@@ -79,7 +80,8 @@ namespace redis3m {
                     Ret r = f(c);
                     put(c);
                     return r;
-                } catch (const transport_failure& ex)
+                }
+                catch (const connection_error& ex)
                 {
                     --retries;
                 }
@@ -101,9 +103,9 @@ namespace redis3m {
         connection::ptr_t create_slave_connection();
         connection::ptr_t create_master_connection();
         connection::ptr_t sentinel_connection();
-
+        static connection::role_t get_role(connection::ptr_t conn);
         boost::mutex access_mutex;
-        std::set<connection::ptr_t> connections;
+        std::vector<connection::ptr_t> connections;
 
         std::vector<std::string> sentinel_hosts;
         unsigned int sentinel_port;

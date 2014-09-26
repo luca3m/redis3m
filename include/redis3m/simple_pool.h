@@ -46,7 +46,7 @@ public:
                 Ret r = f(c);
                 put(c);
                 return r;
-            } catch (const transport_failure& ex)
+            } catch (const connection_error& ex)
             {
                 --retries;
             }

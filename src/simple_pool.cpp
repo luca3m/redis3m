@@ -63,7 +63,7 @@ void simple_pool::run_with_connection(boost::function<void(connection::ptr_t)> f
             f(c);
             put(c);
             return;
-        } catch (const transport_failure& ex)
+        } catch (const connection_error& ex)
         {
             --retries;
         }
