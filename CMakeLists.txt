@@ -68,7 +68,7 @@ target_link_libraries(connection_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LI
 enable_testing ()
 
 add_test (NAME connection COMMAND connection_test)
-add_test (NAME connection_pool COMMAND connection_pool_test)
+#add_test (NAME connection_pool COMMAND connection_pool_test)
 add_test (NAME patterns COMMAND patterns_test)
 
 # Docs
