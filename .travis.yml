@@ -13,6 +13,4 @@ script:
   - cmake .
   - sudo make install
   - sudo ldconfig
-
-after_script:
   - bash ./run-tests.sh
