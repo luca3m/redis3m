@@ -2,7 +2,6 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/connection.h>
-#include <boost/assign/list_of.hpp>
 #include <hiredis/hiredis.h>
 #include <boost/algorithm/string/predicate.hpp>
 
