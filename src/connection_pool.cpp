@@ -14,6 +14,8 @@
 #include <boost/lambda/bind.hpp>
 #include <redis3m/utils/logging.h>
 #include <boost/thread.hpp>
+#include <boost/algorithm/string/find.hpp>
+#include <boost/regex.hpp>
 
 using namespace redis3m;
 
@@ -33,7 +35,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
 
     // Look for a cached connection
     access_mutex.lock();
-    std::set<connection::ptr_t>::iterator it;
+    std::set<connection::ptr_t>::const_iterator it;
     switch (type) {
         case connection::ANY:
             it = connections.begin();
@@ -44,14 +46,9 @@ connection::ptr_t connection_pool::get(connection::role_t type)
                            ( boost::lambda::bind(&connection::_role, *boost::lambda::_1) == type ));
             break;
     }
-    for (; it != connections.end(); ++it)
+    if (it != connections.end())
     {
-        if (it->get()->is_valid())
-        {
-            ret = *it;
-            connections.erase(it);
-            break;
-        }
+        ret = *it;
         connections.erase(it);
     }
     access_mutex.unlock();
@@ -63,14 +60,12 @@ connection::ptr_t connection_pool::get(connection::role_t type)
             case connection::SLAVE:
             {
                 ret = create_slave_connection();
-                ret->_role = connection::SLAVE;
                 break;
             }
             case connection::ANY:
             {
                 try {
                     ret = create_slave_connection();
-                    ret->_role = connection::SLAVE;
                     break;
                 } catch (const cannot_find_slave& ex) {
                     // Go ahead, looking for a master, no break istruction
@@ -79,7 +74,6 @@ connection::ptr_t connection_pool::get(connection::role_t type)
             }
             case connection::MASTER:
                 ret = create_master_connection();
-                ret->_role = connection::MASTER;
                 break;
         }
 
@@ -98,8 +92,11 @@ connection::ptr_t connection_pool::get(connection::role_t type)
 
 void connection_pool::put(connection::ptr_t conn)
 {
-    boost::unique_lock<boost::mutex> lock(access_mutex);
-    connections.insert(conn);
+    if (conn->is_valid())
+    {
+        boost::unique_lock<boost::mutex> lock(access_mutex);
+        connections.insert(conn);
+    }
 }
 
 connection::ptr_t connection_pool::sentinel_connection()
@@ -128,6 +125,42 @@ connection::ptr_t connection_pool::sentinel_connection()
     throw cannot_find_sentinel("Cannot find sentinel");
 }
 
+connection::role_t connection_pool::get_role(connection::ptr_t conn)
+{
+    static const boost::regex role_searcher("\r\nrole:([a-z]+)\r\n");
+
+    reply r = conn->run(command("ROLE"));
+    std::string role_s;
+
+    if (r.type() == reply::ERROR && boost::algorithm::find_first(r.str(), "unknown"))
+    {
+        logging::debug("Old redis, doesn't support ROLE command");
+        reply r = conn->run(command("INFO") << "replication");
+        boost::smatch results;
+        if (boost::regex_search(r.str(), results, role_searcher))
+        {
+            role_s = results[1];
+        }
+    }
+    else if (r.type() == reply::ARRAY)
+    {
+        role_s = r.elements().at(0).str();
+    }
+
+    if (role_s == "master")
+    {
+        return connection::MASTER;
+    }
+    else if (role_s == "slave")
+    {
+        return connection::SLAVE;
+    }
+    else
+    {
+        return connection::ANY;
+    }
+}
+
 connection::ptr_t connection_pool::create_slave_connection()
 {
     connection::ptr_t sentinel = sentinel_connection();
@@ -146,7 +179,17 @@ connection::ptr_t connection_pool::create_slave_connection()
             unsigned int port = boost::lexical_cast<unsigned int>(properties.at(5).str());
             try
             {
-                return connection::create(host, port);
+                connection::ptr_t conn = connection::create(host, port);
+                connection::role_t role = get_role(conn);
+                if (role == connection::SLAVE)
+                {
+                    conn->_role = role;
+                    return conn;
+                }
+                else
+                {
+                    logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be slave but it's not, waiting") % host % port));
+                }
             } catch (const unable_to_connect& ex)
             {
                 logging::debug(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
@@ -158,11 +201,10 @@ connection::ptr_t connection_pool::create_slave_connection()
 
 connection::ptr_t connection_pool::create_master_connection()
 {
-    connection::ptr_t sentinel = sentinel_connection();
-
     unsigned int connection_retries = 0;
     while(connection_retries < 20)
     {
+        connection::ptr_t sentinel = sentinel_connection();
         reply masters = sentinel->run(command("SENTINEL") << "masters" );
         BOOST_FOREACH(const reply& master, masters.elements())
         {
@@ -176,7 +218,17 @@ connection::ptr_t connection_pool::create_master_connection()
 
                     try
                     {
-                        return connection::create(master_ip, master_port);
+                        connection::ptr_t conn = connection::create(master_ip, master_port);
+                        connection::role_t role = get_role(conn);
+                        if (role == connection::MASTER)
+                        {
+                            conn->_role = role;
+                            return conn;
+                        }
+                        else
+                        {
+                            logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be master but it's not, waiting") % master_ip % master_port));
+                        }
                     } catch (const unable_to_connect& ex)
                     {
                         logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
@@ -207,7 +259,8 @@ void connection_pool::run_with_connection(boost::function<void(connection::ptr_t
             f(c);
             put(c);
             return;
-        } catch (const transport_failure& ex)
+        }
+        catch (const connection_error& ex)
         {
             --retries;
         }

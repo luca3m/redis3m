@@ -24,9 +24,9 @@ void producer_f(connection_pool::ptr_t pool, const std::string& queue_name)
         catch (const redis3m::transport_failure& ex)
         {
             logging::debug("Failure on producer");
+            BOOST_FAIL("Failure on producer");
         }
         boost::this_thread::yield();
-        usleep(10000);
     }
 }
 
@@ -43,30 +43,32 @@ void consumer_f(connection_pool::ptr_t pool, const std::string& queue_name)
         catch (const redis3m::transport_failure& ex)
         {
             logging::debug("Failure on consumer");
+            BOOST_FAIL("Failure on consumer");
         }
         boost::this_thread::yield();
-        usleep(10000);
     }
 }
 
 BOOST_AUTO_TEST_CASE( test_pool)
 {
-    connection_pool::ptr_t pool = connection_pool::create(getenv("REDIS_HOST"), "test");
+    connection_pool::ptr_t pool = connection_pool::create(std::string(getenv("REDIS_HOST")), "test");
 
-    connection::ptr_t c = pool->get(connection::MASTER);
+    connection::ptr_t c;
+    BOOST_CHECK_NO_THROW(c = pool->get(connection::MASTER));
 
     c->run(command("SET")("foo")("bar"));
 
     pool->put(c);
 
-    c = pool->get(connection::SLAVE);
+    BOOST_CHECK_NO_THROW(c = pool->get(connection::SLAVE));
 
     BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
+    BOOST_CHECK_THROW(c->run(command("SET")("foo")("bar")), slave_read_only);
 }
 
 BOOST_AUTO_TEST_CASE (crash_test)
 {
-    connection_pool::ptr_t pool = connection_pool::create(getenv("REDIS_HOST"), "test");
+    connection_pool::ptr_t pool = connection_pool::create(std::string(getenv("REDIS_HOST")), "test");
 
     boost::thread_group producers;
     boost::thread_group consumers;
@@ -79,6 +81,20 @@ BOOST_AUTO_TEST_CASE (crash_test)
 
     //producers.interrupt_all();
     //consumers.interrupt_all();
+    connection::ptr_t sentinel = connection::create(getenv("REDIS_HOST"), 26379);
+
+    for (int i = 0; i < 5; ++i)
+    {
+        sentinel->run(command("SENTINEL") << "failover" << "test");
+#if BOOST_VERSION < 105500
+        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+#else
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+#endif
+    }
+
+    producers.interrupt_all();
+    consumers.interrupt_all();
     producers.join_all();
     consumers.join_all();
 }

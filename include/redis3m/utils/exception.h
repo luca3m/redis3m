@@ -25,3 +25,6 @@ namespace redis3m {
 
 #define REDIS3M_EXCEPTION(name) class name: public redis3m::exception {\
 public: name(const std::string& what=""): exception(what){}};
+
+#define REDIS3M_EXCEPTION_2(name, super) class name: public super {\
+    public: name(const std::string& what=""): super(what){}};

@@ -13,8 +13,10 @@
 struct redisContext;
 
 namespace redis3m {
-REDIS3M_EXCEPTION(unable_to_connect)
-REDIS3M_EXCEPTION(transport_failure)
+REDIS3M_EXCEPTION(connection_error)
+REDIS3M_EXCEPTION_2(unable_to_connect, connection_error)
+REDIS3M_EXCEPTION_2(transport_failure, connection_error)
+REDIS3M_EXCEPTION_2(slave_read_only, connection_error)
 
 /**
 * @brief The connection class, represent a connection to a Redis server
@@ -38,7 +40,7 @@ public:
 
     ~connection();
 
-    bool is_valid();
+    bool is_valid() const;
 
     /**
      * @brief Append a command to Redis server
