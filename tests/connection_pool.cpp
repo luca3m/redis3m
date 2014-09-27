@@ -85,7 +85,11 @@ BOOST_AUTO_TEST_CASE (crash_test)
     for (int i = 0; i < 5; ++i)
     {
         sentinel->run(command("SENTINEL") << "failover" << "test");
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(200));
+#if BOOST_VERSION < 105500
+        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+#else
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+#endif
     }
 
     producers.interrupt_all();
