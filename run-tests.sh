@@ -14,9 +14,11 @@ done
 redis-server tests/redis-sentinel.conf --sentinel &> /dev/null &
 
 sleep 0.3
+redis-cli -p 26379 info sentinel
+redis-cli -p 26379 sentinel get-master-addr-by-name test
 
 # Run tests
-make test
+REDIS_HOST=localhost ctest -V
 RESULT=$?
 
 # Cleanup all instances

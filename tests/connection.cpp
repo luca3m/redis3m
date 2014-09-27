@@ -15,6 +15,12 @@ BOOST_AUTO_TEST_CASE( correct_connection )
     BOOST_CHECK_NO_THROW(test_connection());
 }
 
+// hiredis bug
+//BOOST_AUTO_TEST_CASE( ipv6_connection )
+//{
+//    BOOST_CHECK_NO_THROW(connection::create("::1", 6379));
+//}
+
 BOOST_AUTO_TEST_CASE( test_info)
 {
     test_connection tc;
