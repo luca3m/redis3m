@@ -35,12 +35,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
 
     // Look for a cached connection
     access_mutex.lock();
-
-    // Clean invalid connections
-//    std::remove_if(connections.begin(), connections.end(),
-//                   ( boost::lambda::bind(&connection::is_valid, *boost::lambda::_1) == false ));
-
-    std::vector<connection::ptr_t>::const_iterator it;
+    std::set<connection::ptr_t>::const_iterator it;
     switch (type) {
         case connection::ANY:
             it = connections.begin();
@@ -100,7 +95,7 @@ void connection_pool::put(connection::ptr_t conn)
     if (conn->is_valid())
     {
         boost::unique_lock<boost::mutex> lock(access_mutex);
-        connections.push_back(conn);
+        connections.insert(conn);
     }
 }
 

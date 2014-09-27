@@ -105,7 +105,7 @@ namespace redis3m {
         connection::ptr_t sentinel_connection();
         static connection::role_t get_role(connection::ptr_t conn);
         boost::mutex access_mutex;
-        std::vector<connection::ptr_t> connections;
+        std::set<connection::ptr_t> connections;
 
         std::vector<std::string> sentinel_hosts;
         unsigned int sentinel_port;
