@@ -5,6 +5,8 @@
 #include <redis3m/utils/datetime.h>
 #include <boost/lexical_cast.hpp>
 #include <redis3m/utils/file.h>
+#include <boost/assign/list_of.hpp>
+#include <redis3m/command.h>
 
 using namespace redis3m;
 using namespace redis3m::patterns;

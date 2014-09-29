@@ -4,6 +4,7 @@
 #pragma once
 
 #include <redis3m/connection.h>
+#include <redis3m/command.h>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -82,7 +83,7 @@ public:
      */
     bool exists_by_id(connection::ptr_t conn, const std::string& id)
     {
-        return conn->run(command("SISMEMBER")(collection_key(), id)).integer() == 1;
+        return conn->run(command("SISMEMBER")(collection_key())(id)).integer() == 1;
     }
 
     /**
@@ -95,7 +96,7 @@ public:
     {
         std::map<std::string, std::string> model_map;
         model_map["name"] = model.model_name();
-        if (model.loaded())
+        if (model.loaded() && !model.id().empty())
         {
             model_map["id"] = model.id();
         }
@@ -122,10 +123,13 @@ public:
         sbuf.clear();
 
         // pack model indices
-        std::vector<std::pair<std::string, std::string> > indices;
-        for(const std::string& index : model.indices())
+
+        std::map<std::string, std::vector<std::string> > indices;
+        for(const std::string& index : Model::indices())
         {
-            indices.push_back(std::make_pair(index, attributes[index]));
+            std::vector<std::string> values;
+            values.push_back(attributes[index]);
+            indices[index] = values;
         }
         msgpack::pack(&sbuf, indices);
         args.push_back(std::string(sbuf.data(), sbuf.size()));
@@ -214,6 +218,7 @@ public:
         {
             ret.insert(i.str());
         }
+        return ret;
     }
 
     /**

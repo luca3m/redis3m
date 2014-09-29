@@ -5,6 +5,7 @@
 
 #include <string>
 #include <redis3m/connection.h>
+#include <redis3m/command.h>
 #include <map>
 #include <stdexcept>
 

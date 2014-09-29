@@ -2,18 +2,17 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/connection.h>
-#include <boost/assign/list_of.hpp>
 #include <hiredis/hiredis.h>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace redis3m;
-
-boost::assign_detail::generic_list<std::string>(&redis3m::command)(const std::string&) = boost::assign::list_of<std::string>;
 
 connection::connection(const std::string& host, const unsigned port)
 {
     c = redisConnect(host.c_str(), port);
     if (c->err != REDIS_OK)
     {
+        redisFree(c);
         throw unable_to_connect();
     }
 }
@@ -52,6 +51,12 @@ reply connection::get_reply()
     }
     reply ret(r);
     freeReplyObject(r);
+
+    if (ret.type() == reply::ERROR &&
+        boost::algorithm::starts_with(ret.str(), "READONLY"))
+    {
+        throw slave_read_only();
+    }
     return ret;
 }
 
@@ -65,7 +70,7 @@ std::vector<reply> connection::get_replies(unsigned int count)
     return ret;
 }
 
-bool connection::is_valid()
+bool connection::is_valid() const
 {
     return c->err == REDIS_OK;
 }

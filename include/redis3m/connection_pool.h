@@ -12,18 +12,19 @@
 #include <redis3m/utils/exception.h>
 
 namespace redis3m {
+    REDIS3M_EXCEPTION(cannot_find_sentinel)
+    REDIS3M_EXCEPTION(cannot_find_master)
+    REDIS3M_EXCEPTION(cannot_find_slave)
+    REDIS3M_EXCEPTION(too_much_retries)
+    REDIS3M_EXCEPTION(wrong_database)
+    REDIS3M_EXCEPTION(role_dont_match)
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
-     * to get instaces ip, managing also failover
+     * to get instances ip, managing also failover
      */
     class connection_pool: boost::noncopyable
     {
     public:
-        REDIS3M_EXCEPTION(cannot_find_sentinel)
-        REDIS3M_EXCEPTION(cannot_find_master)
-        REDIS3M_EXCEPTION(cannot_find_slave)
-        REDIS3M_EXCEPTION(too_much_retries)
-        REDIS3M_EXCEPTION(wrong_database)
         typedef std::shared_ptr<connection_pool> ptr_t;
 
         /**
@@ -78,7 +79,8 @@ namespace redis3m {
                     Ret r = f(c);
                     put(c);
                     return r;
-                } catch (const transport_failure& ex)
+                }
+                catch (const connection_error& ex)
                 {
                     --retries;
                 }
@@ -100,7 +102,7 @@ namespace redis3m {
         connection::ptr_t create_slave_connection();
         connection::ptr_t create_master_connection();
         connection::ptr_t sentinel_connection();
-
+        static connection::role_t get_role(connection::ptr_t conn);
         std::mutex access_mutex;
         std::set<connection::ptr_t> connections;
 

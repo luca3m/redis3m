@@ -5,5 +5,6 @@
 
 // Base
 #include <redis3m/connection.h>
+#include <redis3m/command.h>
 #include <redis3m/connection_pool.h>
 #include <redis3m/simple_pool.h>

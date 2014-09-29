@@ -4,7 +4,6 @@
 #pragma once
 
 #include <string>
-#include <redis3m/utils/exception.h>
 #include <vector>
 
 struct redisReply;
@@ -56,9 +55,29 @@ public:
 
     inline operator long long() const { return _integer; }
 
-    inline bool operator==(const std::string& rvalue) const { return _str == rvalue; }
+    inline bool operator==(const std::string& rvalue) const
+    {
+        if (_type == STRING || _type == ERROR || _type == STATUS)
+        {
+            return _str == rvalue;
+        }
+        else
+        {
+            return false;
+        }
+     }
 
-    inline bool operator==(const long long rvalue) const { return _integer == rvalue; }
+    inline bool operator==(const long long rvalue) const
+    {
+        if (_type == INTEGER)
+        {
+            return _integer == rvalue;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
 private:
     reply(redisReply *reply);

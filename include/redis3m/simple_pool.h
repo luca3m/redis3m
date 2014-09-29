@@ -21,9 +21,37 @@ public:
     typedef std::shared_ptr<simple_pool> ptr_t;
     REDIS3M_EXCEPTION(too_much_retries)
 
-    static inline ptr_t create(const std::string& host, unsigned int port)
+    static inline ptr_t create(const std::string& host="localhost", unsigned int port=6379)
     {
         return ptr_t(new simple_pool(host, port));
+    }
+
+    template<typename Ret>
+    /**
+     * @brief Execute a block of code passing a connection::ptr_t
+     * if something fails, like broken connection, it will automatically
+     * retry with an another one
+     * @param f function to run, C++11 lambdas are perfect
+     * @param retries how much retries do
+     * @return
+     */
+    Ret run_with_connection(std::function<Ret(connection::ptr_t)> f,
+                            unsigned int retries=5)
+    {
+        while (retries > 0)
+        {
+            try
+            {
+                connection::ptr_t c = get();
+                Ret r = f(c);
+                put(c);
+                return r;
+            } catch (const connection_error& ex)
+            {
+                --retries;
+            }
+        }
+        throw too_much_retries();
     }
 
     /**
@@ -56,4 +84,8 @@ private:
     std::set<connection::ptr_t> connections;
     std::mutex access_mutex;
 };
+
+template<>
+void simple_pool::run_with_connection(std::function<void(connection::ptr_t)> f,
+                            unsigned int retries);
 }
