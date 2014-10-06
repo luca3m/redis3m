@@ -19,12 +19,18 @@ public:
         logger->debug_impl(s);
     }
 
+    inline static void warning(const std::string& s)
+    {
+        logger->warning_impl(s);
+    }
+
     inline static void error(const std::string& s)
     {
         logger->error_impl(s);
     }
 
     virtual void debug_impl(const std::string& s);
+    virtual void warning_impl(const std::string& s);
     virtual void error_impl(const std::string& s);
 
 private:

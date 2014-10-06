@@ -14,6 +14,12 @@ void logging::debug_impl(const std::string &string)
     std::cerr << string << std::endl;
 }
 
+void logging::warning_impl(const std::string &string)
+{
+    std::unique_lock<std::mutex> lock(access);
+    std::cerr << string << std::endl;
+}
+
 void logging::error_impl(const std::string &string)
 {
     std::unique_lock<std::mutex> lock(access);

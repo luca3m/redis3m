@@ -63,7 +63,10 @@ target_link_libraries(patterns_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 add_executable(connection_pool_test tests/connection_pool.cpp)
 target_link_libraries(connection_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
-                              ${Boost_THREAD_LIBRARY}
+                              ${Boost_SYSTEM_LIBRARY}
+                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+add_executable(cluster_pool_test tests/cluster_pool.cpp)
+target_link_libraries(cluster_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 enable_testing ()
