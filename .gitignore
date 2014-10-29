@@ -28,3 +28,4 @@ redis3m.cbp
 redis3m.pc
 patterns_test
 docs
+cluster_pool_test

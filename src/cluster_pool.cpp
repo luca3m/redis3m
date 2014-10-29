@@ -39,6 +39,7 @@ reply cluster_pool::run(const std::vector<std::string> &command,
     }
     else
     {
+        // TODO: choose a random node
         host = *known_instances.begin();
     }
     connection::ptr_t conn = get_connection_for_host(host);
@@ -50,6 +51,7 @@ reply cluster_pool::run(const std::vector<std::string> &command,
 
 void cluster_pool::regenerate_slots_map()
 {
+    slot_map.clear();
     for ( auto host : known_instances)
     {
         try
