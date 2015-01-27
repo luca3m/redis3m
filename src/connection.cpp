@@ -3,7 +3,9 @@
 
 #include <redis3m/connection.h>
 #include <hiredis/hiredis.h>
+#ifndef NO_BOOST
 #include <boost/algorithm/string/predicate.hpp>
+#endif
 
 using namespace redis3m;
 
@@ -52,8 +54,12 @@ reply connection::get_reply()
     reply ret(r);
     freeReplyObject(r);
 
-    if (ret.type() == reply::ERROR &&
+    if (ret.type() == reply::type_t::TYPE_ERROR &&
+#ifndef NO_BOOST
         boost::algorithm::starts_with(ret.str(), "READONLY"))
+#else
+		(ret.str().find("READONLY") == 0) )
+#endif
     {
         throw slave_read_only();
     }
@@ -63,7 +69,7 @@ reply connection::get_reply()
 std::vector<reply> connection::get_replies(unsigned int count)
 {
     std::vector<reply> ret;
-    for (int i=0; i < count; ++i)
+    for (unsigned int i=0; i < count; ++i)
     {
         ret.push_back(get_reply());
     }

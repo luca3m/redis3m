@@ -62,7 +62,7 @@ void simple_pool::run_with_connection(std::function<void(connection::ptr_t)> f,
             f(c);
             put(c);
             return;
-        } catch (const connection_error& ex)
+        } catch (const connection_error& )
         {
             --retries;
         }

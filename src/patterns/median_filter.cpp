@@ -2,7 +2,9 @@
 // Licensed under Apache 2.0, see LICENSE for details
 #include <redis3m/patterns/median_filter.h>
 #include <redis3m/utils/file.h>
+#ifndef NO_BOOST
 #include <boost/lexical_cast.hpp>
+#endif
 #include <redis3m/command.h>
 
 using namespace redis3m;
@@ -30,11 +32,17 @@ double median_filter::median(connection::ptr_t connection, const std::string &ta
 {
     reply r = connection->run(command("SORT") << list_key(tag));
     const std::vector<reply>& values = r.elements();
-    int size = values.size();
+    int size = (int)values.size();
 
     if (size % 2 != 0)
     {
-        return boost::lexical_cast<double>(values.at((size-1)/2).str());
+		return 
+#ifndef NO_BOOST
+        boost::lexical_cast<double>
+#else
+		std::stod
+#endif
+		(values.at((size - 1) / 2).str());
     }
     else
     {
@@ -44,8 +52,13 @@ double median_filter::median(connection::ptr_t connection, const std::string &ta
         }
         else
         {
+#ifndef NO_BOOST
             return ( boost::lexical_cast<double>(values.at(size/2-1).str()) +
                 boost::lexical_cast<double>(values.at(size/2).str()) ) / 2;
+#else
+			return (std::stod(values.at(size / 2 - 1).str()) +
+				std::stod(values.at(size / 2).str())) / 2;
+#endif
         }
     }
 }

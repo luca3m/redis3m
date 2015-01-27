@@ -2,10 +2,15 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #include <redis3m/utils/resolv.h>
+#ifndef _MSC_VER
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#else
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#endif
 #include <string.h>
 
 using namespace redis3m;

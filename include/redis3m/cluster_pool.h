@@ -1,12 +1,11 @@
 #pragma once
-
-#include <boost/noncopyable.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 #include <redis3m/reply.h>
 #include <redis3m/connection.h>
 #include <redis3m/utils/pool.h>
+#include <redis3m/NoCopy.h>
 #include <map>
 #include <mutex>
 #include <set>
@@ -15,8 +14,10 @@
 
 namespace redis3m
 {
-class cluster_pool: boost::noncopyable
+
+class cluster_pool NOCOPY_BASE
 {
+
 public:
     REDIS3M_EXCEPTION(cannot_regenerate_slots_map)
     typedef std::shared_ptr<cluster_pool> ptr_t;

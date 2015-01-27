@@ -2,13 +2,16 @@
 #include <redis3m/utils/logging.h>
 #include <redis3m/utils/crc16.h>
 #include <redis3m/command.h>
+#ifndef NO_BOOST
 #include <boost/format.hpp>
+#endif
 #include <regex>
+#include <assert.h>
 
 using namespace redis3m;
 
 reply cluster_pool::run(const std::vector<std::string> &command,
-                        redis3m::connection::role_t role,
+                        redis3m::connection::role_t /*role*/,
                         const std::string &key_slot)
 {
     uint16_t slot=0x4000;
@@ -83,23 +86,25 @@ void cluster_pool::regenerate_slots_map()
             {
                 auto slot_it = slot.elements().begin();
                 slot_interval interval;
-                interval.begin = slot_it->integer();
+                interval.begin = (int)slot_it->integer();
                 ++slot_it;
-                interval.end = slot_it->integer();
+                interval.end = (int)slot_it->integer();
                 ++slot_it;
-                slot_hosts_t hosts(host_t(slot_it->elements().at(0), slot_it->elements().at(1)));
+                slot_hosts_t hosts(host_t(slot_it->elements().at(0), (int)slot_it->elements().at(1)));
                 ++slot_it;
                 for ( ; slot_it != slot.elements().end(); ++slot_it)
                 {
-                    hosts.slaves.push_back(host_t(slot_it->elements().at(0), slot_it->elements().at(1)));
+                    hosts.slaves.push_back(host_t(slot_it->elements().at(0), (int)slot_it->elements().at(1)));
                 }
                 slot_map[interval] = hosts;
             }
             return;
         }
-        catch ( const connection_error& ex)
+        catch ( const connection_error&)
         {
+#ifndef NO_BOOST
             logging::warning(boost::str(boost::format("Host %s:%p is down, trying with another one") % host.address % host.port));
+#endif NO_BOOST
         }
     }
     throw cannot_regenerate_slots_map();
@@ -122,7 +127,7 @@ connection::ptr_t cluster_pool::get_connection_for_host(const cluster_pool::host
     return ret;
 }
 
-void cluster_pool::put_connection_for_host(const cluster_pool::host_t &host, connection::ptr_t conn)
+void cluster_pool::put_connection_for_host(const cluster_pool::host_t & /*host*/, connection::ptr_t /*conn*/)
 {
     // TODO: put connection on pool for reuse
 }

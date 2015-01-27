@@ -4,15 +4,24 @@
 #include <redis3m/connection_pool.h>
 #include <redis3m/command.h>
 #include <redis3m/utils/resolv.h>
+#ifndef NO_BOOST
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#endif
 #include <redis3m/utils/logging.h>
 #include <chrono>
 #include <thread>
+#ifndef NO_BOOST
 #include <boost/algorithm/string/find.hpp>
 #include <boost/regex.hpp>
+#else
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <regex>
+#endif
 
 using namespace redis3m;
 
@@ -23,7 +32,16 @@ master_name(master_name),
 sentinel_port(sentinel_port),
 _database(0)
 {
+#ifndef NO_BOOST
     boost::algorithm::split(sentinel_hosts, sentinel_host, boost::is_any_of(","), boost::token_compress_on);
+#else //http://stackoverflow.com/questions/5167625/splitting-a-c-stdstring-using-tokens-e-g
+	std::string s;
+	std::istringstream f(sentinel_host.c_str());
+	while (std::getline(f, s, ',')) {
+		std::cout << s << std::endl;
+		sentinel_hosts.push_back(s);
+	}
+#endif
 }
 
 connection::ptr_t connection_pool::get(connection::role_t type)
@@ -66,7 +84,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
                 try {
                     ret = create_slave_connection();
                     break;
-                } catch (const cannot_find_slave& ex) {
+                } catch (const cannot_find_slave& ) {
                     // Go ahead, looking for a master, no break istruction
                     logging::debug("Slave not found, looking for a master");
                 }
@@ -80,7 +98,7 @@ connection::ptr_t connection_pool::get(connection::role_t type)
         if (_database != 0)
         {
             reply r = ret->run(command("SELECT")(std::to_string(_database)));
-            if (r.type() == reply::ERROR)
+            if (r.type() == reply::type_t::TYPE_ERROR)
             {
                 throw wrong_database(r.str());
             }
@@ -103,21 +121,27 @@ connection::ptr_t connection_pool::sentinel_connection()
     for(const std::string& host : sentinel_hosts)
     {
         std::vector<std::string> real_sentinels = resolv::get_addresses(host);
+#ifndef NO_BOOST
         logging::debug(boost::str(
                            boost::format("Found %d redis sentinels: %s")
                            % real_sentinels.size()
                            % boost::algorithm::join(real_sentinels, ", ")
                            )
                        );
+#endif
         for( const std::string& real_sentinel : real_sentinels)
         {
+#ifndef NO_BOOST
             logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
+#endif
             try
             {
                 return connection::create(real_sentinel, sentinel_port);
-            } catch (const unable_to_connect& ex)
+            } catch (const unable_to_connect& )
             {
+#ifndef NO_BOOST
                 logging::debug(boost::str(boost::format("%s is down") % real_sentinel));
+#endif
             }
         }
     }
@@ -126,22 +150,39 @@ connection::ptr_t connection_pool::sentinel_connection()
 
 connection::role_t connection_pool::get_role(connection::ptr_t conn)
 {
-    static const boost::regex role_searcher("\r\nrole:([a-z]+)\r\n");
+	static const 
+#ifndef NO_BOOST
+    boost::regex 
+#else
+	std::regex 
+#endif
+	role_searcher("\r\nrole:([a-z]+)\r\n");
 
     reply r = conn->run(command("ROLE"));
     std::string role_s;
 
-    if (r.type() == reply::ERROR && boost::algorithm::find_first(r.str(), "unknown"))
+    if (r.type() == reply::type_t::TYPE_ERROR
+#ifndef NO_BOOST
+		&& boost::algorithm::find_first(r.str(),"unknown"))
+#else
+		&& (r.str().find("unknown") != std::string::npos) )
+#endif
+		
     {
         logging::debug("Old redis, doesn't support ROLE command");
         reply r = conn->run(command("INFO") << "replication");
+#ifndef NO_BOOST
         boost::smatch results;
         if (boost::regex_search(r.str(), results, role_searcher))
+#else
+		std::smatch results;
+		if (std::regex_search(r.str(), results, role_searcher))
+#endif
         {
             role_s = results[1];
         }
     }
-    else if (r.type() == reply::ARRAY)
+    else if (r.type() == reply::type_t::TYPE_ARRAY)
     {
         role_s = r.elements().at(0).str();
     }
@@ -187,11 +228,15 @@ connection::ptr_t connection_pool::create_slave_connection()
                 }
                 else
                 {
+#ifndef NO_BOOST
                     logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be slave but it's not, waiting") % host % port));
+#endif 
                 }
-            } catch (const unable_to_connect& ex)
+            } catch (const unable_to_connect&)
             {
+#ifndef NO_BOOST
                 logging::debug(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
+#endif
             }
         }
     }
@@ -226,11 +271,15 @@ connection::ptr_t connection_pool::create_master_connection()
                         }
                         else
                         {
+#ifndef NO_BOOST
                             logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be master but it's not, waiting") % master_ip % master_port));
+#endif //NO_BOOST
                         }
-                    } catch (const unable_to_connect& ex)
+                    } catch (const unable_to_connect&)
                     {
+#ifndef NO_BOOST
                         logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+#endif //NO_BOOST
                     }
                 }
             }
@@ -238,7 +287,11 @@ connection::ptr_t connection_pool::create_master_connection()
         connection_retries++;
         std::this_thread::sleep_for(std::chrono::seconds(5));
     }
+#ifndef NO_BOOST
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
+#else
+	throw cannot_find_master(master_name);
+#endif
 }
 
 template<>
@@ -255,7 +308,7 @@ void connection_pool::run_with_connection(std::function<void(connection::ptr_t)>
             put(c);
             return;
         }
-        catch (const connection_error& ex)
+        catch (const connection_error&)
         {
             --retries;
         }

@@ -6,23 +6,24 @@
 #include <string>
 #include <redis3m/utils/exception.h>
 #include <redis3m/reply.h>
+#include <redis3m/NoCopy.h>
 #include <vector>
 #include <memory>
-#include <boost/noncopyable.hpp>
 
 struct redisContext;
 
 namespace redis3m {
-REDIS3M_EXCEPTION(connection_error)
-REDIS3M_EXCEPTION_2(unable_to_connect, connection_error)
-REDIS3M_EXCEPTION_2(transport_failure, connection_error)
-REDIS3M_EXCEPTION_2(slave_read_only, connection_error)
+	REDIS3M_EXCEPTION(connection_error)
+		REDIS3M_EXCEPTION_2(unable_to_connect, connection_error)
+		REDIS3M_EXCEPTION_2(transport_failure, connection_error)
+		REDIS3M_EXCEPTION_2(slave_read_only, connection_error)
 
-/**
-* @brief The connection class, represent a connection to a Redis server
-*/
-class connection: boost::noncopyable
-{
+		/**
+		* @brief The connection class, represent a connection to a Redis server
+		*/
+
+	class connection NOCOPY_BASE
+	{
 public:
     typedef std::shared_ptr<connection> ptr_t;
 

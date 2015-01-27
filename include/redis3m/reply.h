@@ -20,14 +20,14 @@ public:
     /**
      * @brief Define reply type
      */
-    enum type_t
+    enum class type_t
     {
-        STRING = 1,
-        ARRAY = 2,
-        INTEGER = 3,
-        NIL = 4,
-        STATUS = 5,
-        ERROR = 6
+        TYPE_STRING = 1,
+        TYPE_ARRAY = 2,
+        TYPE_INTEGER = 3,
+        TYPE_NIL = 4,
+        TYPE_STATUS = 5,
+        TYPE_ERROR = 6
     };
 
     /**
@@ -57,7 +57,7 @@ public:
 
     inline bool operator==(const std::string& rvalue) const
     {
-        if (_type == STRING || _type == ERROR || _type == STATUS)
+		if (_type == type_t::TYPE_STRING || _type == type_t::TYPE_ERROR || _type == type_t::TYPE_STATUS)
         {
             return _str == rvalue;
         }
@@ -69,7 +69,7 @@ public:
 
     inline bool operator==(const long long rvalue) const
     {
-        if (_type == INTEGER)
+		if (_type == type_t::TYPE_INTEGER)
         {
             return _integer == rvalue;
         }

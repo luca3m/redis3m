@@ -6,8 +6,10 @@
 #include <string>
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/connection.h>
+#ifndef NO_BOOST
 #include <boost/date_time/posix_time/ptime.hpp>
 #include <boost/date_time/posix_time/posix_time_duration.hpp>
+#endif
 
 namespace redis3m
 {

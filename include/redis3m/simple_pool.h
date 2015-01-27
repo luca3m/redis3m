@@ -2,8 +2,7 @@
 // Licensed under Apache 2.0, see LICENSE for details
 
 #pragma once
-
-#include <boost/noncopyable.hpp>
+#include <redis3m/NoCopy.h>
 #include <redis3m/connection.h>
 #include <set>
 #include <memory>
@@ -15,7 +14,8 @@ namespace redis3m
 /**
  * @brief Manages a pool of connections to a single Redis server
  */
-class simple_pool: boost::noncopyable
+
+class simple_pool NOCOPY_BASE
 {
 public:
     typedef std::shared_ptr<simple_pool> ptr_t;
