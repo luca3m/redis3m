@@ -3,7 +3,7 @@
 #include <mutex>
 #include <functional>
 #include <forward_list>
-#include <boost/noncopyable.hpp>
+#include <redis3m/utils/noncopyable.h>
 
 namespace redis3m
 {
@@ -11,7 +11,7 @@ namespace utils
 {
 
 template<typename T>
-class pool: boost::noncopyable
+class pool: noncopyable
 {
     std::function<T(void)> builder;
     std::mutex access_mutex;

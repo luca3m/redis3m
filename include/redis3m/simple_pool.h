@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include <redis3m/utils/noncopyable.h>
 #include <redis3m/connection.h>
 #include <set>
 #include <memory>
@@ -15,7 +15,7 @@ namespace redis3m
 /**
  * @brief Manages a pool of connections to a single Redis server
  */
-class simple_pool: boost::noncopyable
+class simple_pool: utils::noncopyable
 {
 public:
     typedef std::shared_ptr<simple_pool> ptr_t;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include <redis3m/utils/noncopyable.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@
 
 namespace redis3m
 {
-class cluster_pool: boost::noncopyable
+class cluster_pool: utils::noncopyable
 {
 public:
     REDIS3M_EXCEPTION(cannot_regenerate_slots_map)

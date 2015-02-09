@@ -8,8 +8,8 @@
 #include <redis3m/connection.h>
 #include <memory>
 #include <mutex>
-#include <boost/noncopyable.hpp>
 #include <redis3m/utils/exception.h>
+#include <redis3m/utils/noncopyable.h>
 
 namespace redis3m {
     REDIS3M_EXCEPTION(cannot_find_sentinel)
@@ -22,7 +22,7 @@ namespace redis3m {
      * @brief Manages a connection pool, using a Redis Sentinel
      * to get instances ip, managing also failover
      */
-    class connection_pool: boost::noncopyable
+    class connection_pool: utils::noncopyable
     {
     public:
         typedef std::shared_ptr<connection_pool> ptr_t;
