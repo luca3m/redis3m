@@ -10,14 +10,14 @@ using namespace redis3m;
 int main(int argc, char **argv)
 {
         connection::ptr_t conn = connection::create();
-        std::string send;
+        std::string body;
         if (argv[1] != NULL)
         {
-            send = argv[1];
+            body = argv[1];
         }
         else
         {
-            send = "Undefined";
+            body = "Undefined";
         }
-        reply r = conn->run(command("PUBLISH") << "topic" << send);
+        reply r = conn->run(command("PUBLISH") << "topic" << body);
 }
