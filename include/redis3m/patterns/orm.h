@@ -8,8 +8,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/foreach.hpp>
-#include <boost/assign/list_of.hpp>
 #include <redis3m/patterns/model.h>
 #include <redis3m/patterns/script_exec.h>
 #include <msgpack.hpp>
@@ -114,7 +112,7 @@ public:
         std::map<std::string, std::string> attributes = model.to_map();
         std::vector<std::string> attributes_vector;
         typedef std::pair<std::string, std::string> strpair;
-        BOOST_FOREACH(const strpair& item, attributes)
+        for(const strpair& item : attributes)
         {
             attributes_vector.push_back(item.first);
             attributes_vector.push_back(item.second);
@@ -125,8 +123,9 @@ public:
         sbuf.clear();
 
         // pack model indices
+
         std::map<std::string, std::vector<std::string> > indices;
-        BOOST_FOREACH(const std::string& index, Model::indices())
+        for(const std::string& index : Model::indices())
         {
             std::vector<std::string> values;
             values.push_back(attributes[index]);
@@ -138,7 +137,7 @@ public:
 
         // pack model uniques
         std::map<std::string, std::string> uniques;
-        BOOST_FOREACH(const std::string& index, Model::uniques())
+        for(const std::string& index : model.uniques())
         {
             uniques[index] = attributes[index];
         }
@@ -173,7 +172,7 @@ public:
         // pack model uniques
         std::map<std::string, std::string> attributes = model.to_map();
         std::map<std::string, std::string> uniques;
-        BOOST_FOREACH(const std::string& index, Model::uniques())
+        for(const std::string& index : model.uniques())
         {
             uniques[index] = attributes[index];
         }
@@ -194,7 +193,7 @@ public:
         reply lrange = conn->run(command("LRANGE")
                             (tracked_key(m.id(), list_name))
                             ("0")("-1"));
-        BOOST_FOREACH(const reply& r, lrange.elements())
+        for(const reply& r : lrange.elements())
         {
             ret.push_back(r.str());
         }
@@ -215,7 +214,7 @@ public:
     {
         reply r = conn->run(command("SMEMBERS")(tracked_key(m.id(), set_name)));
         std::set<std::string> ret;
-        BOOST_FOREACH(const reply& i, r.elements())
+        for(const reply& i : r.elements())
         {
             ret.insert(i.str());
         }

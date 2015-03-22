@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include <redis3m/utils/noncopyable.h>
 #include <redis3m/connection.h>
-#include <boost/thread/mutex.hpp>
-#include <boost/function.hpp>
 #include <set>
+#include <memory>
+#include <mutex>
 
 namespace redis3m
 {
@@ -15,10 +15,10 @@ namespace redis3m
 /**
  * @brief Manages a pool of connections to a single Redis server
  */
-class simple_pool: boost::noncopyable
+class simple_pool: utils::noncopyable
 {
 public:
-    typedef boost::shared_ptr<simple_pool> ptr_t;
+    typedef std::shared_ptr<simple_pool> ptr_t;
     REDIS3M_EXCEPTION(too_much_retries)
 
     static inline ptr_t create(const std::string& host="localhost", unsigned int port=6379)
@@ -35,7 +35,7 @@ public:
      * @param retries how much retries do
      * @return
      */
-    Ret run_with_connection(boost::function<Ret(connection::ptr_t)> f,
+    Ret run_with_connection(std::function<Ret(connection::ptr_t)> f,
                             unsigned int retries=5)
     {
         while (retries > 0)
@@ -66,6 +66,8 @@ public:
      */
     void put(connection::ptr_t conn);
 
+    //void run_with_connection(std::function<void(connection::ptr_t)> f, unsigned int retries=5);
+
     /**
      * @brief Set default database, all connection will be initialized selecting
      * this database.
@@ -80,10 +82,10 @@ private:
     unsigned int _port;
     unsigned int _database;
     std::set<connection::ptr_t> connections;
-    boost::mutex access_mutex;
+    std::mutex access_mutex;
 };
 
 template<>
-void simple_pool::run_with_connection(boost::function<void(connection::ptr_t)> f,
+void simple_pool::run_with_connection(std::function<void(connection::ptr_t)> f,
                             unsigned int retries);
 }

@@ -4,15 +4,16 @@
 #include "common.h"
 
 #include <boost/assign.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 #include <redis3m/utils/logging.h>
 #include <boost/lexical_cast.hpp>
+#include <functional>
 
 using namespace redis3m;
 
-void producer_f(connection_pool::ptr_t pool, const std::string& queue_name)
+void producer_f(connection_pool::ptr_t pool, const std::string& queue_name, const bool& do_work)
 {
-    while (!boost::this_thread::interruption_requested())
+    while (do_work)
     {
         try
         {
@@ -26,13 +27,13 @@ void producer_f(connection_pool::ptr_t pool, const std::string& queue_name)
             logging::debug("Failure on producer");
             BOOST_FAIL("Failure on producer");
         }
-        boost::this_thread::yield();
+        std::this_thread::yield();
     }
 }
 
-void consumer_f(connection_pool::ptr_t pool, const std::string& queue_name)
+void consumer_f(connection_pool::ptr_t pool, const std::string& queue_name, const bool& do_work)
 {
-    while (!boost::this_thread::interruption_requested())
+    while (do_work)
     {
         try
         {
@@ -45,7 +46,7 @@ void consumer_f(connection_pool::ptr_t pool, const std::string& queue_name)
             logging::debug("Failure on consumer");
             BOOST_FAIL("Failure on consumer");
         }
-        boost::this_thread::yield();
+        std::this_thread::yield();
     }
 }
 
@@ -66,36 +67,47 @@ BOOST_AUTO_TEST_CASE( test_pool)
     BOOST_CHECK_THROW(c->run(command("SET")("foo")("bar")), slave_read_only);
 }
 
+BOOST_AUTO_TEST_CASE (run_with_connection)
+{
+    connection_pool::ptr_t pool = connection_pool::create(getenv("REDIS_HOST"), "test");
+
+    pool->run_with_connection<void>([](connection::ptr_t c)
+    {
+       c->run(command("SET")("foo")("bar"));
+       BOOST_CHECK_EQUAL(c->run(command("GET")("foo")).str(), "bar");
+    });
+}
+
 BOOST_AUTO_TEST_CASE (crash_test)
 {
     connection_pool::ptr_t pool = connection_pool::create(std::string(getenv("REDIS_HOST")), "test");
 
-    boost::thread_group producers;
-    boost::thread_group consumers;
+    bool do_work = true;
+    std::vector<std::shared_ptr<std::thread>> producers;
+    std::vector<std::shared_ptr<std::thread>> consumers;
 
     for (int i=0; i < 4; ++i)
     {
-        producers.add_thread(new boost::thread(boost::bind(&producer_f, pool, "test-queue")));
-        consumers.add_thread(new boost::thread(boost::bind(&consumer_f, pool, "test-queue")));
+        producers.push_back( std::make_shared<std::thread>(std::bind(&producer_f, pool, "test-queue", std::ref(do_work))));
+        consumers.push_back(std::make_shared<std::thread>(std::bind(&consumer_f, pool, "test-queue", std::ref(do_work))));
     }
 
-    //producers.interrupt_all();
-    //consumers.interrupt_all();
     connection::ptr_t sentinel = connection::create(getenv("REDIS_HOST"), 26379);
 
     for (int i = 0; i < 5; ++i)
     {
         sentinel->run(command("SENTINEL") << "failover" << "test");
-#if BOOST_VERSION < 105500
-        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
-#else
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
-#endif
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
-    producers.interrupt_all();
-    consumers.interrupt_all();
-    producers.join_all();
-    consumers.join_all();
+    do_work=false;
+    for (auto producer : producers)
+    {
+        producer->join();
+    }
+    for (auto consumer : consumers)
+    {
+        consumer->join();
+    }
 }
 

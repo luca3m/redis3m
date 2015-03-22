@@ -8,7 +8,6 @@
 #include <redis3m/command.h>
 #include <map>
 #include <stdexcept>
-#include <boost/foreach.hpp>
 
 namespace redis3m
 {
@@ -67,8 +66,7 @@ public:
         hmset_command.push_back("HMSET");
         hmset_command.push_back(Model::model_name() + ":" + m.id());
 
-        std::pair<std::string, std::string> item;
-        BOOST_FOREACH(item, serialized)
+        for(auto item : serialized)
         {
             hmset_command.push_back(item.first);
             hmset_command.push_back(item.second);

@@ -20,3 +20,12 @@ cmake_install.cmake
 build
 cmake_install.cmake.user
 CTestTestfile.cmake
+Testing
+connection_test
+datadir.cpp
+connection_pool_test
+redis3m.cbp
+redis3m.pc
+patterns_test
+docs
+cluster_pool_test
