@@ -67,7 +67,7 @@ std::string scheduler::find_expired(connection::ptr_t connection, const boost::p
                                 boost::assign::list_of(_queue),
                                 boost::assign::list_of(now_s)(now_and_lock_for));
     std::string ret;
-    if (r.type() == reply::STRING)
+    if (r.type() == reply::type_t::STRING)
     {
         ret = r.str();
     }

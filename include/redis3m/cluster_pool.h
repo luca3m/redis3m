@@ -17,6 +17,7 @@ namespace redis3m
 {
 class cluster_pool: utils::noncopyable
 {
+
 public:
     REDIS3M_EXCEPTION(cannot_regenerate_slots_map)
     typedef std::shared_ptr<cluster_pool> ptr_t;

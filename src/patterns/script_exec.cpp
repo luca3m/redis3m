@@ -3,9 +3,8 @@
 
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/utils/sha1.h>
-#include <boost/lexical_cast.hpp>
 #include <redis3m/utils/file.h>
-#include <boost/algorithm/string/predicate.hpp>
+
 
 using namespace redis3m;
 
@@ -18,11 +17,11 @@ _is_path(is_path)
     if (_is_path)
     {
         std::string script_content = utils::read_content_of_file(script);
-        sha1::calc(script_content.c_str(),script_content.size(),hash);
+        sha1::calc(script_content.c_str(),(int)script_content.size(),hash);
     }
     else
     {
-        sha1::calc(script.c_str(),script.size(),hash);
+        sha1::calc(script.c_str(),(int)script.size(),hash);
     }
     sha1::toHexString(hash, hexstring);
     _sha1.assign(hexstring);
@@ -37,12 +36,13 @@ reply patterns::script_exec::exec(connection::ptr_t connection,
 
     exec_command.push_back("EVALSHA");
     exec_command.push_back(_sha1);
-    exec_command.push_back(boost::lexical_cast<std::string>(keys.size()));
+	exec_command.push_back(std::to_string(keys.size()));
     exec_command.insert(exec_command.end(), keys.begin(), keys.end());
     exec_command.insert(exec_command.end(), args.begin(), args.end());
     reply r = connection->run(exec_command);
-    if (r.type() == reply::ERROR &&
-        boost::starts_with(r.str(), "NOSCRIPT") )
+    if (r.type() == reply::type_t::ERROR &&
+		r.str().find("NOSCRIPT") == 0
+		)
     {
         exec_command[0] = "EVAL";
         if (_is_path)

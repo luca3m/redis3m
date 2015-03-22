@@ -22,5 +22,5 @@ BOOST_AUTO_TEST_CASE( set_key)
     redis3m::cluster_pool::ptr_t pool = get_pool();
     BOOST_CHECK_EQUAL("OK", pool->run(command("SET")("foo")("bar")));
     BOOST_CHECK_EQUAL("bar", pool->run(command("GET")("foo")));
-    BOOST_CHECK_EQUAL(reply::NIL, pool->run(command("GET")("test")).type());
+    //BOOST_CHECK_EQUAL(reply::type_t::NIL, pool->run(command("GET")("test")).type());
 }

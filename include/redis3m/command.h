@@ -5,7 +5,6 @@
 
 #include <string>
 #include <vector>
-#include <boost/lexical_cast.hpp>
 
 namespace redis3m
 {
@@ -15,24 +14,24 @@ class command
 public:
     inline command() {}
 
-    inline command(const std::string& arg)
+    inline command(std::string arg)
     {
-        _args.push_back(arg);
+        _args.push_back(std::move(arg));
     }
 
-    template<typename Type>
-    inline command& operator<<(const Type arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
+	template<typename Type>
+	inline command& operator<<(const Type arg)
+	{
+		_args.push_back(std::to_string(arg));
+		return *this;
+	}
 
-    template<typename Type>
-    inline command& operator()(const Type arg)
-    {
-        _args.push_back(boost::lexical_cast<std::string>(arg));
-        return *this;
-    }
+	template<typename Type>
+	inline command& operator()(const Type arg)
+	{
+		_args.push_back(std::to_string(arg));
+		return *this;
+	}
 
     inline operator const std::vector<std::string>& () {
         return _args;
@@ -41,7 +40,6 @@ public:
 private:
     std::vector<std::string> _args;
 };
-
 template<>
 inline command& command::operator<<(const char* arg)
 {
@@ -57,16 +55,16 @@ inline command& command::operator()(const char* arg)
 }
 
 template<>
-inline command& command::operator<<(const std::string& arg)
+inline command& command::operator<<(std::string arg)
 {
-    _args.push_back(arg);
+    _args.push_back(std::move(arg));
     return *this;
 }
 
 template<>
-inline command& command::operator()(const std::string& arg)
+inline command& command::operator()(std::string arg)
 {
-    _args.push_back(arg);
+	_args.push_back(std::move(arg));
     return *this;
 }
 }

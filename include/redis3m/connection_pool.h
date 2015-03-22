@@ -117,3 +117,4 @@ namespace redis3m {
                                 connection::role_t conn_type,
                                 unsigned int retries);
 }
+

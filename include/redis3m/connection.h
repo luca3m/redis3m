@@ -9,7 +9,6 @@
 #include <redis3m/reply.h>
 #include <vector>
 #include <memory>
-#include <boost/noncopyable.hpp>
 
 struct redisContext;
 
