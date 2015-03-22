@@ -22,7 +22,7 @@ install:
   - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
 
-  - sudo apt-get install libmsgpack-dev libboost-regex-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev
+  - sudo apt-get install libmsgpack-dev libboost-regex-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libhiredis-dev
 
 # Run the Build script
 script:
