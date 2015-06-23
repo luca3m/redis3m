@@ -20,6 +20,7 @@ else()
 endif()
 
 find_package(Boost COMPONENTS system filesystem unit_test_framework date_time regex REQUIRED)
+find_package(Threads REQUIRED)
 
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${Boost_INCLUDE_DIRS})
@@ -65,7 +66,8 @@ target_link_libraries(patterns_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
 add_executable(connection_pool_test tests/connection_pool.cpp)
 target_link_libraries(connection_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
-                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+                              ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                              ${CMAKE_THREAD_LIBS_INIT})
 add_executable(cluster_pool_test tests/cluster_pool.cpp)
 target_link_libraries(cluster_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
@@ -77,7 +79,7 @@ add_test (NAME connection COMMAND connection_test)
 add_test (NAME patterns COMMAND patterns_test)
 
 # Docs
-FIND_PACKAGE(Doxygen)
+FIND_PACKAGE(Doxygen QUIET)
 IF (DOXYGEN_FOUND)
         SET(DOXYGEN_INPUT "${CMAKE_SOURCE_DIR}/Doxyfile")
   SET(DOXYGEN_OUTPUT "docs")
