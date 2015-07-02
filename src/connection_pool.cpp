@@ -49,26 +49,27 @@ connection::ptr_t connection_pool::get(connection::role_t type)
     connection::ptr_t ret;
 
     // Look for a cached connection
-    access_mutex.lock();
-    std::set<connection::ptr_t>::const_iterator it;
-    switch (type) {
-        case connection::ANY:
-            it = connections.begin();
-            break;
-        case connection::MASTER:
-        case connection::SLAVE:
-            it = std::find_if(connections.begin(), connections.end(),[type](connection::ptr_t conn)
-            {
-                return conn->_role == type;
-            });
-            break;
-    }
-    if (it != connections.end())
     {
-        ret = *it;
-        connections.erase(it);
+        std::lock_guard<std::mutex> lock(access_mutex);
+        std::set<connection::ptr_t>::const_iterator it;
+        switch (type) {
+            case connection::ANY:
+                it = connections.begin();
+                break;
+            case connection::MASTER:
+            case connection::SLAVE:
+                it = std::find_if(connections.begin(), connections.end(),[type](connection::ptr_t conn)
+                {
+                    return conn->_role == type;
+                });
+                break;
+        }
+        if (it != connections.end())
+        {
+            ret = *it;
+            connections.erase(it);
+        }
     }
-    access_mutex.unlock();
 
     // If no connection found, create a new one
     if (!ret)
@@ -111,7 +112,7 @@ void connection_pool::put(connection::ptr_t conn)
 {
     if (conn->is_valid())
     {
-        std::unique_lock<std::mutex> lock(access_mutex);
+        std::lock_guard<std::mutex> lock(access_mutex);
         connections.insert(conn);
     }
 }
