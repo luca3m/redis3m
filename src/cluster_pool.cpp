@@ -100,10 +100,13 @@ void cluster_pool::regenerate_slots_map()
             }
             return;
         }
-        catch ( const connection_error&)
+        catch (const connection_error&)
         {
 #ifndef NO_BOOST
             logging::warning(boost::str(boost::format("Host %s:%p is down, trying with another one") % host.address % host.port));
+#else
+            std::string msg = "Host " + host.address + ":" + std::to_string(host.port) + " is down, trying with another one";
+            logging::warning(msg);
 #endif
         }
     }

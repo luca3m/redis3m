@@ -128,11 +128,20 @@ connection::ptr_t connection_pool::sentinel_connection()
                            % boost::algorithm::join(real_sentinels, ", ")
                            )
                        );
+#else
+        std::string msg = "Found " + std::to_string(real_sentinels.size()) + " redis sentinels: " +
+                           std::accumulate(std::begin(real_sentinels), std::end(real_sentinels), std::string(),
+                                [](const std::string& a, const std::string& b) -> std::string {
+                                        return a + (a.length() > 0 ? ", " : "") + b;
+                                  });
+        logging::debug(msg);
 #endif
         for( const std::string& real_sentinel : real_sentinels)
         {
 #ifndef NO_BOOST
             logging::debug(boost::str(boost::format("Trying sentinel %s") % real_sentinel));
+#else
+            logging::debug("Trying sentinel " + real_sentinel);
 #endif
             try
             {
@@ -141,6 +150,8 @@ connection::ptr_t connection_pool::sentinel_connection()
             {
 #ifndef NO_BOOST
                 logging::debug(boost::str(boost::format("%s is down") % real_sentinel));
+#else
+                logging::debug(real_sentinel + " is down");
 #endif
             }
         }
@@ -230,12 +241,21 @@ connection::ptr_t connection_pool::create_slave_connection()
                 {
 #ifndef NO_BOOST
                     logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be slave but it's not, waiting") % host % port));
+#else
+                    std::string msg = "Error on connection to " + host + ":" + std::to_string(port) +
+                                      " declared to be slave but it's not, waiting";
+                    logging::debug(msg);
+
 #endif 
                 }
             } catch (const unable_to_connect&)
             {
 #ifndef NO_BOOST
                 logging::debug(boost::str(boost::format("Error on connection to Slave %s:%d declared to be up") % host % port));
+#else
+                std::string msg = "Error on connection to Slave " + host + ":" + std::to_string(port) +
+                                  " declared to be up";
+                logging::debug(msg);
 #endif
             }
         }
@@ -273,12 +293,20 @@ connection::ptr_t connection_pool::create_master_connection()
                         {
 #ifndef NO_BOOST
                             logging::debug(boost::str(boost::format("Error on connection to %s:%d declared to be master but it's not, waiting") % master_ip % master_port));
+#else
+                            std::string msg = "Error on connection to " + master_ip + ":" + std::to_string(master_port) +
+                                              " declared to be master but it's not, waiting";
+                            logging::debug(msg);
 #endif //NO_BOOST
                         }
                     } catch (const unable_to_connect&)
                     {
 #ifndef NO_BOOST
                         logging::debug(boost::str(boost::format("Error on connection to Master %s:%d declared to be up, waiting") % master_ip % master_port));
+#else
+                        std::string msg = "Error on connection to Master " + master_ip + ":" +
+                                          std::to_string(master_port) + " declared to be up, waiting";
+                        logging::debug(msg);
 #endif //NO_BOOST
                     }
                 }
@@ -290,7 +318,8 @@ connection::ptr_t connection_pool::create_master_connection()
 #ifndef NO_BOOST
     throw cannot_find_master(boost::str(boost::format("Unable to find master of name: %s (too much retries") % master_name));
 #else
-	throw cannot_find_master(master_name);
+    std::string msg = "Unable to find master of name: " + master_name + " (too many retries)";
+    throw cannot_find_master(msg);
 #endif
 }
 

@@ -37,6 +37,18 @@ public:
         return _args;
     }
 
+    inline std::string toDebugString() {
+        std::string ret = "[redis args: ( ";
+        bool first = true;
+        for(std::vector<std::string>::iterator iterator = _args.begin(); iterator != _args.end(); ++iterator) {
+            if(!first) ret += ", ";
+            first = false;
+            ret += "'" + *iterator + "'";
+        }
+        ret += " )]";
+        return ret;
+    }
+
 private:
     std::vector<std::string> _args;
 };

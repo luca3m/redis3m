@@ -29,3 +29,8 @@ _integer(0)
             break;
     }
 }
+
+reply::reply():
+_type(type_t::ERROR),
+_integer(0) {
+}
