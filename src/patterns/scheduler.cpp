@@ -20,7 +20,7 @@ scheduler::scheduler(const std::string &queue_name):
 }
 
 void scheduler::append_enqueue(connection::ptr_t connection, const std::string &object_id,
-                               const boost::posix_time::ptime& time)
+                               const datetime::ptime& time)
 {
     connection->append(command("ZADD")(_queue)
                             (boost::lexical_cast<std::string>(datetime::ptime_in_seconds(time)))
@@ -28,20 +28,20 @@ void scheduler::append_enqueue(connection::ptr_t connection, const std::string &
 }
 
 void scheduler::append_enqueue(connection::ptr_t connection, const std::string &object_id,
-                               const boost::posix_time::time_duration& delay)
+                               const datetime::time_duration& delay)
 {
     append_enqueue(connection, object_id, datetime::now()+delay);
 }
 
 void scheduler::enqueue(connection::ptr_t connection, const std::string &object_id,
-                        const boost::posix_time::ptime& time)
+                        const datetime::ptime& time)
 {
     append_enqueue(connection, object_id, time);
     connection->get_reply();
 }
 
 void scheduler::enqueue(connection::ptr_t connection, const std::string &object_id,
-                               const boost::posix_time::time_duration& delay)
+                               const datetime::time_duration& delay)
 {
     append_enqueue(connection, object_id, delay);
     connection->get_reply();
@@ -58,9 +58,9 @@ void scheduler::dequeue(connection::ptr_t connection, const std::string &object_
     connection->get_reply();
 }
 
-std::string scheduler::find_expired(connection::ptr_t connection, const boost::posix_time::time_duration& lock_for)
+std::string scheduler::find_expired(connection::ptr_t connection, const datetime::time_duration& lock_for)
 {
-    boost::posix_time::ptime now = datetime::now();
+    datetime::ptime now = datetime::now();
     std::string now_s = boost::lexical_cast<std::string>(datetime::ptime_in_seconds(now));
     std::string now_and_lock_for = boost::lexical_cast<std::string>(datetime::ptime_in_seconds(now+lock_for));
     reply r = find_expired_script.exec(connection,
