@@ -18,6 +18,8 @@ namespace redis3m {
     REDIS3M_EXCEPTION(too_much_retries)
     REDIS3M_EXCEPTION(wrong_database)
     REDIS3M_EXCEPTION(role_dont_match)
+    REDIS3M_EXCEPTION(authentication_error)
+
     /**
      * @brief Manages a connection pool, using a Redis Sentinel
      * to get instances ip, managing also failover
@@ -95,6 +97,13 @@ namespace redis3m {
          */
         inline void set_database(unsigned int value) { _database = value; }
 
+        /**
+         * @brief Set authentication password to use on every new master/slave
+         * connection object created by the pool.
+         * @param value The password to use
+         */
+        inline void set_password(const std::string& value) { password = value; }
+
     private:
         connection_pool(const std::string& sentinel_host,
                         const std::string& master_name,
@@ -103,12 +112,15 @@ namespace redis3m {
         connection::ptr_t create_master_connection();
         connection::ptr_t sentinel_connection();
         static connection::role_t get_role(connection::ptr_t conn);
+        bool authenticate(connection::ptr_t conn);
+
         std::mutex access_mutex;
         std::set<connection::ptr_t> connections;
 
         std::vector<std::string> sentinel_hosts;
         unsigned int sentinel_port;
         std::string master_name;
+        std::string password;
         unsigned int _database;
     };
 
