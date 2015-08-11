@@ -23,14 +23,14 @@ connection::ptr_t simple_pool::get()
 
     if (!ret)
     {
-+        if (!_path.empty())
-+        {
-+            ret = connection::create_unix(_path);
-+        }
-+        else
-+        {
-+            ret = connection::create(_host, _port);
-+        }
+        if (!_path.empty())
+        {
+            ret = connection::create_unix(_path);
+        }
+        else
+        {
+            ret = connection::create(_host, _port);
+        }
         // Setup connections selecting db
         if (_database != 0)
         {
