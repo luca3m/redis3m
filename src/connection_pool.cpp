@@ -30,6 +30,7 @@ connection_pool::connection_pool(const std::string& sentinel_host,
                                  unsigned int sentinel_port):
 master_name(master_name),
 sentinel_port(sentinel_port),
+password(""),
 _database(0)
 {
 #ifndef NO_BOOST
@@ -201,6 +202,11 @@ connection::role_t connection_pool::get_role(connection::ptr_t conn)
     }
 }
 
+bool connection_pool::authenticate(connection::ptr_t conn)
+{
+    return (conn->run(command("AUTH") << password).type() != reply::type_t::ERROR);
+}
+
 connection::ptr_t connection_pool::create_slave_connection()
 {
     connection::ptr_t sentinel = sentinel_connection();
@@ -220,6 +226,11 @@ connection::ptr_t connection_pool::create_slave_connection()
             try
             {
                 connection::ptr_t conn = connection::create(host, port);
+                if (password != "" && !authenticate(conn))
+                {
+                    throw authentication_error("Invalid authentication credentials specified");
+                }
+
                 connection::role_t role = get_role(conn);
                 if (role == connection::SLAVE)
                 {
@@ -263,6 +274,11 @@ connection::ptr_t connection_pool::create_master_connection()
                     try
                     {
                         connection::ptr_t conn = connection::create(master_ip, master_port);
+                        if (password != "" && !authenticate(conn))
+                        {
+                            throw authentication_error("Invalid authentication credentials specified");
+                        }
+
                         connection::role_t role = get_role(conn);
                         if (role == connection::MASTER)
                         {
