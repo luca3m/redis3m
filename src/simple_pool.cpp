@@ -10,15 +10,16 @@ connection::ptr_t simple_pool::get()
 {
     connection::ptr_t ret;
 
-    access_mutex.lock();
-    std::set<connection::ptr_t>::iterator it = connections.begin();
-    if (it != connections.end())
     {
-        ret = *it;
-        connections.erase(it);
-    }
+        std::lock_guard<std::mutex> lock(access_mutex);
+        std::set<connection::ptr_t>::iterator it = connections.begin();
+        if (it != connections.end())
+        {
+            ret = *it;
+            connections.erase(it);
+        }
 
-    access_mutex.unlock();
+    }
 
     if (!ret)
     {
@@ -37,7 +38,7 @@ void simple_pool::put(connection::ptr_t conn)
 {
     if (conn->is_valid())
     {
-        std::unique_lock<std::mutex> lock(access_mutex);
+        std::lock_guard<std::mutex> lock(access_mutex);
         connections.insert(conn);
     }
 }

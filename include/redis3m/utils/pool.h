@@ -25,14 +25,15 @@ public:
     T get()
     {
         T ret;
-        access_mutex.lock();
-        auto it = objects.begin();
-        if (it != objects.end())
         {
-            ret = *it;
-            objects.erase(it);
+            std::lock_guard<std::mutex> lock(access_mutex);
+            auto it = objects.begin();
+            if (it != objects.end())
+            {
+                ret = *it;
+                objects.erase(it);
+            }
         }
-        access_mutex.unlock();
         if (!ret)
         {
             ret = builder();
@@ -42,7 +43,7 @@ public:
 
     void put(const T& item)
     {
-        std::unique_lock<std::mutex> lock(access_mutex);
+        std::lock_guard<std::mutex> lock(access_mutex);
         objects.push_front(item);
     }
 };

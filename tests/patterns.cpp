@@ -71,19 +71,19 @@ BOOST_AUTO_TEST_CASE ( scheduler_test )
     patterns::scheduler s("test-queue");
 
     // Enqueue
-    s.enqueue(*tc, "testid", boost::posix_time::seconds(1));
+    s.enqueue(*tc, "testid", datetime::seconds(1));
 
     // Not expired yet
     BOOST_CHECK_EQUAL( s.find_expired(*tc), "");
     sleep(2);
 
     // Now it should expire
-    std::string found_id = s.find_expired(*tc, boost::posix_time::seconds(1));
+    std::string found_id = s.find_expired(*tc, datetime::seconds(1));
     BOOST_CHECK_EQUAL( found_id, "testid");
     sleep(2);
 
     // Expire again after lock_for passed
-    found_id = s.find_expired(*tc, boost::posix_time::seconds(2));
+    found_id = s.find_expired(*tc, datetime::seconds(2));
     BOOST_CHECK_EQUAL( found_id, "testid");
 
     // Dequeue

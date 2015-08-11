@@ -6,8 +6,7 @@
 #include <string>
 #include <redis3m/patterns/script_exec.h>
 #include <redis3m/connection.h>
-#include <boost/date_time/posix_time/ptime.hpp>
-#include <boost/date_time/posix_time/posix_time_duration.hpp>
+#include <redis3m/utils/datetime.h>
 
 namespace redis3m
 {
@@ -35,7 +34,7 @@ public:
      * @param object_id an object id, can be everything, like a reference to an Redis hash
      * @param time absolute UTC time, when job will fire
      */
-    void append_enqueue(connection::ptr_t connection, const std::string& object_id, const boost::posix_time::ptime& time);
+    void append_enqueue(connection::ptr_t connection, const std::string& object_id, const datetime::ptime& time);
 
     /**
      * @brief Append Redis commands needed to enqueue a job, useful to use inside transactions
@@ -43,7 +42,7 @@ public:
      * @param object_id an object id, can be everything, like a reference to an Redis hash
      * @param delay Job will fire at now() + delay
      */
-    void append_enqueue(connection::ptr_t connection, const std::string& object_id, const boost::posix_time::time_duration& delay);
+    void append_enqueue(connection::ptr_t connection, const std::string& object_id, const datetime::time_duration& delay);
 
     /**
      * @brief Put a job in schedule
@@ -51,7 +50,7 @@ public:
      * @param object_id an object id, can be everything, like a reference to an Redis hash
      * @param time absolute UTC time, when job will fire
      */
-    void enqueue(connection::ptr_t connection, const std::string& object_id, const boost::posix_time::ptime& time);
+    void enqueue(connection::ptr_t connection, const std::string& object_id, const datetime::ptime& time);
 
     /**
      * @brief Put a job in schedule
@@ -59,7 +58,7 @@ public:
      * @param object_id an object id, can be everything, like a reference to an Redis hash
      * @param delay Job will fire at now() + delay
      */
-    void enqueue(connection::ptr_t connection, const std::string& object_id, const boost::posix_time::time_duration& delay);
+    void enqueue(connection::ptr_t connection, const std::string& object_id, const datetime::time_duration& delay);
 
     /**
      * @brief Append Redis commands to remove a job from queue, use it when worker ends a job. Otherwise it will
@@ -85,7 +84,7 @@ public:
      * @param lock_for lock delay, by default 1 min
      * @return An object id or an empty string if none found
      */
-    std::string find_expired(connection::ptr_t connection, const boost::posix_time::time_duration& lock_for=boost::posix_time::seconds(60));
+    std::string find_expired(connection::ptr_t connection, const datetime::time_duration& lock_for=datetime::seconds(60));
 
 private:
     std::string _queue;

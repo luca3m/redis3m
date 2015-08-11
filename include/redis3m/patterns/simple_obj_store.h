@@ -66,7 +66,7 @@ public:
         hmset_command.push_back("HMSET");
         hmset_command.push_back(Model::model_name() + ":" + m.id());
 
-        for(auto item : serialized)
+        for(const auto& item : serialized)
         {
             hmset_command.push_back(item.first);
             hmset_command.push_back(item.second);

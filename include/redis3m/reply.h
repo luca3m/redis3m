@@ -81,6 +81,7 @@ public:
 
 private:
     reply(redisReply *reply);
+    reply();
 
     type_t _type;
     std::string _str;

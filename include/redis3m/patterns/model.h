@@ -4,7 +4,9 @@
 #pragma once
 
 #include <string>
+#ifndef NO_BOOST
 #include <boost/lexical_cast.hpp>
+#endif
 #include <map>
 #include <redis3m/utils/exception.h>
 #include <vector>
@@ -166,7 +168,11 @@ protected:
     {
         if (map.find(key) != map.end())
         {
+#ifndef NO_BOOST
             return boost::lexical_cast<IntegerType>(map.at(key));
+#else
+            return static_cast<IntegerType>(std::stoll(map.at(key)));
+#endif
         }
         else
         {
@@ -190,7 +196,11 @@ protected:
     {
         if (value != default_value)
         {
+#ifndef NO_BOOST
             map[key] = boost::lexical_cast<std::string>(value);
+#else
+            map[key] = std::to_string(value);
+#endif
         }
     }
 
