@@ -25,6 +25,11 @@ public:
     {
         return ptr_t(new simple_pool(host, port));
     }
+    
+    static inline ptr_t create_unix(const std::string& path)
+    {
+        return ptr_t(new simple_pool(path));
+    }
 
     template<typename Ret>
     /**
@@ -76,8 +81,10 @@ public:
     inline void set_database(unsigned int value) { _database = value; }
 
 private:
+    simple_pool(const std::string& path);
     simple_pool(const std::string& host, unsigned int port);
 
+    std::string _path;
     std::string _host;
     unsigned int _port;
     unsigned int _database;
