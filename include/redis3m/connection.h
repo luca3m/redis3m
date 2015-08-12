@@ -38,6 +38,16 @@ public:
         return ptr_t(new connection(host, port));
     }
 
+    /**
+     * @brief Create and open a new connection
+     * @param path to unix socket
+     * @return
+     */
+    inline static ptr_t create_unix(const std::string& path)
+    {
+        return ptr_t(new connection(path));
+    }
+
     ~connection();
 
     bool is_valid() const;
@@ -90,6 +100,7 @@ public:
 private:
     friend class connection_pool;
     connection(const std::string& host, const unsigned int port);
+    connection(const std::string& path);
 
     role_t _role;
     redisContext *c;

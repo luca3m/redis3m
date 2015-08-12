@@ -23,7 +23,14 @@ connection::ptr_t simple_pool::get()
 
     if (!ret)
     {
-        ret = connection::create(_host, _port);
+        if (!_path.empty())
+        {
+            ret = connection::create_unix(_path);
+        }
+        else
+        {
+            ret = connection::create(_host, _port);
+        }
         // Setup connections selecting db
         if (_database != 0)
         {
@@ -46,6 +53,13 @@ void simple_pool::put(connection::ptr_t conn)
 simple_pool::simple_pool(const std::string &host, unsigned int port):
     _host(host),
     _port(port),
+    _database(0)
+{
+
+}
+
+simple_pool::simple_pool(const std::string &path):
+    _path(path),
     _database(0)
 {
 

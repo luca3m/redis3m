@@ -10,6 +10,11 @@ BOOST_AUTO_TEST_CASE ( fail_connect )
     BOOST_CHECK_THROW(connection::create("localhost", 9090), unable_to_connect);
 }
 
+BOOST_AUTO_TEST_CASE ( fail_unix_connect )
+{
+    BOOST_CHECK_THROW(connection::create_unix("/tmp/nope"), unable_to_connect);
+}
+
 BOOST_AUTO_TEST_CASE( correct_connection )
 {
     BOOST_CHECK_NO_THROW(test_connection());
