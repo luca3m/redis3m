@@ -30,6 +30,13 @@ else()
    set(datadir data)
 endif()
 
+set(prefix      ${CMAKE_INSTALL_PREFIX})
+set(exec_prefix ${CMAKE_INSTALL_PREFIX})
+set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
+
 # Library
 include_directories("${PROJECT_SOURCE_DIR}/include" ${REDIS3M_BOOST_INC})
 file(GLOB SRC_FILES "src/*.cpp" "src/utils/*.cpp" "src/patterns/*.cpp")
@@ -38,46 +45,45 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/utils/datadir.cpp.in
   ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp @ONLY)
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})
 target_link_libraries(${PROJECT_NAME} hiredis ${REDIS3M_BOOST_LIBS})
+
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${REDIS3M_VERSION_STRING}
                                            SOVERSION ${REDIS3M_VERSION_MAJOR})
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DATADIR=\"${datadir}\"")
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
+# Static version 
+add_library(${PROJECT_NAME}-static STATIC ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})
+target_link_libraries(${PROJECT_NAME}-static hiredis ${REDIS3M_BOOST_LIBS})
+set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
 install (TARGETS ${PROJECT_NAME} DESTINATION lib${LIB_SUFFIX})
 install (DIRECTORY "${CMAKE_SOURCE_DIR}/include/${PROJECT_NAME}" DESTINATION include)
+set_target_properties(${PROJECT_NAME}-static PROPERTIES COMPILE_DEFINITIONS_RELEASE "DATADIR=\"${datadir}\"")
+set_target_properties(${PROJECT_NAME}-static PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
 if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR lib${LIB_SUFFIX})
 endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
 
-set(prefix      ${CMAKE_INSTALL_PREFIX})
-set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
-
-
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DATADIR=\"${datadir}\"")
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${libdir}/pkgconfig)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/data/lua" DESTINATION ${datadir})
 
 # Tests
 add_executable(connection_test tests/connection.cpp tests/common.h)
-target_link_libraries(connection_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
+target_link_libraries(connection_test ${PROJECT_NAME}-static ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 add_executable(patterns_test tests/patterns.cpp)
-target_link_libraries(patterns_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
+target_link_libraries(patterns_test ${PROJECT_NAME}-static ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 add_executable(connection_pool_test tests/connection_pool.cpp)
-target_link_libraries(connection_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
+target_link_libraries(connection_pool_test ${PROJECT_NAME}-static ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                               ${CMAKE_THREAD_LIBS_INIT})
 add_executable(cluster_pool_test tests/cluster_pool.cpp)
-target_link_libraries(cluster_pool_test ${PROJECT_NAME} ${Boost_FILESYSTEM_LIBRARY}
+target_link_libraries(cluster_pool_test ${PROJECT_NAME}-static ${Boost_FILESYSTEM_LIBRARY}
                               ${Boost_SYSTEM_LIBRARY}
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 enable_testing ()
