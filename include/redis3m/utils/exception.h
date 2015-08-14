@@ -14,7 +14,7 @@ namespace redis3m {
         _what(what){}
         virtual ~exception() throw() {}
         
-        inline virtual const char* what()
+        inline virtual const char* what() const noexcept override
         {
             return _what.c_str();
         }
