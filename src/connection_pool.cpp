@@ -21,6 +21,7 @@
 #include <sstream>
 #include <algorithm>
 #include <regex>
+#include <numeric>
 #endif
 
 using namespace redis3m;
