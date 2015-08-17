@@ -6,21 +6,21 @@
 
 using namespace redis3m;
 
-logging::ptr_t logging::logger(new logging());
+logging::ptr_t logging::logger(new logging_impl());
 
-void logging::debug_impl(const std::string &string)
+void logging_impl::debug_impl(const std::string &string)
 {
     std::lock_guard<std::mutex> lock(access);
     std::cerr << string << std::endl;
 }
 
-void logging::warning_impl(const std::string &string)
+void logging_impl::warning_impl(const std::string &string)
 {
     std::lock_guard<std::mutex> lock(access);
     std::cerr << string << std::endl;
 }
 
-void logging::error_impl(const std::string &string)
+void logging_impl::error_impl(const std::string &string)
 {
     std::lock_guard<std::mutex> lock(access);
     std::cerr << string << std::endl;
