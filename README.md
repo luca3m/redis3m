@@ -1,6 +1,7 @@
 redis3m
 =======
 [![Build Status](https://travis-ci.org/luca3m/redis3m.png?branch=master)](https://travis-ci.org/luca3m/redis3m)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luca3m/redis3m?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 A C++ [Redis](http://redis.io) client, born to bring my experience using Redis and C++ on a opensource library.
 
