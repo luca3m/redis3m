@@ -13,6 +13,10 @@
 #endif
 #include <string.h>
 
+#if __FreeBSD__
+#include <netinet/in.h>
+#endif
+
 using namespace redis3m;
 
 std::vector<std::string> resolv::get_addresses(const std::string &hostname)
