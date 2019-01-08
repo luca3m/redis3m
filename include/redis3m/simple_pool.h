@@ -5,6 +5,7 @@
 
 #include <redis3m/utils/noncopyable.h>
 #include <redis3m/connection.h>
+#include <functional>
 #include <set>
 #include <memory>
 #include <mutex>
