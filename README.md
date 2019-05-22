@@ -20,7 +20,7 @@ redis3m requires hiredis and boost libraries.
 First step install all required dependencies, on a Debian system you can use:
 
 ```bash
-sudo apt-get install libmsgpack-dev libboost-thread-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev cmake build-essential
+sudo apt-get install libmsgpack-dev libboost-thread-dev libboost-date-time-dev libboost-test-dev libboost-filesystem-dev libboost-system-dev libhiredis-dev cmake build-essential libboost-regex-dev
 ```
 
 Then checkout the code and compile it

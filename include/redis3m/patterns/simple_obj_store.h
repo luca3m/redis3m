@@ -39,7 +39,7 @@ public:
         {
             std::map<std::string, std::string> serialized;
 
-            for (int i=0; i < key_values.size(); i+=2)
+            for (uint32_t i=0; i < key_values.size(); i+=2)
             {
                 serialized[key_values.at(i).str()] = key_values.at(i+1).str();
             }

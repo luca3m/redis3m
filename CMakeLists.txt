@@ -10,7 +10,7 @@ endif()
 find_package(Boost COMPONENTS system filesystem unit_test_framework date_time regex REQUIRED)
 find_package(Threads REQUIRED)
 
-# to be used from command line: cmake NO_BOOST=YES 
+# to be used from command line: cmake NO_BOOST=YES
 if(NO_BOOST)
   set(NO_BOOST_CFLAG -DNO_BOOST)
 else(NO_BOOST)
@@ -22,8 +22,8 @@ set(REDIS3M_VERSION_MAJOR 9)
 set(REDIS3M_VERSION_MINOR 9)
 set(REDIS3M_VERSION_PATCH 9)
 set(REDIS3M_VERSION_STRING ${REDIS3M_VERSION_MAJOR}.${REDIS3M_VERSION_MINOR}.${REDIS3M_VERSION_PATCH})
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -std=c++11 -ggdb -pipe -fPIC ${NO_BOOST_CFLAG}")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -std=c++11 -pipe -fPIC ${NO_BOOST_CFLAG}")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -std=c++11 -ggdb -pipe -fPIC -Wall -Wpedantic ${NO_BOOST_CFLAG}")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -std=c++11 -pipe -fPIC -Wall -Wpedantic ${NO_BOOST_CFLAG}")
 if(CMAKE_BUILD_TYPE STREQUAL Release)
     set(datadir ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME})
 else()
@@ -51,7 +51,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${REDIS3M_VERSION_STRIN
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELEASE "DATADIR=\"${datadir}\"")
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "DATADIR=\"${CMAKE_SOURCE_DIR}/data\"")
 
-# Static version 
+# Static version
 add_library(${PROJECT_NAME}-static STATIC ${SRC_FILES} ${CMAKE_CURRENT_BINARY_DIR}/datadir.cpp ${INCLUDE_FILES})
 target_link_libraries(${PROJECT_NAME}-static hiredis ${REDIS3M_BOOST_LIBS})
 set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
